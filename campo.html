@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Marcar puntos · Ruta Centro</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap">
+<style>
+:root{--fondo:#F3F1EC;--papel:#fff;--tinta:#0E2236;--suave:#5B6878;--linea:#D9DCE1;--oro:#B9821F;--oro-claro:#E7B860;--marino:#012941;--ok:#1E7A4C;--aviso:#A8571A;--error:#A3262A;
+  --f-t:"Playfair Display",Georgia,serif;--f-ui:"Poppins",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--fondo);color:var(--tinta);font:15px/1.45 var(--f-ui);-webkit-text-size-adjust:100%;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 40px) max(16px,env(safe-area-inset-left,0px))}
+.env{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--oro)}
+h1{font-family:var(--f-t);font-size:1.8rem;line-height:1.1;margin:2px 0 4px}
+p{margin:0}
+.suave{color:var(--suave);font-size:.9rem}
+.gps{position:sticky;top:0;z-index:5;background:var(--marino);color:#fff;border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.punto{width:14px;height:14px;border-radius:50%;background:#888;flex:none;box-shadow:0 0 0 4px rgba(255,255,255,.15)}
+.punto.bien{background:#4CD38A}.punto.regular{background:#F2B33D}.punto.mal{background:#F06B6B}
+.gps b{font-size:1.05rem;font-variant-numeric:tabular-nums}
+.gps small{display:block;color:#B9C7D3;font-size:.78rem}
+.gps button{margin-left:auto}
+button{font:600 .92rem/1 var(--f-ui);border-radius:12px;border:1.5px solid var(--linea);background:var(--papel);color:var(--tinta);padding:0 14px;min-height:48px;cursor:pointer}
+button.oro{background:var(--oro);border-color:var(--oro);color:#fff}
+button:disabled{opacity:.5}
+.ficha{background:var(--papel);border:1px solid var(--linea);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.cab{display:flex;gap:12px;align-items:center}
+.num{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:700 1.05rem var(--f-t);background:var(--marino);color:var(--oro-claro);border:2px solid var(--oro)}
+.num.oc{background:transparent;color:var(--oro);border-style:dashed}
+.cab h2{margin:0;font:700 1.08rem/1.2 var(--f-t)}
+.cab p{font-size:.82rem;color:var(--suave)}
+.res{font-size:.84rem;font-variant-numeric:tabular-nums;color:var(--suave)}
+.res.ok{color:var(--ok)}
+.acciones{display:flex;gap:8px}
+.acciones .oro{flex:1}
+.barra{height:6px;border-radius:3px;background:var(--linea);overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:var(--oro);transition:width .3s}
+.seccion{font:700 1.2rem var(--f-t);margin:10px 0 0}
+.final{display:flex;flex-direction:column;gap:8px;background:var(--papel);border:1px solid var(--linea);border-radius:16px;padding:14px}
+textarea{width:100%;min-height:150px;font:12px/1.4 ui-monospace,Menlo,monospace;border:1.5px solid var(--linea);border-radius:12px;padding:10px;background:var(--fondo);color:var(--tinta)}
+.aviso{background:#FFF4E5;border:1px solid var(--aviso);color:var(--aviso);border-radius:12px;padding:10px 12px;font-size:.86rem}
+</style>
+</head>
+<body>
+<div class="env">
+  <div><span class="eyebrow">Érase · Ruta Centro Histórico</span><h1>Marcar puntos</h1>
+  <p class="suave">Colócate donde quieras que empiece a sonar el audio y toca «Marcar aquí». La página espera a tener buena señal, hace la media de varias lecturas y guarda el punto con la hora.</p></div>
+
+  <div class="gps" id="gps"><span class="punto" id="g-punto"></span><div><b id="g-txt">GPS apagado</b><small id="g-sub">Toca «Activar» y acepta el permiso de ubicación</small></div><button type="button" class="oro" id="b-gps">Activar</button></div>
+  <div class="aviso" id="aviso" hidden></div>
+
+  <div class="seccion">Paradas</div>
+  <div id="paradas" class="env"></div>
+  <div class="seccion">Lugares ocultos</div>
+  <div id="ocultos" class="env"></div>
+
+  <div class="final">
+    <div class="seccion" style="margin:0">Enviar a Claude</div>
+    <p class="suave">Cuando termines, toca «Copiar resultados» y pégalo en el chat con Claude. Los datos también se quedan guardados en este móvil.</p>
+    <div class="acciones"><button type="button" class="oro" id="b-copiar">Copiar resultados</button><button type="button" id="b-compartir">Compartir</button></div>
+    <textarea id="salida" readonly aria-label="Resultados"></textarea>
+    <button type="button" id="b-borrar">Borrar todo y empezar de nuevo</button>
+  </div>
+</div>
+<script>
+var PUNTOS=[
+ {id:"p1",n:"1",nombre:"La Comandancia",donde:"Plaza de la Constitución, frente a la escalinata"},
+ {id:"p2",n:"2",nombre:"Calle Real",donde:"Donde quieras que suene la parada"},
+ {id:"p3",n:"3",nombre:"Plaza de la Iglesia",donde:"Parroquia de la Inmaculada"},
+ {id:"p4",n:"4",nombre:"Paseo Fariñas",donde:"Plaza Fariñas y Galería Manolo Alés"},
+ {id:"p5",n:"5",nombre:"Museo Cruz Herrera",donde:"Villa de San José y Jardines Saccone"},
+ {id:"o1",n:"?",nombre:"Casa con las iniciales B L",donde:"Calle Real, antiguo Teatro Cómico"},
+ {id:"o2",n:"?",nombre:"Balcones de la Casa Toledano",donde:"Calle Duque de Tetuán, reja de 1900"},
+ {id:"o3",n:"?",nombre:"Patio de vecinos",donde:"Esquina Plaza Fariñas con Doctor Villar"},
+ {id:"o4",n:"?",nombre:"Regalo de boda de Leovigilda",donde:"Plaza Fariñas, casa de 1906"}
+];
+function $(s){return document.querySelector(s)}
+var DATOS={}; try{DATOS=JSON.parse(localStorage.getItem("erase-marcas")||"{}")||{}}catch(e){DATOS={}}
+function guardar(){try{localStorage.setItem("erase-marcas",JSON.stringify(DATOS))}catch(e){} pintarSalida()}
+var ultima=null, vigia=null, lecturas=null, midiendo=null, bloqueo=null;
+function hora(){var d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0")}
+function aviso(t){var a=$("#aviso");a.hidden=!t;a.textContent=t||""}
+
+function activar(){
+  if(!("geolocation" in navigator)){aviso("Este navegador no permite usar la ubicación.");return}
+  if(vigia!==null)return;
+  $("#g-txt").textContent="Buscando señal…";$("#g-sub").textContent="Al aire libre tarda unos segundos";
+  vigia=navigator.geolocation.watchPosition(function(p){
+    ultima={lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy,t:Date.now()};
+    var a=Math.round(ultima.acc), cls=a<=10?"bien":a<=25?"regular":"mal";
+    $("#g-punto").className="punto "+cls; $("#g-txt").textContent="Precisión ±"+a+" m";
+    $("#g-sub").textContent=a<=10?"Señal buena: puedes marcar":a<=25?"Señal regular: espera un poco o sal a zona despejada":"Señal mala: aléjate de edificios altos";
+    $("#b-gps").hidden=true; aviso("");
+    if(midiendo&&lecturas)lecturas.push(ultima);
+  },function(e){
+    $("#g-punto").className="punto mal";
+    if(e.code===1){$("#g-txt").textContent="Sin permiso";aviso("No hay permiso de ubicación. En iPhone: Ajustes › Privacidad › Localización › Safari › «Al usar la app» y recarga la página.")}
+    else{$("#g-txt").textContent="Sin señal";$("#g-sub").textContent="Reintentando…"}
+  },{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+  try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(function(w){bloqueo=w}).catch(function(){})}catch(e){}
+}
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&vigia!==null){try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(function(w){bloqueo=w}).catch(function(){})}catch(e){}}});
+
+function marcar(p,btn){
+  if(vigia===null){activar()}
+  if(midiendo)return;
+  midiendo=p.id; lecturas=[]; if(ultima&&Date.now()-ultima.t<3000)lecturas.push(ultima);
+  var barra=$("#ba-"+p.id), t0=Date.now(), DUR=12000;
+  btn.disabled=true; btn.textContent="Midiendo… quédate quieto";
+  var tick=setInterval(function(){
+    var f=Math.min(1,(Date.now()-t0)/DUR); barra.style.width=(f*100)+"%";
+    var buenas=lecturas.filter(function(l){return l.acc<=15});
+    if(f>=1){clearInterval(tick); terminar(buenas.length?buenas:lecturas)}
+  },200);
+  function terminar(ls){
+    midiendo=null; btn.disabled=false; btn.textContent="Volver a marcar"; barra.style.width="0";
+    if(!ls.length){$("#re-"+p.id).textContent="No llegó ninguna lectura del GPS. Inténtalo otra vez.";return}
+    var sw=0,la=0,ln=0,mejor=1e9; ls.forEach(function(l){var w=1/Math.max(1,l.acc*l.acc);sw+=w;la+=l.lat*w;ln+=l.lng*w;mejor=Math.min(mejor,l.acc)});
+    DATOS[p.id]={lat:+(la/sw).toFixed(6),lng:+(ln/sw).toFixed(6),precision:Math.round(mejor),lecturas:ls.length,hora:hora()};
+    guardar(); pintar(p);
+  }
+}
+function pintar(p){
+  var d=DATOS[p.id], r=$("#re-"+p.id);
+  if(!d){r.className="res";r.textContent="Sin marcar";return}
+  r.className="res ok";r.textContent="✓ "+d.lat+", "+d.lng+" · ±"+d.precision+" m · "+d.lecturas+" lecturas · "+d.hora;
+}
+function ficha(p){
+  var el=document.createElement("article"); el.className="ficha";
+  el.innerHTML='<div class="cab"><span class="num'+(p.n==="?"?" oc":"")+'">'+p.n+'</span><div><h2></h2><p></p></div></div>'+
+    '<div class="barra"><i id="ba-'+p.id+'"></i></div><div class="res" id="re-'+p.id+'"></div>'+
+    '<div class="acciones"><button type="button" class="oro">Marcar aquí</button><button type="button" class="borrar">Quitar</button></div>';
+  el.querySelector("h2").textContent=(p.n!=="?"?"Parada "+p.n+" · ":"")+p.nombre; el.querySelector(".cab p").textContent=p.donde;
+  var b=el.querySelector(".oro"); b.onclick=function(){marcar(p,b)};
+  var q=el.querySelector(".borrar"); q.onclick=function(){ if(q.dataset.s!=="1"){q.dataset.s="1";q.textContent="¿Seguro?";setTimeout(function(){q.dataset.s="";q.textContent="Quitar"},2500);return}
+    delete DATOS[p.id]; guardar(); pintar(p); b.textContent="Marcar aquí"; q.dataset.s="";q.textContent="Quitar"};
+  if(DATOS[p.id])b.textContent="Volver a marcar";
+  return el;
+}
+function texto(){
+  var l=["ÉRASE · MARCAS DE CAMPO · "+new Date().toLocaleString("es-ES"),"id | nombre | lat, lng | precisión | hora"];
+  PUNTOS.forEach(function(p){var d=DATOS[p.id]; l.push(p.id+" | "+p.nombre+" | "+(d?d.lat+", "+d.lng+" | ±"+d.precision+" m | "+d.hora:"sin marcar"))});
+  return l.join("\n");
+}
+function pintarSalida(){$("#salida").value=texto()}
+PUNTOS.forEach(function(p){(p.id[0]==="p"?$("#paradas"):$("#ocultos")).appendChild(ficha(p)); pintar(p)});
+pintarSalida();
+$("#b-gps").onclick=activar;
+$("#b-copiar").onclick=function(){var t=texto(),b=this;
+  (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent="Copiado ✓";setTimeout(function(){b.textContent="Copiar resultados"},2000)})
+  .catch(function(){var s=$("#salida");s.focus();s.select();b.textContent="Selecciona y copia";})};
+$("#b-compartir").onclick=function(){ if(navigator.share)navigator.share({title:"Marcas Ruta Centro",text:texto()}).catch(function(){}); else $("#b-copiar").click(); };
+$("#b-borrar").onclick=function(){var b=this; if(b.dataset.s!=="1"){b.dataset.s="1";b.textContent="Toca otra vez para borrar todo";setTimeout(function(){b.dataset.s="";b.textContent="Borrar todo y empezar de nuevo"},3000);return}
+  DATOS={};guardar();PUNTOS.forEach(pintar);document.querySelectorAll(".ficha .oro").forEach(function(x){x.textContent="Marcar aquí"});b.dataset.s="";b.textContent="Borrar todo y empezar de nuevo"};
+</script>
+</body>
+</html>
