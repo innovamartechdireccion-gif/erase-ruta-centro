@@ -57,6 +57,8 @@ textarea{width:100%;min-height:150px;font:12px/1.4 ui-monospace,Menlo,monospace;
   <div id="paradas" class="env"></div>
   <div class="seccion">Lugares ocultos</div>
   <div id="ocultos" class="env"></div>
+  <div class="seccion">Lugares de interés y entradas</div>
+  <div id="extras" class="env"></div>
 
   <div class="seccion">Grabar camino</div>
   <article class="ficha">
@@ -83,7 +85,11 @@ var PUNTOS=[
  {id:"o1",n:"?",nombre:"Casa con las iniciales B L",donde:"Calle Real, antiguo Teatro Cómico"},
  {id:"o2",n:"?",nombre:"Balcones de la Casa Toledano",donde:"Calle Duque de Tetuán, reja de 1900"},
  {id:"o3",n:"?",nombre:"Patio de vecinos",donde:"Esquina Plaza Fariñas con Doctor Villar"},
- {id:"o4",n:"?",nombre:"Regalo de boda de Leovigilda",donde:"Plaza Fariñas, casa de 1906"}
+ {id:"o4",n:"?",nombre:"Regalo de boda de Leovigilda",donde:"Plaza Fariñas, casa de 1906"},
+ {id:"i1",n:"i",nombre:"Edificio Ballesteros (Universidad)",donde:"Avenida de España, 5. Delante de la fachada principal"},
+ {id:"i2",n:"i",nombre:"Escenario del viernes de coronación",donde:"Plaza de la Constitución, donde se monta el escenario de la Velada"},
+ {id:"x1",n:"→",nombre:"Fin de la calle Real (lado Iglesia)",donde:"Donde la calle Real desemboca en la Plaza de la Iglesia"},
+ {id:"x2",n:"→",nombre:"Entrada a la Plaza Fariñas (lado Museo)",donde:"Donde empieza la plaza viniendo desde el Museo Cruz Herrera"}
 ];
 function $(s){return document.querySelector(s)}
 var DATOS={}; try{DATOS=JSON.parse(localStorage.getItem("erase-marcas")||"{}")||{}}catch(e){DATOS={}}
@@ -138,10 +144,10 @@ function pintar(p){
 }
 function ficha(p){
   var el=document.createElement("article"); el.className="ficha";
-  el.innerHTML='<div class="cab"><span class="num'+(p.n==="?"?" oc":"")+'">'+p.n+'</span><div><h2></h2><p></p></div></div>'+
+  el.innerHTML='<div class="cab"><span class="num'+(/^\d$/.test(p.n)?"":" oc")+'">'+p.n+'</span><div><h2></h2><p></p></div></div>'+
     '<div class="barra"><i id="ba-'+p.id+'"></i></div><div class="res" id="re-'+p.id+'"></div>'+
     '<div class="acciones"><button type="button" class="oro">Marcar aquí</button><button type="button" class="borrar">Quitar</button></div>';
-  el.querySelector("h2").textContent=(p.n!=="?"?"Parada "+p.n+" · ":"")+p.nombre; el.querySelector(".cab p").textContent=p.donde;
+  el.querySelector("h2").textContent=(/^\d$/.test(p.n)?"Parada "+p.n+" · ":"")+p.nombre; el.querySelector(".cab p").textContent=p.donde;
   var b=el.querySelector(".oro"); b.onclick=function(){marcar(p,b)};
   var q=el.querySelector(".borrar"); q.onclick=function(){ if(q.dataset.s!=="1"){q.dataset.s="1";q.textContent="¿Seguro?";setTimeout(function(){q.dataset.s="";q.textContent="Quitar"},2500);return}
     delete DATOS[p.id]; guardar(); pintar(p); b.textContent="Marcar aquí"; q.dataset.s="";q.textContent="Quitar"};
@@ -179,7 +185,7 @@ function texto(){
   return l.join("\n");
 }
 function pintarSalida(){$("#salida").value=texto()}
-PUNTOS.forEach(function(p){(p.id[0]==="p"?$("#paradas"):$("#ocultos")).appendChild(ficha(p)); pintar(p)});
+PUNTOS.forEach(function(p){(p.id[0]==="p"?$("#paradas"):p.id[0]==="o"?$("#ocultos"):$("#extras")).appendChild(ficha(p)); pintar(p)});
 pintarSalida(); pintarCamino();
 $("#b-gps").onclick=activar;
 $("#b-copiar").onclick=function(){var t=texto(),b=this;
