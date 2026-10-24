@@ -58,6 +58,13 @@ textarea{width:100%;min-height:150px;font:12px/1.4 ui-monospace,Menlo,monospace;
   <div class="seccion">Lugares ocultos</div>
   <div id="ocultos" class="env"></div>
 
+  <div class="seccion">Grabar camino</div>
+  <article class="ficha">
+    <div class="cab"><span class="num oc">↝</span><div><h2>Del Museo Cruz Herrera a la Comandancia</h2><p>Para cerrar el anillo de la ruta. Pulse «Empezar» en la puerta del Museo, camine hasta la Comandancia por las calles que debe seguir el turista y pulse «Terminar».</p></div></div>
+    <div class="res" id="cam-res">Sin grabar</div>
+    <div class="acciones"><button type="button" class="oro" id="b-cam">Empezar a grabar</button><button type="button" id="b-cam-borrar">Borrar</button></div>
+  </article>
+
   <div class="final">
     <div class="seccion" style="margin:0">Enviar a Claude</div>
     <p class="suave">Cuando termines, toca «Copiar resultados» y pégalo en el chat con Claude. Los datos también se quedan guardados en este móvil.</p>
@@ -141,14 +148,39 @@ function ficha(p){
   if(DATOS[p.id])b.textContent="Volver a marcar";
   return el;
 }
+/* ---------- grabar camino ---------- */
+var CAMINO = (function(){ try{ return JSON.parse(localStorage.getItem("erase-camino")||"null") || {pts:[],grabando:false}; }catch(e){ return {pts:[],grabando:false}; } })();
+CAMINO.grabando=false;
+function guardarCamino(){ try{ localStorage.setItem("erase-camino",JSON.stringify(CAMINO)); }catch(e){} pintarSalida(); }
+function distM(a,b){ var R=6371000,r=Math.PI/180,x=Math.pow(Math.sin((b[0]-a[0])*r/2),2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.pow(Math.sin((b[1]-a[1])*r/2),2); return 2*R*Math.asin(Math.sqrt(x)); }
+function largoCamino(){ var s=0; for (var i=1;i<CAMINO.pts.length;i++) s+=distM(CAMINO.pts[i-1],CAMINO.pts[i]); return Math.round(s); }
+function pintarCamino(){ var n=CAMINO.pts.length, r=$("#cam-res");
+  r.className = n ? "res ok" : "res"; r.textContent = CAMINO.grabando ? "Grabando… "+n+" puntos · "+largoCamino()+" m" : (n ? "✓ Camino grabado: "+n+" puntos · "+largoCamino()+" m" : "Sin grabar");
+  $("#b-cam").textContent = CAMINO.grabando ? "Terminar" : (n ? "Volver a grabar" : "Empezar a grabar"); }
+var vigiaCam=null;
+$("#b-cam").onclick=function(){
+  if (CAMINO.grabando){ CAMINO.grabando=false; if (vigiaCam!==null){ navigator.geolocation.clearWatch(vigiaCam); vigiaCam=null; } guardarCamino(); pintarCamino(); return; }
+  if (!("geolocation" in navigator)){ aviso("Este navegador no permite usar la ubicación."); return; }
+  if (vigia===null) activar();
+  CAMINO={pts:[],grabando:true}; pintarCamino();
+  vigiaCam=navigator.geolocation.watchPosition(function(p){
+    if (!CAMINO.grabando || p.coords.accuracy>20) return;
+    var q=[+p.coords.latitude.toFixed(6),+p.coords.longitude.toFixed(6)], u=CAMINO.pts[CAMINO.pts.length-1];
+    if (!u || distM(u,q)>=4){ CAMINO.pts.push(q); guardarCamino(); pintarCamino(); }
+  },function(){},{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+};
+$("#b-cam-borrar").onclick=function(){ var b=this; if(b.dataset.s!=="1"){b.dataset.s="1";b.textContent="¿Seguro?";setTimeout(function(){b.dataset.s="";b.textContent="Borrar"},2500);return}
+  CAMINO={pts:[],grabando:false}; if (vigiaCam!==null){ navigator.geolocation.clearWatch(vigiaCam); vigiaCam=null; } guardarCamino(); pintarCamino(); b.dataset.s=""; b.textContent="Borrar"; };
+
 function texto(){
   var l=["ÉRASE · MARCAS DE CAMPO · "+new Date().toLocaleString("es-ES"),"id | nombre | lat, lng | precisión | hora"];
   PUNTOS.forEach(function(p){var d=DATOS[p.id]; l.push(p.id+" | "+p.nombre+" | "+(d?d.lat+", "+d.lng+" | ±"+d.precision+" m | "+d.hora:"sin marcar"))});
+  if (CAMINO.pts.length) l.push("camino p5-p1 ("+CAMINO.pts.length+" puntos, "+largoCamino()+" m): "+CAMINO.pts.map(function(q){return q[0]+","+q[1]}).join(";"));
   return l.join("\n");
 }
 function pintarSalida(){$("#salida").value=texto()}
 PUNTOS.forEach(function(p){(p.id[0]==="p"?$("#paradas"):$("#ocultos")).appendChild(ficha(p)); pintar(p)});
-pintarSalida();
+pintarSalida(); pintarCamino();
 $("#b-gps").onclick=activar;
 $("#b-copiar").onclick=function(){var t=texto(),b=this;
   (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent="Copiado ✓";setTimeout(function(){b.textContent="Copiar resultados"},2000)})
