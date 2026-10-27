@@ -2582,22 +2582,27 @@ const UI = {
       };
       fo.append(im);
     });
-    const rk = RETO_PIEZA[item.id], cr = $("#capsula-reto");
-    cr.hidden = !rk || !G.ocultosVistos.has(item.id);
-    cr.classList.toggle("nueva", !!item.retoNueva);
-    if (!cr.hidden) {
-      Reto.crear($("#capsula-reto-f"), item.retoNueva ? rk : null);
+    const rk = RETO_PIEZA[item.id], cr = $("#capsula-reto"), esNuevaPieza = !!item.retoNueva;
+    const pintarPieza = () => {
+      cr.hidden = false;
+      cr.classList.toggle("nueva", esNuevaPieza);
+      Reto.crear($("#capsula-reto-f"), esNuevaPieza ? rk : null);
       const nv = Reto.vistas().size, T = Reto.total();
       $("#capsula-reto-txt").innerHTML = "".concat(tr("retoPieza", { n: Reto.orden(item.id), t: T }), "<b>").concat(tr("rp_" + rk), "</b>").concat(nv === T ? tr("retoFin") : "");
-    }
+    };
+    // La pieza nueva aparece al terminar el audio, no mientras se está narrando.
+    cr.hidden = !rk || !G.ocultosVistos.has(item.id) || esNuevaPieza;
+    cr.classList.toggle("nueva", false);
+    if (!cr.hidden) pintarPieza();
     $("#cap-etq").textContent = etq;
     $("#capsula-titulo").textContent = item.nombre;
     Voz.narrar(item, $("#capsula-sub"), "subtitulo", () => {
-      const esperaPuzle = item.retoNueva ? 6e3 : 0;
-      if (luego) return setTimeout(luego, item.retoNueva ? 6e3 : (lista.length ? 6e3 : 900));
+      if (esNuevaPieza) pintarPieza();
+      const esperaPuzle = esNuevaPieza ? 6e3 : 0;
+      if (luego) return setTimeout(luego, esNuevaPieza ? 6e3 : (lista.length ? 6e3 : 900));
       setTimeout(() => {
         if (!Voz.item && $("#visor").hidden) $("#capsula").hidden = true;
-      }, item.retoNueva ? 6e3 : (lista.length ? 12e3 : 3500));
+      }, esNuevaPieza ? 6e3 : (lista.length ? 12e3 : 3500));
     });
   },
   cerrarCapsula() {
