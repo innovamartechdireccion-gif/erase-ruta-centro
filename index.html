@@ -1302,19 +1302,19 @@ const RUTA = {
       lat: 36.161964,
       lng: -5.350777,
       audio: null,
-      texto: "Lugar oculto. Mire bien las fachadas de esta calle: en una de ellas aparecen grabadas dos letras, una B y una L. Son las iniciales de Bartolomé Lima, antiguo alcalde de La Línea. Su única hija, Leovigilda, se casó con el médico Villar. Y junto a la casa estaba el negocio de la familia: el Teatro Cómico."
+      texto: "Lugar oculto. Está ante la casa de Bartolomé Lima, padre de Leovigilda. Fíjese en las iniciales B L grabadas en la fachada: son las letras de su nombre. Bartolomé fue alcalde de La Línea y junto a esta casa estuvo el negocio de la familia, el Teatro Cómico. Su única hija, Leovigilda, se casó después con el médico Villar."
     },
     {
       id: "o2",
       tipo: "oculto",
       nombre: "Los balcones de la Casa Toledano",
-      sub: "Calle Duque de Tetuán",
+      sub: "Esquina de la calle Duque de Tetuán con la Plaza de la Iglesia",
       tramo: ["p3", "p4"],
       en: 0.3,
       lat: 36.162098,
       lng: -5.351723,
       audio: null,
-      texto: "Lugar oculto. Está ante la Casa Toledano, levantada en 1900 por Ruperto Toledano, otro alcalde de la ciudad. El año aparece en la reja del vestíbulo. Ahora mire los balcones del primer piso. El del centro, abombado, era el de las mujeres: así cabía el vuelo de sus vestidos. Los rectos, a los lados, eran los de los hombres."
+      texto: "Lugar oculto. Está ante la Casa Toledano, en la esquina de la calle Duque de Tetuán con la Plaza de la Iglesia. Fue levantada en 1900 por Ruperto Toledano, otro alcalde de la ciudad. El año aparece en la reja del vestíbulo. Ahora mire los balcones del primer piso. El del centro, abombado, era el de las mujeres: así cabía el vuelo de sus vestidos. Los rectos, a los lados, eran los de los hombres."
     },
     {
       id: "o3",
@@ -1338,7 +1338,7 @@ const RUTA = {
       lat: 36.161529,
       lng: -5.35142,
       audio: null,
-      texto: "Lugar oculto. Esta es la casa de Leovigilda Lima, de 1906. Fue el regalo de su padre, Bartolomé Lima, cuando ella se casó con el doctor Villar. ¿Recuerda las letras B L de la calle Real? Es la misma familia. Fíjese en la piedra que corona la puerta."
+      texto: "Lugar oculto. Está ante la casa de Leovigilda Lima, en el Paseo Fariñas. La casa, de 1906, fue el regalo de su padre, Bartolomé Lima, cuando ella se casó con el doctor Villar. ¿Recuerda las iniciales B L de la casa de la calle Real? Es la misma familia. Fíjese en la piedra que corona la puerta."
     },
     {
       id: "o5",
@@ -2153,7 +2153,21 @@ const G = {
     UI.pintar();
     UI.latir("#c-ocu");
     const n = this.ocultosVistos.size, item = __spreadProps(__spreadValues({}, o), { nombre: o.nombre, retoNueva: true });
-    if (this.capitulo) this.pendientes.push([item, n]);
+    const paradaActiva = this.capitulo && Voz.item && Voz.item.id === this.capitulo && !this.capListo;
+    if (paradaActiva) {
+      const p = porId(this.capitulo);
+      Voz.parar();
+      UI.capsula(item, tr("descubierto", { n, t: RUTA.ocultos.length }), () => {
+        if (this.capitulo !== p.id) return;
+        UI.cerrarCapsula();
+        this.capListo = false;
+        UI.capituloListo(false);
+        Voz.narrar(p, $("#cap-texto"), "texto", () => {
+          this.capListo = true;
+          UI.capituloListo(true);
+        });
+      });
+    } else if (this.capitulo) this.pendientes.push([item, n]);
     else UI.capsula(item, tr("descubierto", { n, t: RUTA.ocultos.length }));
   },
   salir(p) {
@@ -2567,6 +2581,7 @@ const UI = {
     });
     const rk = RETO_PIEZA[item.id], cr = $("#capsula-reto");
     cr.hidden = !rk || !G.ocultosVistos.has(item.id);
+    cr.classList.toggle("nueva", !!item.retoNueva);
     if (!cr.hidden) {
       Reto.crear($("#capsula-reto-f"), item.retoNueva ? rk : null);
       const nv = Reto.vistas().size, T = Reto.total();
@@ -2575,10 +2590,11 @@ const UI = {
     $("#cap-etq").textContent = etq;
     $("#capsula-titulo").textContent = item.nombre;
     Voz.narrar(item, $("#capsula-sub"), "subtitulo", () => {
-      if (luego) return setTimeout(luego, lista.length ? 6e3 : 900);
+      const esperaPuzle = item.retoNueva ? 6e3 : 0;
+      if (luego) return setTimeout(luego, item.retoNueva ? 6e3 : (lista.length ? 6e3 : 900));
       setTimeout(() => {
         if (!Voz.item && $("#visor").hidden) $("#capsula").hidden = true;
-      }, lista.length ? 12e3 : 3500);
+      }, item.retoNueva ? 6e3 : (lista.length ? 12e3 : 3500));
     });
   },
   cerrarCapsula() {
