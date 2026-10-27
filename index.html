@@ -3329,7 +3329,7 @@ const Reto = {
     return [...G.ocultosVistos].filter((o) => RETO_PIEZA[o]).indexOf(oid) + 1;
   },
   /* dibuja la fachada en host; "nueva" (clave de pieza) se revela con animación */
-  crear(host, nueva) {
+  crear(host, nueva, blanco) {
     if (!host) return;
     host.innerHTML = "";
     const NS = "http://www.w3.org/2000/svg", id = "rt" + ++this.n + "-";
@@ -3470,13 +3470,13 @@ const Reto = {
     r(-335, 900, 1670, 10);
     r(323, 910, 320, 8);
     mover(nB, TG);
-    const vistas = this.vistas(), completa = vistas.size === this.total(), quieto2 = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const vistas = blanco ? new Set() : this.vistas(), quieto2 = matchMedia("(prefers-reduced-motion: reduce)").matches;
     PZ.forEach((pz) => {
       if (!vistas.has(pz.k)) return;
       const base = pz.k === "toledano" ? el("g", { transform: TU }) : pz.k === "marco" || pz.k === "puerta" ? el("g", { transform: TD }, el("g", { transform: TG })) : el("g", { transform: TG });
       const g = el("g", { "clip-path": "url(#".concat(id, "c-").concat(pz.k, ")"), mask: "url(#".concat(id, "m-").concat(pz.k, ")") }, base);
-      if (!completa && pz.k === "toledano") el("rect", { x: 0, y: 0, width: 1e3, height: 400, class: "fondo" }, g);
-      if (!completa) el("image", { href: RETO_FOTO[pz.k], x: pz.foto.x, y: pz.foto.y, width: pz.foto.w, height: pz.foto.h, preserveAspectRatio: pz.foto.par || "xMidYMid slice" }, g);
+      if (pz.k === "toledano") el("rect", { x: 0, y: 0, width: 1e3, height: 400, class: "fondo" }, g);
+      el("image", { href: RETO_FOTO[pz.k], x: pz.foto.x, y: pz.foto.y, width: pz.foto.w, height: pz.foto.h, preserveAspectRatio: pz.foto.par || "xMidYMid slice" }, g);
       const halo = el("path", { d: pz.forma, class: "halo", "fill-rule": pz.regla || "nonzero" }, base);
       const anima = pz.k === nueva && !quieto2, t0 = performance.now(), dur = 1600;
       const paso = (t) => {
@@ -3501,7 +3501,7 @@ const Reto = {
     document.querySelectorAll(".reto-cuenta").forEach((e) => e.textContent = "".concat(this.vistas().size, "/").concat(this.total()));
     if (clave === this.clave) return;
     this.clave = clave;
-    document.querySelectorAll("[data-reto]").forEach((h) => this.crear(h));
+    document.querySelectorAll("[data-reto]").forEach((h) => this.crear(h, null, !!h.closest(".reto-bien")));
   }
 };
 const Pasaporte = {
