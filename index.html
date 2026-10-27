@@ -2236,15 +2236,10 @@ const G = {
     UI.pintar();
     M.mapa.flyTo([p.lat, p.lng], 17.5, { duration: 0.9 });
     const cola = this.pendientes.splice(0).map(([o, n]) => [o, tr("descubierto", { n, t: RUTA.ocultos.length })]);
-    if (p.camino) {
-      const haciaP1 = p.salidas && p.salidas.p1 && this.entrada && this.entrada[p.id] === 1 && !this.visitados.has("p1");
-      const s = haciaP1 ? porId("p1") : this.siguiente(), alt = s && p.salidas && p.salidas[s.id];
-      const natural = s && s.orden === p.orden + 1;
-      const txt = !s ? tr("finTxt") : alt ? alt.texto : natural ? p.camino : tr("siguienteGen", { n: s.nombre });
-      const aud = !s ? (AUD_GEN[LANG] || {}).fin || null : alt ? alt.audio : natural ? p.audioCamino || null : null;
-      cola.push([{ id: p.id + "-c", nombre: s ? tr("hacia", { n: s.nombre }) : tr("finRuta"), texto: txt, audio: aud }, tr("enCamino")]);
-    }
     const fin = this.visitados.size >= paradas().length;
+    // No se anuncia ni se impone una siguiente parada: el recorrido es libre.
+    // Solo se mantiene la locución final al completar las cinco paradas.
+    if (fin) cola.push([{ id: p.id + "-fin", nombre: tr("finRuta"), texto: tr("finTxt"), audio: (AUD_GEN[LANG] || {}).fin || null }, tr("finRuta")]);
     const siguiente = () => {
       if (this.capitulo) return;
       if (!cola.length) {
