@@ -2186,6 +2186,13 @@ const G = {
       () => Voz.narrar(p, $("#cap-texto"), "texto", () => {
         this.capListo = true;
         UI.capituloListo(true);
+        // Al visitar las cinco paradas se ha cerrado el anillo: cerrar la ficha
+        // automáticamente y reproducir la locución general de final de ruta.
+        if (this.visitados.size >= paradas().length) {
+          setTimeout(() => {
+            if (this.capitulo === p.id && this.capListo) this.cerrar();
+          }, 450);
+        }
       })
     );
     if (M.mapa) {
