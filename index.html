@@ -2249,24 +2249,20 @@ const G = {
     };
     siguiente();
   },
-  /* La ruta es un anillo 1→2→3→4→5→1: se puede empezar por cualquier parada. El sentido se fija en la primera
-     parada (hacia la vecina más cercana del anillo) y se mantiene hasta completar las cinco. */
+  /* La ruta es libre: el QR activa el circuito y, después de cada parada,
+     se propone la parada pendiente más cercana. El visitante puede elegir otra
+     y el GPS reconocerá cualquier parada en cualquier orden. */
   siguiente() {
-    const ps = paradas(), n = ps.length, falta = ps.filter((p) => !this.visitados.has(p.id));
+    const ps = paradas(), falta = ps.filter((p) => !this.visitados.has(p.id));
     if (!falta.length) return null;
     const ult = this.ultima && porId(this.ultima);
-    if (!ult) return porId(this.inicio) && !this.visitados.has(this.inicio) ? porId(this.inicio) : falta[0];
-    if (!this.sentido) {
-      const i2 = ps.indexOf(ult), a = ps[(i2 + 1) % n], b = ps[(i2 - 1 + n) % n];
-      const da = Math.min(...activaciones(a).map((z) => dist(ult, z))), db = Math.min(...activaciones(b).map((z) => dist(ult, z)));
-      this.sentido = this.visitados.has(a.id) ? -1 : this.visitados.has(b.id) ? 1 : da <= db ? 1 : -1;
-    }
-    let i = ps.indexOf(ult);
-    for (let k = 0; k < n; k++) {
-      i = (i + this.sentido + n) % n;
-      if (!this.visitados.has(ps[i].id)) return ps[i];
-    }
-    return null;
+    if (!ult && !this.pos) return porId(this.inicio) && !this.visitados.has(this.inicio) ? porId(this.inicio) : falta[0];
+    const origen = this.pos || ult;
+    return falta.reduce((mejor, p) => {
+      const d = Math.min(...activaciones(p).map((z) => dist(origen, z)));
+      if (!mejor || d < mejor.d) return { p, d };
+      return mejor;
+    }, null).p;
   },
   tocarPunto(p) {
     if (this.modo === "demo" && p.tipo === "parada") return this.caminarA(p);
