@@ -5123,7 +5123,7 @@ const Bienvenida = {
     const filas = { gps: $("#r-gps"), auri: $("#r-auri"), ocu: $("#r-ocu"), listo: $("#r-listo") };
     const marcar = (k) => Object.entries(filas).forEach(([n, e]) => e.classList.toggle("activa", n === k));
     const AU = AUDIO_INTRO[LANG] || {};
-    Voz.narrar(
+    const escucharIntroduccion = () => Voz.narrar(
       {
         id: "introC",
         nombre: "",
@@ -5136,6 +5136,16 @@ const Bienvenida = {
       "subtitulo",
       () => setTimeout(() => marcar("listo"), 300)
     );
+    // En español, explicar primero el reto de las casas y después reproducir
+    // la introducción que termina preguntando «¿Está preparado?».
+    if (LANG === "es") {
+      Voz.narrar(
+        { id: "reto-casas-intro", nombre: "", texto: tr("retoP"), audio: "audio/es/reto_casas.mp3" },
+        $("#voz-oculta"),
+        "subtitulo",
+        () => setTimeout(escucharIntroduccion, 250)
+      );
+    } else escucharIntroduccion();
   },
   ubicacion() {
     const b = $("#b-ubicacion"), t = $("#ubi-txt");
