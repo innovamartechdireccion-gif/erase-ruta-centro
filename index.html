@@ -1556,9 +1556,9 @@ const Voz = {
     } catch (e) {
     }
   },
-  narrar(item, destino, modo, fin) {
+  narrar(item, destino, modo, fin, desde) {
     this.parar();
-    Object.assign(this, { item, destino, modo, fin: fin || null, pausado: false, i: 0 });
+    Object.assign(this, { item, destino, modo, fin: fin || null, pausado: false, i: desde && desde.i || 0, inicioAudio: desde && desde.t || 0 });
     this.frases = item.texto.replace(/([.!?…])\s+/g, "$1").split("").map((s) => s.trim()).filter(Boolean);
     if (modo === "texto") destino.innerHTML = this.frases.map((f, k) => '<span data-k="'.concat(k, '">').concat(f, "</span>")).join(" ");
     UI.sonando(true);
@@ -1639,9 +1639,10 @@ const Voz = {
     this.audio = a;
     a.muted = false;
     try {
-      a.currentTime = 0;
+      a.currentTime = this.inicioAudio || 0;
     } catch (e) {
     }
+    this.inicioAudio = 0;
     const tot = this.frases.join("").length, lim = [];
     let ac = 0;
     this.frases.forEach((f) => {
@@ -1718,6 +1719,16 @@ const Voz = {
   },
   alternar() {
     this.hablando() ? this.pausar() : this.reanudar();
+  },
+  suspender() {
+    if (!this.item) return null;
+    const r = { item: this.item, destino: this.destino, modo: this.modo, fin: this.fin, i: this.i, t: this.audio ? this.audio.currentTime : 0 };
+    this.parar();
+    return r;
+  },
+  continuar(r) {
+    if (!r) return;
+    this.narrar(r.item, r.destino, r.modo, r.fin, { i: r.i, t: r.t });
   },
   parar() {
     this.pausado = true;
@@ -2155,17 +2166,13 @@ const G = {
     const n = this.ocultosVistos.size, item = __spreadProps(__spreadValues({}, o), { nombre: o.nombre, retoNueva: true });
     const paradaActiva = this.capitulo && Voz.item && Voz.item.id === this.capitulo && !this.capListo;
     if (paradaActiva) {
-      const p = porId(this.capitulo);
-      Voz.parar();
+      const p = porId(this.capitulo), pausa = Voz.suspender();
       UI.capsula(item, tr("descubierto", { n, t: RUTA.ocultos.length }), () => {
         if (this.capitulo !== p.id) return;
         UI.cerrarCapsula();
         this.capListo = false;
         UI.capituloListo(false);
-        Voz.narrar(p, $("#cap-texto"), "texto", () => {
-          this.capListo = true;
-          UI.capituloListo(true);
-        });
+        Voz.continuar(pausa);
       });
     } else if (this.capitulo) this.pendientes.push([item, n]);
     else UI.capsula(item, tr("descubierto", { n, t: RUTA.ocultos.length }));
