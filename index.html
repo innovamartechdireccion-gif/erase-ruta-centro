@@ -1017,7 +1017,7 @@ const TXT = {
     escuchar: "Escuchar",
     descubierto: "Lugar oculto descubierto, {n} de {t}",
     retoT: "Reto de las casas de principios del s. XX",
-    retoP: "Podrá pasear por los lugares más interesantes del municipio, escuchar y ver la historia a pie de calle y, además, participar en un pequeño reto. A lo largo del recorrido encontrará fragmentos de cinco casas de principios del siglo XX que todavía existen en distintos puntos de la ciudad. Con esos fragmentos hemos creado una casa que nunca existió. Si quiere completar el reto, deberá terminar la ruta y pasar por todas sus paradas.",
+    retoP: "¡Ha entrado usted en la Ruta Centro Histórico de La Línea! Podrá pasear por los lugares más interesantes del municipio, escuchar y ver la historia a pie de calle y, además, participar en un pequeño reto. A lo largo del recorrido encontrará fragmentos de cinco casas de principios del siglo XX que todavía existen en distintos puntos de la ciudad. Con esos fragmentos hemos creado una casa que nunca existió. Si quiere completar el reto, deberá terminar la ruta y pasar por todas sus paradas.",
     retoPieza: "El reto · pieza {n} de {t}",
     retoFin: "¡La casa que nunca existió está completa!",
     rp_leovigilda: "El zócalo de rombos y círculos",
@@ -4873,13 +4873,22 @@ const Intro = {
     if (!this.aListo || !this.mapaListo || this.bHecho) return;
     this.bHecho = true;
     const B = tr("introB"), AU = AUDIO_INTRO[LANG], estB = AU ? AU.dB * 1e3 : Math.min(4500, Math.max(2200, B.length / (LANG === "en" ? 14.5 : 14) * 1e3));
-    Trazo.dibujar(estB);
     Musica.llegada();
     const tarjeta = () => this.final();
-    Voz.narrar({ id: "introB", nombre: "", texto: B, audio: AU ? AU.B : null, audioEl: this.audB }, $("#voz-oculta"), "subtitulo", () => Trazo.completar(tarjeta));
-    this.timers.push(setTimeout(() => {
-      if (!this.finHecho) Trazo.completar(tarjeta);
-    }, estB + 4e3));
+    if (LANG === "es") {
+      // La bienvenida ya explica que se ha entrado en la ruta; no repetir esa locución.
+      const dur = 1200;
+      Trazo.dibujar(dur);
+      this.timers.push(setTimeout(() => {
+        if (!this.finHecho) Trazo.completar(tarjeta);
+      }, dur + 100));
+    } else {
+      Trazo.dibujar(estB);
+      Voz.narrar({ id: "introB", nombre: "", texto: B, audio: AU ? AU.B : null, audioEl: this.audB }, $("#voz-oculta"), "subtitulo", () => Trazo.completar(tarjeta));
+      this.timers.push(setTimeout(() => {
+        if (!this.finHecho) Trazo.completar(tarjeta);
+      }, estB + 4e3));
+    }
   },
   // Acercamiento a donde está el turista ("Estás aquí") y arranca la ruta en el modo elegido.
   final() {
