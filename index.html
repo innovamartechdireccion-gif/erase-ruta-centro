@@ -1944,6 +1944,25 @@ function distRuta(pos) {
   });
   return m;
 }
+/* Igual que distRuta, pero devuelve el punto en sí (lat/lng) en vez de la distancia.
+   Lo usa el modo demo para "pegar" el marcador "tú" a la línea mientras se arrastra con
+   el dedo, como si fuera un deslizador sobre la ruta. */
+function puntoEnRuta(lat, lng) {
+  const k = 111320 * Math.cos(lat * Math.PI / 180), xy = ([lo, la]) => [(lo - lng) * k, (la - lat) * 110540];
+  let mejor = null, m = 1e9;
+  [RUTA_GEO, RUTA_CIERRE].forEach((L2) => {
+    for (let i = 0; i < L2.length - 1; i++) {
+      const a = xy(L2[i]), b = xy(L2[i + 1]), vx = b[0] - a[0], vy = b[1] - a[1], l2 = vx * vx + vy * vy;
+      const t = l2 ? Math.max(0, Math.min(1, -(a[0] * vx + a[1] * vy) / l2)) : 0;
+      const d = Math.hypot(a[0] + t * vx, a[1] + t * vy);
+      if (d < m) {
+        m = d;
+        mejor = { lat: L2[i][1] + (L2[i + 1][1] - L2[i][1]) * t, lng: L2[i][0] + (L2[i + 1][0] - L2[i][0]) * t };
+      }
+    }
+  });
+  return mejor;
+}
 function activaciones(p) {
   return [{ lat: p.lat, lng: p.lng, radio: p.radio }].concat(p.zonas || []);
 }
@@ -1980,8 +1999,21 @@ function refrescarMarcas() {
   RUTA.puntos.forEach((p) => M.marcas[p.id] && M.marcas[p.id].setIcon(icono(p)));
 }
 function ponerTu(lat, lng) {
-  if (!M.tu) M.tu = L.marker([lat, lng], { icon: L.divIcon({ className: "", iconSize: [20, 20], html: '<div class="tu"></div>' }), zIndexOffset: 1e3, interactive: false }).addTo(M.mapa);
-  else M.tu.setLatLng([lat, lng]);
+  if (!M.tu) {
+    M.tu = L.marker([lat, lng], { icon: L.divIcon({ className: "", iconSize: [20, 20], html: '<div class="tu"></div>' }), zIndexOffset: 1e3, draggable: true }).addTo(M.mapa);
+    // En modo demo, el marcador "tú" se puede arrastrar con el dedo deslizándolo sobre la
+    // ruta: así, en una presentación sin caminar de verdad, se puede llevar la posición
+    // justo al punto de un lugar oculto y ver cómo salta, sin depender de la velocidad fija
+    // del paso automático. En modo GPS real se desactiva: la posición solo la manda el GPS.
+    M.tu.on("drag", () => {
+      G.caminando = false;
+      const pt = puntoEnRuta(M.tu.getLatLng().lat, M.tu.getLatLng().lng);
+      if (!pt) return;
+      M.tu.setLatLng([pt.lat, pt.lng]);
+      G.mover(pt.lat, pt.lng, 5);
+    });
+  } else M.tu.setLatLng([lat, lng]);
+  G.modo === "demo" ? M.tu.dragging.enable() : M.tu.dragging.disable();
 }
 const G = {
   modo: "gps",
