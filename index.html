@@ -1033,6 +1033,8 @@ const TXT = {
     desvioTxt: "Parece que se ha desviado de la ruta. La siguiente parada es {n}, a {d}. Mire el mapa: la línea dorada le lleva hasta allí.",
     siguienteGen: "Siguiente parada: {n}. Le avisaré al llegar.",
     finTxt: "Ha completado la Ruta Centro Histórico. Gracias por pasear con Érase La Línea.",
+    volverT: "Ya ha visitado las 5 paradas",
+    volverTxt: "Para terminar el recorrido, vuelva hasta {n}, el punto por donde entró. En el camino de vuelta todavía quedan lugares ocultos por descubrir.",
     paradaN: "Ruta Centro Histórico · {o} de 5 visitadas",
     seguir: "Seguir",
     fuente: "Texto basado en la guía oficial de la Oficina Municipal de Turismo de La Línea de la Concepción.",
@@ -1118,6 +1120,8 @@ const TXT = {
     desvioTxt: "It looks like you have left the route. The next stop is {n}, {d} away. Check the map: the gold line will take you there.",
     siguienteGen: "Next stop: {n}. I will let you know when you arrive.",
     finTxt: "You have completed the Historic Centre Route. Thank you for walking with Érase La Línea.",
+    volverT: "You have visited all 5 stops",
+    volverTxt: "To finish the route, go back to {n}, where you entered. On the way back there are still hidden places to find.",
     paradaN: "Historic Centre Route · {o} of 5 visited",
     seguir: "Continue",
     fuente: "Text based on the official guide of the La Línea de la Concepción Municipal Tourist Office.",
@@ -1399,7 +1403,8 @@ const CFG = {
   pasoDemo: 1.4,
   kCoords: "erase_rch_coords_v2",
   kVisitados: "erase_rch_visitados_v3",
-  kOcultos: "erase_rch_ocultos_v2"
+  kOcultos: "erase_rch_ocultos_v2",
+  kVuelta: "erase_rch_vuelta_v1"
 };
 const $ = (s) => document.querySelector(s);
 const leer = (k, d) => {
@@ -1985,6 +1990,9 @@ const G = {
   visitados: new Set(leer(CFG.kVisitados, [])),
   oidos: /* @__PURE__ */ new Set(),
   ocultosVistos: new Set(leer(CFG.kOcultos, [])),
+  // Se pone a true al volver físicamente al punto por donde se entró, una vez visitadas
+  // las 5 paradas: es lo que cierra de verdad el círculo (ver llegar() y cerrar()).
+  vueltaHecha: leer(CFG.kVuelta, false),
   idxPrev: null,
   pendientes: [],
   dentro: {},
@@ -2081,7 +2089,13 @@ const G = {
       if (this.capitulo === p.id) return;
       if (this.capitulo && !this.capListo) return;
       this.enParada = p.id;
-      if (this.modo === "gps" && this.visitados.has(p.id)) return;
+      if (this.modo === "gps" && this.visitados.has(p.id)) {
+        // Visitadas las 5 paradas, la ruta solo se cierra cuando se vuelve de verdad al
+        // punto por donde se entró (en el tramo de vuelta quedan lugares ocultos: no basta
+        // con haber pasado por las 5 en cualquier orden). Ver cerrarCirculo().
+        if (p.id === this.inicio && !this.vueltaHecha && this.visitados.size >= paradas().length) this.cerrarCirculo();
+        return;
+      }
       if (this.modo === "demo" && this.destinoDemo && this.destinoDemo !== p.id) return;
       this.abrir(p);
     } else if (!this.oidos.has(p.id) && !this.capitulo) {
@@ -2090,6 +2104,13 @@ const G = {
       UI.pintarDetalles();
       UI.capsula(p, "De paso");
     }
+  },
+  cerrarCirculo() {
+    this.vueltaHecha = true;
+    guardar(CFG.kVuelta, true);
+    UI.capsula({ id: "fin-ruta", nombre: tr("finRuta"), texto: tr("finTxt"), audio: (AUD_GEN[LANG] || {}).fin || null }, tr("finRuta"), () => {
+      if (Pasaporte.completar()) setTimeout(() => Pasaporte.mostrar(true), 600);
+    });
   },
   /* lugares ocultos: se desbloquean al cruzar caminando su punto del trazado */
   /* Aviso de desvío: el margen ya no es un número fijo (40 m), sino que se adapta a la
@@ -2242,10 +2263,20 @@ const G = {
     UI.pintar();
     M.mapa.flyTo([p.lat, p.lng], 17.5, { duration: 0.9 });
     const cola = this.pendientes.splice(0).map(([o, n]) => [o, tr("descubierto", { n, t: RUTA.ocultos.length })]);
-    const fin = this.visitados.size >= paradas().length;
-    // No se anuncia ni se impone una siguiente parada: el recorrido es libre.
-    // Solo se mantiene la locución final al completar las cinco paradas.
-    if (fin) cola.push([{ id: p.id + "-fin", nombre: tr("finRuta"), texto: tr("finTxt"), audio: (AUD_GEN[LANG] || {}).fin || null }, tr("finRuta")]);
+    const todas = this.visitados.size >= paradas().length;
+    // No se anuncia ni se impone una siguiente parada: el recorrido es libre. Pero la ruta
+    // solo se da por terminada si, además de las 5 paradas, se está físicamente en el punto
+    // de partida (o en modo demo, que no tiene este problema): si no, se recuerda volver,
+    // porque en el tramo de vuelta quedan lugares ocultos sin descubrir.
+    const fin = todas && (this.modo !== "gps" || p.id === this.inicio);
+    if (fin) {
+      this.vueltaHecha = true;
+      guardar(CFG.kVuelta, true);
+      cola.push([{ id: p.id + "-fin", nombre: tr("finRuta"), texto: tr("finTxt"), audio: (AUD_GEN[LANG] || {}).fin || null }, tr("finRuta")]);
+    } else if (todas) {
+      const ini = porId(this.inicio);
+      cola.push([{ id: p.id + "-volver", nombre: tr("volverT"), texto: tr("volverTxt", { n: ini.nombre }), audio: null }, tr("volverT")]);
+    }
     const siguiente = () => {
       if (this.capitulo) return;
       if (!cola.length) {
