@@ -155,6 +155,14 @@ body.con-hoja .leaflet-control-attribution{margin-bottom:var(--peek,190px)!impor
 /* cápsula "de paso / en camino" con subtítulo */
 .capsula{position:fixed;z-index:12;left:max(14px,env(safe-area-inset-left,0px));right:max(14px,env(safe-area-inset-right,0px));bottom:calc(var(--peek,190px) + 12px);max-width:532px;margin:0 auto;border-radius:22px;padding:16px 16px 14px;box-shadow:var(--sombra);animation:emerger .45s cubic-bezier(.2,.9,.25,1)}
 @keyframes emerger{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+/* Al descubrir una pieza nueva del Reto, la cápsula ocupa toda la pantalla: la casa que
+   se va formando se ve a la vez que empieza a sonar el audio, sin esperar a que termine. */
+.capsula.completa{position:fixed;inset:0;left:0;right:0;top:0;bottom:0;z-index:150;max-width:none;width:auto;margin:0;border-radius:0;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;background:var(--noche);padding:max(26px,calc(env(safe-area-inset-top,0px) + 20px)) max(22px,env(safe-area-inset-right,0px)) max(26px,calc(env(safe-area-inset-bottom,0px) + 20px)) max(22px,env(safe-area-inset-left,0px))}
+.capsula.completa .capsula-reto{grid-template-columns:1fr;justify-items:center;text-align:center;gap:18px;margin:0 0 22px}
+.capsula.completa .reto-fachada{width:min(72vw,320px)}
+.capsula.completa .capsula-reto small{font-size:1.05rem}
+.capsula.completa .capsula-fotos{order:3;margin-top:14px}
+.capsula.completa .subtitulo{font-size:1.3rem}
 .capsula-cab{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .capsula-cab small{color:var(--oro-claro);font-weight:500;font-size:.8rem}
 .capsula-cab b{font-family:var(--f-titulo);font-size:1.05rem;display:block;line-height:1.2}
@@ -2654,16 +2662,17 @@ const UI = {
       const nv = Reto.vistas().size, T = Reto.total();
       $("#capsula-reto-txt").innerHTML = "".concat(tr("retoPieza", { n: Reto.orden(item.id), t: T }), "<b>").concat(tr("rp_" + rk), "</b>").concat(nv === T ? tr("retoFin") : "");
     };
-    // La pieza nueva aparece al terminar el audio, no mientras se está narrando.
-    cr.hidden = !rk || !G.ocultosVistos.has(item.id) || esNuevaPieza;
+    // Si es una pieza nueva del Reto, la cápsula pasa a pantalla completa y la casa se
+    // revela (con su destello dorado) a la vez que empieza el audio, no cuando termina.
+    c.classList.toggle("completa", esNuevaPieza);
+    cr.hidden = !rk || !G.ocultosVistos.has(item.id);
     cr.classList.toggle("nueva", false);
     if (!cr.hidden) pintarPieza();
     $("#cap-etq").textContent = etq;
     $("#capsula-titulo").textContent = item.nombre;
     Voz.narrar(item, $("#capsula-sub"), "subtitulo", () => {
-      if (esNuevaPieza) pintarPieza();
-      // Pieza nueva del Reto: 10 s de margen (la casa aparece al terminar el audio, así
-      // que si solo se dejaban 6 s mucha gente no llegaba a mirar la pantalla a tiempo).
+      // Pieza nueva del Reto: 10 s de margen antes de volver a la pantalla normal (si
+      // solo se dejaban 6 s mucha gente no llegaba a mirar el móvil a tiempo).
       if (luego) return setTimeout(luego, esNuevaPieza ? 1e4 : (lista.length ? 6e3 : 900));
       setTimeout(() => {
         if (!Voz.item && $("#visor").hidden) $("#capsula").hidden = true;
