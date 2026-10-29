@@ -814,7 +814,7 @@ html.estilo-senal .pin .o{border-radius:12px}
   <div class="pastilla cristal">
     <img class="logo" data-logo alt="">
     <div class="t"><b data-t="rutaCorta">Centro Histórico</b><span id="modo-txt">La Línea de la Concepción</span></div>
-    <div class="contadores" aria-label="Progreso"><div id="c-par"><b id="c-paradas">0/5</b><span data-t="paradas">paradas</span></div><div id="c-ocu"><b id="c-ocultos">0/4</b><span data-t="ocultosC">ocultos</span></div></div>
+    <div class="contadores" aria-label="Progreso"><div id="c-par"><b id="c-paradas">0/6</b><span data-t="paradas">paradas</span></div><div id="c-ocu"><b id="c-ocultos">0/4</b><span data-t="ocultosC">ocultos</span></div></div>
   </div>
   <button class="boton-redondo cristal" id="b-menu" aria-label="Menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
 </div>
@@ -838,7 +838,7 @@ html.estilo-senal .pin .o{border-radius:12px}
       <button type="button" class="chip" id="b-llegar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span data-t="comoLlegar">Cómo llegar</span></button>
       <button class="chip oro" id="b-escuchar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg><span id="b-escuchar-txt">Ir caminando</span></button>
     </div>
-    <h3 class="seccion" data-t="cincoParadas">Las cinco paradas</h3>
+    <h3 class="seccion" data-t="cincoParadas">Las seis paradas</h3>
     <div class="carrusel" id="carrusel"></div>
     <h3 class="seccion"><span data-t="retoT">El reto de la casa perdida</span> <span class="reto-cuenta" style="color:var(--oro-claro);font-family:var(--f-ui);font-size:.9rem;font-weight:500;margin-left:6px">0/5</span></h3>
     <div class="reto-fachada hoja-reto" data-reto></div>
@@ -984,7 +984,7 @@ const TXT = {
     ocultosL: "lugares ocultos",
     ocultosC: "ocultos",
     estasEn: "Estás en <b>{n}</b>.",
-    empiezaEn: "Puede empezar en <b>cualquiera de las 5 paradas</b>: la guía le llevará a la más cercana.",
+    empiezaEn: "Puede empezar en <b>cualquiera de las 6 paradas</b>: la guía le llevará a la más cercana.",
     cercaDe: "La parada más cercana es <b>{n}</b>, a {d}.",
     entrar: "Entrar en la ruta",
     estasAqui: "Estás aquí",
@@ -1018,7 +1018,7 @@ const TXT = {
     comoLlegar: "Ver en el mapa",
     irCaminando: "Ir caminando",
     escucharYa: "Escuchar ahora",
-    cincoParadas: "Las cinco paradas",
+    cincoParadas: "Las seis paradas",
     lugaresOcultos: "Lugares ocultos",
     lugarOculto: "Lugar oculto",
     aparece: "Aparece caminando de {a} a {b}",
@@ -1041,16 +1041,16 @@ const TXT = {
     desvioTxt: "Parece que se ha desviado de la ruta. La siguiente parada es {n}, a {d}. Mire el mapa: la línea dorada le lleva hasta allí.",
     siguienteGen: "Siguiente parada: {n}. Le avisaré al llegar.",
     finTxt: "Ha completado la Ruta Centro Histórico. Gracias por pasear con Érase La Línea.",
-    volverT: "Ya ha visitado las 5 paradas",
+    volverT: "Ya ha visitado las 6 paradas",
     volverTxt: "Para terminar el recorrido, vuelva hasta {n}, el punto por donde entró. En el camino de vuelta todavía quedan lugares ocultos por descubrir.",
-    paradaN: "Ruta Centro Histórico · {o} de 5 visitadas",
+    paradaN: "Ruta Centro Histórico · {o} de 6 visitadas",
     seguir: "Seguir",
     fuente: "Texto basado en la guía oficial de la Oficina Municipal de Turismo de La Línea de la Concepción.",
     aerea: "Vista aérea: Esri, Maxar",
     completa100: "Ruta completada al 100 %",
     completaP: "Paradas completadas",
     todo: "Has descubierto todo",
-    cinco: "Has recorrido las cinco paradas",
+    cinco: "Has recorrido las seis paradas",
     todoP: "Cinco paradas y siete lugares ocultos.",
     faltan: "Lugares ocultos: {o} de {t}. Recorre los tramos que te falten para encontrarlos.",
     demoModo: "Demostración",
@@ -1071,7 +1071,7 @@ const TXT = {
     ocultosL: "hidden places",
     ocultosC: "hidden",
     estasEn: "You are at <b>{n}</b>.",
-    empiezaEn: "You can start at <b>any of the 5 stops</b>: the guide will take you to the nearest one.",
+    empiezaEn: "You can start at <b>any of the 6 stops</b>: the guide will take you to the nearest one.",
     cercaDe: "The nearest stop is <b>{n}</b>, {d} away.",
     entrar: "Enter the route",
     estasAqui: "You are here",
@@ -1105,7 +1105,7 @@ const TXT = {
     comoLlegar: "Show on map",
     irCaminando: "Walk there",
     escucharYa: "Listen now",
-    cincoParadas: "The five stops",
+    cincoParadas: "The six stops",
     lugaresOcultos: "Hidden places",
     lugarOculto: "Hidden place",
     aparece: "Unlocks walking from {a} to {b}",
@@ -1128,16 +1128,16 @@ const TXT = {
     desvioTxt: "It looks like you have left the route. The next stop is {n}, {d} away. Check the map: the gold line will take you there.",
     siguienteGen: "Next stop: {n}. I will let you know when you arrive.",
     finTxt: "You have completed the Historic Centre Route. Thank you for walking with Érase La Línea.",
-    volverT: "You have visited all 5 stops",
+    volverT: "You have visited all 6 stops",
     volverTxt: "To finish the route, go back to {n}, where you entered. On the way back there are still hidden places to find.",
-    paradaN: "Historic Centre Route · {o} of 5 visited",
+    paradaN: "Historic Centre Route · {o} of 6 visited",
     seguir: "Continue",
     fuente: "Text based on the official guide of the La Línea de la Concepción Municipal Tourist Office.",
     aerea: "Aerial view: Esri, Maxar",
     completa100: "Route 100% complete",
     completaP: "All stops completed",
     todo: "You have found everything",
-    cinco: "You have visited all five stops",
+    cinco: "You have visited all six stops",
     todoP: "Five stops and seven hidden places.",
     faltan: "Hidden places: {o} of {t}. Walk the sections you have missed to find them.",
     demoModo: "Demo",
@@ -1255,11 +1255,25 @@ const RUTA = {
       zonas: [{ lat: 36.162004, lng: -5.350991, radio: 12 }],
       audio: null,
       texto: "Estás en la Calle Real, el eje que unía la zona militar, alrededor de la Comandancia, con la zona religiosa, alrededor de la iglesia. Por esta calle pasaba buena parte de la vida de La Línea, una ciudad que llegó a tener varios teatros y cines. Camina atento: esta calle guarda un secreto en una de sus fachadas.",
-      camino: "Sigue por la Calle Real hacia la Plaza de la Iglesia. Mira bien las fachadas por el camino."
+      camino: "Sigue por la Calle Real hacia la Plaza Cruz Herrera. Mira bien las fachadas por el camino."
+    },
+    {
+      id: "p6",
+      orden: 3,
+      tipo: "parada",
+      nombre: "Plaza Cruz Herrera",
+      sub: "[PENDIENTE: subtítulo]",
+      lat: 36.161155,
+      lng: -5.349295,
+      aprox: false,
+      radio: 20,
+      audio: null,
+      texto: "[PENDIENTE: texto de la parada 6, con al menos dos \"¿sabías que?\" — a escribir o proponer en borrador]",
+      camino: "Sigue hacia la Plaza de la Iglesia."
     },
     {
       id: "p3",
-      orden: 3,
+      orden: 4,
       tipo: "parada",
       nombre: "Plaza de la Iglesia",
       sub: "Parroquia de la Inmaculada",
@@ -1273,7 +1287,7 @@ const RUTA = {
     },
     {
       id: "p4",
-      orden: 4,
+      orden: 5,
       tipo: "parada",
       nombre: "Paseo Fariñas",
       sub: "Plaza Nueva y Galería Manolo Alés",
@@ -1288,7 +1302,7 @@ const RUTA = {
     },
     {
       id: "p5",
-      orden: 5,
+      orden: 6,
       tipo: "parada",
       nombre: "Museo Cruz Herrera",
       sub: "Villa de San José y Jardines Saccone",
@@ -1309,8 +1323,8 @@ const RUTA = {
       tipo: "oculto",
       nombre: "La casa de las iniciales B L",
       sub: "Calle Real",
-      tramo: ["p2", "p3"],
-      en: 0.45,
+      tramo: ["p6", "p3"],
+      en: 0.65,
       lat: 36.161964,
       lng: -5.350777,
       audio: null,
@@ -1337,8 +1351,8 @@ const RUTA = {
       tipo: "oculto",
       nombre: "La puerta de 1905",
       sub: "Calle Real, 12",
-      tramo: ["p2", "p3"],
-      en: 0.15,
+      tramo: ["p2", "p6"],
+      en: 0.54,
       lat: 36.161532,
       lng: -5.348919,
       audio: null,
@@ -1373,8 +1387,8 @@ const RUTA = {
       tipo: "oculto",
       nombre: "El casino de la calle Real",
       sub: "Calle Real",
-      tramo: ["p2", "p3"],
-      en: 0.5,
+      tramo: ["p6", "p3"],
+      en: 0.25,
       lat: 36.1617662,
       lng: -5.3498535,
       audio: null,
@@ -1403,10 +1417,34 @@ const RUTA = {
       lng: -5.349879,
       audio: "audio/es/o8.mp3",
       texto: "Lugar oculto. Está ante el complejo Ballesteros, uno de los edificios que encontrará durante este tramo por la Avenida de España. Deténgase un momento para observar su fachada y su relación con el paisaje urbano del centro histórico de La Línea."
+    },
+    {
+      id: "o9",
+      tipo: "oculto",
+      nombre: "La calle de los paraguas",
+      sub: "Calle Cadalso",
+      tramo: ["p6", "p3"],
+      en: 0.09,
+      lat: 36.161188,
+      lng: -5.349495,
+      audio: null,
+      texto: "[PENDIENTE: texto de la calle de los paraguas (C. Cadalso) — a escribir o proponer en borrador]"
+    },
+    {
+      id: "o10",
+      tipo: "oculto",
+      nombre: "El patio de vecinos",
+      sub: "Plaza Fariñas, junto a la calle Duque de Villar",
+      tramo: ["p4", "p5"],
+      en: 0.2,
+      lat: 36.161159,
+      lng: -5.350841,
+      audio: null,
+      texto: "[PENDIENTE: texto del patio de vecinos — a escribir o proponer en borrador]"
     }
   ]
 };
-const ORDEN = ["p1", "p2", "p3", "p4", "p5"];
+const ORDEN = ["p1", "p2", "p6", "p3", "p4", "p5"];
 const CFG = {
   precisionMax: 40,
   lecturas: 2,
@@ -4025,7 +4063,7 @@ const ESTILO_NOM = { es: { cine: "Cine", museo: "Cuaderno de museo", senal: "Se�
 const ROMANO = ["", "I", "II", "III", "IV", "V"];
 const PA_TXT = {
   es: { parada: "{v} de 5 visitadas", cap: "Ruta Centro Histórico", sonando: "Sonando", pausa: "En pausa", fin: "Escuchado", antes: "Antes y ahora", fotos: "Fotos y más", sabias: "¿Sabías que…?", leer: "Leer", seguir: "Seguir la ruta", sig: "Siguiente parada", ultima: "Última parada", guarde: "Guarde el móvil:<br>le avisaremos", estilo: "Estilo", repetir: "Escuchar desde el principio", ficha: "Ver la ficha" },
-  en: { parada: "{v} of 5 visited", cap: "Historic Centre Route", sonando: "Playing", pausa: "Paused", fin: "Heard", antes: "Then and now", fotos: "Photos & more", sabias: "Did you know…?", leer: "Read", seguir: "Continue the route", sig: "Next stop", ultima: "Last stop", guarde: "Put your phone away:<br>we will let you know", estilo: "Style", repetir: "Listen from the start", ficha: "Open the page" }
+  en: { parada: "{v} of 6 visited", cap: "Historic Centre Route", sonando: "Playing", pausa: "Paused", fin: "Heard", antes: "Then and now", fotos: "Photos & more", sabias: "Did you know…?", leer: "Read", seguir: "Continue the route", sig: "Next stop", ultima: "Last stop", guarde: "Put your phone away:<br>we will let you know", estilo: "Style", repetir: "Listen from the start", ficha: "Open the page" }
 };
 const paT = (k, v) => {
   let s = (PA_TXT[LANG] || PA_TXT.es)[k] || "";
