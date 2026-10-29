@@ -2630,11 +2630,12 @@ const UI = {
     $("#capsula-titulo").textContent = item.nombre;
     Voz.narrar(item, $("#capsula-sub"), "subtitulo", () => {
       if (esNuevaPieza) pintarPieza();
-      const esperaPuzle = esNuevaPieza ? 6e3 : 0;
-      if (luego) return setTimeout(luego, esNuevaPieza ? 6e3 : (lista.length ? 6e3 : 900));
+      // Pieza nueva del Reto: 10 s de margen (la casa aparece al terminar el audio, así
+      // que si solo se dejaban 6 s mucha gente no llegaba a mirar la pantalla a tiempo).
+      if (luego) return setTimeout(luego, esNuevaPieza ? 1e4 : (lista.length ? 6e3 : 900));
       setTimeout(() => {
         if (!Voz.item && $("#visor").hidden) $("#capsula").hidden = true;
-      }, esNuevaPieza ? 6e3 : (lista.length ? 12e3 : 3500));
+      }, esNuevaPieza ? 1e4 : (lista.length ? 12e3 : 3500));
     });
   },
   cerrarCapsula() {
