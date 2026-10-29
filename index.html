@@ -1325,6 +1325,10 @@ const RUTA = {
       en: 0.3,
       lat: 36.162098,
       lng: -5.351723,
+      // Está a unos 19 m de la línea de la ruta (el resto de ocultos están casi encima);
+      // con el radio normal de 22 m apenas queda margen para el ruido del GPS, así que
+      // aquí se amplía.
+      radio: 36,
       audio: null,
       texto: "Lugar oculto. Está ante la Casa Toledano, en la esquina de la calle Duque de Tetuán con la Plaza de la Iglesia. Fue levantada en 1900 por Ruperto Toledano, otro alcalde de la ciudad. El año aparece en la reja del vestíbulo. Ahora mire los balcones del primer piso. El del centro, abombado, era el de las mujeres: así cabía el vuelo de sus vestidos. Los rectos, a los lados, eran los de los hombres."
     },
@@ -2193,9 +2197,12 @@ const G = {
       Pisado.marcar(lat, lng);
     } catch (e) {
     }
+    // Antes no se descubría un lugar oculto si su posición quedaba cerca de la zona de
+    // activación de una parada aún no visitada (por ejemplo, la casa B L se quedaba
+    // bloqueada hasta abrir la ficha de Calle Real, aunque se pasara justo al lado). Se
+    // quita esa condición: basta con la cercanía real para que salte, en cualquier orden.
     RUTA.ocultos.forEach((o) => {
-      if (this.ocultosVistos.has(o.id) || !o.lat || dist({ lat, lng }, o) > 22) return;
-      if (RUTA.puntos.some((p) => p.tipo === "parada" && !this.visitados.has(p.id) && conCoords(p) && activaciones(p).some((z) => dist(o, z) <= z.radio + 15))) return;
+      if (this.ocultosVistos.has(o.id) || !o.lat || dist({ lat, lng }, o) > (o.radio || 22)) return;
       this.descubrir(o);
     });
     let k = 0, m = 1e9;
@@ -2423,6 +2430,17 @@ const G = {
     Object.values(M.ocultos || {}).forEach((m) => m.remove());
     M.ocultos = {};
     guardar(CFG.kVisitados, []);
+    // vueltaHecha y el sello del pasaporte también se reinician: si no, al repetir la
+    // prueba (sobre todo en demo) la ruta ya está "completada" de antes y Pasaporte.completar()
+    // no vuelve a avisar, aunque todo lo demás se haya borrado.
+    this.vueltaHecha = false;
+    guardar(CFG.kVuelta, false);
+    try {
+      const pd = Pasaporte.datos();
+      delete pd.rch;
+      guardar(Pasaporte.clave, pd);
+    } catch (e) {
+    }
     this.idxRuta = 0;
     const [lng, lat] = RUTA_GEO[0];
     if (M.mapa) {
