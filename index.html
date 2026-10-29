@@ -2092,8 +2092,13 @@ const G = {
     }
   },
   /* lugares ocultos: se desbloquean al cruzar caminando su punto del trazado */
-  /* Aviso de desvío: más de 40 m de la línea dorada durante 20 s seguidos (el GPS baila 5-15 m entre edificios).
-     Como mucho un aviso cada 90 s. No avisa dentro de una parada ni en el tramo Museo–Comandancia mientras no esté grabado. */
+  /* Aviso de desvío: el margen ya no es un número fijo (40 m), sino que se adapta a la
+     precisión que el propio GPS está dando en ese instante. En calles estrechas del centro
+     histórico, entre edificios altos, el móvil puede marcar 30-40 m de error aunque la persona
+     esté bien situada (rebote de la señal, no desvío real). Con precisión mala pedimos más
+     distancia real antes de avisar; con precisión buena, el margen se queda en su mínimo (45 m).
+     Además hace falta que el desvío se mantenga 30 s seguidos (antes 20 s), y como mucho un
+     aviso cada 90 s. No avisa dentro de una parada ni en el tramo Museo–Comandancia mientras no esté grabado. */
   revisarDesvio() {
     const ahora = Date.now(), reset = () => {
       this.desvioDesde = null;
@@ -2103,14 +2108,15 @@ const G = {
     const s = this.siguiente();
     if (!s) return reset();
     if (!RUTA_CIERRE.length && (this.ultima === "p5" && s.id === "p1" || this.ultima === "p1" && s.id === "p5")) return reset();
+    const acc = this.pos.accuracy || 25, margen = Math.max(45, acc * 1.4 + 20);
     const d = distRuta(this.pos);
-    if (d <= 30) return reset();
-    if (d <= 40) return;
+    if (d <= margen * 0.75) return reset();
+    if (d <= margen) return;
     if (!this.desvioDesde) {
       this.desvioDesde = ahora;
       return;
     }
-    if (ahora - this.desvioDesde < 2e4 || ahora - (this.desvioAviso || 0) < 9e4) return;
+    if (ahora - this.desvioDesde < 3e4 || ahora - (this.desvioAviso || 0) < 9e4) return;
     this.desvioAviso = ahora;
     this.desvioDesde = null;
     try {
