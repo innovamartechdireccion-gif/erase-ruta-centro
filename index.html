@@ -668,8 +668,10 @@ html.estilo-senal .pin .o{border-radius:12px}
 .ps-estrellas{display:flex;flex-direction:column;align-items:center;gap:5px}
 .ps-estrellas span{font:600 .58rem/1 var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:#4A5C70}
 .ps-estrellas div{display:flex;gap:8px}
-.ps-estrellas svg{width:22px;height:22px;fill:none;stroke:#A9B3BE;stroke-width:1.6;stroke-linejoin:round;transition:fill .3s,stroke .3s,filter .3s}
-.ps-estrellas svg.si{fill:#E7B860;stroke:#C8912C;filter:drop-shadow(0 0 5px rgba(231,184,96,.9))}
+.ps-estrellas svg{width:26px;height:26px;overflow:visible}
+.ps-estrellas svg path{stroke-width:1.6;stroke-linejoin:round;transition:fill .3s,stroke .3s,filter .3s,clip-path .3s}
+.ps-estrellas svg path.base{fill:none;stroke:#A9B3BE}
+.ps-estrellas svg path.rell{fill:#E7B860;stroke:#C8912C;filter:drop-shadow(0 0 5px rgba(231,184,96,.9))}
 .ps-estrellas svg.brilla{animation:psEstrella .5s cubic-bezier(.3,1.6,.5,1)}
 @keyframes psEstrella{0%{transform:scale(.4) rotate(-40deg)}100%{transform:none}}
 .ps-pagina .ps-eti{font:600 .58rem/1 var(--f-ui);letter-spacing:.22em;text-transform:uppercase;color:#9C6F1C}
@@ -3652,8 +3654,10 @@ const Pasaporte = {
       return "";
     }
   },
-  estrella(si) {
-    return '<svg viewBox="0 0 24 24" class="'.concat(si ? "si" : "", '" aria-hidden="true"><path d="M12 2.8l2.75 5.9 6.45.75-4.8 4.4 1.3 6.35L12 17l-5.7 3.2 1.3-6.35-4.8-4.4 6.45-.75z"/></svg>');
+  estrella(frac) {
+    const f = Math.max(0, Math.min(1, frac || 0)), pct = (1 - f) * 100;
+    const d = "M12 2.8l2.75 5.9 6.45.75-4.8 4.4 1.3 6.35L12 17l-5.7 3.2 1.3-6.35-4.8-4.4 6.45-.75z";
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="base" d="'.concat(d, '"/><path class="rell" style="clip-path:inset(0 ').concat(pct, '% 0 0)" d="').concat(d, '"/></svg>');
   },
   fechaTxt(iso) {
     const t = this.t(), d = /* @__PURE__ */ new Date(iso + "T12:00:00");
@@ -3740,7 +3744,9 @@ const Pasaporte = {
     o.id = "pasaporte";
     o.setAttribute("role", "dialog");
     o.setAttribute("aria-label", t.menu);
-    const n = d.ocultos || 0, TOT = RUTA.ocultos.length, estrellas = Array.from({ length: TOT }, (_, i) => this.estrella(!conSello && i < n)).join("");
+    const n = d.ocultos || 0, TOT = RUTA.ocultos.length, EST = Math.ceil(TOT / 2);
+    const fracsFinal = Array.from({ length: EST }, (_, i) => Math.max(0, Math.min(2, n - i * 2)) / 2);
+    const estrellas = (conSello ? Array.from({ length: EST }, () => 0) : fracsFinal).map((f) => this.estrella(f)).join("");
     o.innerHTML = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="ps-tinta"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter></svg>\n      <div class="ps-libro">\n        <div class="ps-pagina">\n          '.concat(this.ayto(), '\n          <span class="ps-eti">').concat(t.eti, "</span><h2>").concat(t.ruta, '</h2>\n          <div class="ps-sello-zona"><img src="').concat(LOGO_RCH, '" alt="').concat(t.ruta, '"><div class="ps-sello">').concat(t.sello, '<small>Érase La Línea</small></div></div>\n          <span class="ps-fecha">').concat(this.fechaTxt(d.fecha), '</span>\n          <div class="ps-estrellas"><span>').concat(t.ocu, " · ").concat(n, "/").concat(TOT, "</span><div>").concat(estrellas, '</div></div>\n          <span class="ps-linea"></span>\n          <span class="ps-prox">').concat(t.prox, '</span>\n          <div class="ps-huecos"><span>?</span><span>?</span><span>?</span></div>\n        </div>\n        <div class="ps-tapa"><div class="cara"><img src="').concat(LOGO, '" alt=""><b>').concat(t.tapa, "</b><small>").concat(t.sub, "</small>").concat(this.ayto(), '</div><div class="dorso"></div></div>\n      </div>\n      <div class="ps-botones"><button type="button" class="ps-comp">').concat(t.comp, '</button><button type="button" class="ps-cer">').concat(t.cer, "</button></div>");
     document.body.appendChild(o);
     const tapa = o.querySelector(".ps-tapa"), sello = o.querySelector(".ps-sello"), libro = o.querySelector(".ps-libro"), bot = o.querySelector(".ps-botones");
@@ -3748,10 +3754,14 @@ const Pasaporte = {
     o.querySelector(".ps-comp").onclick = () => this.compartir();
     const quieto2 = matchMedia("(prefers-reduced-motion: reduce)").matches;
     setTimeout(() => tapa.classList.add("abierta"), quieto2 ? 0 : 900);
-    const encender = (ret) => [...o.querySelectorAll(".ps-estrellas svg")].slice(0, n).forEach((s, i) => setTimeout(() => {
-      s.classList.add("si", "brilla");
-      this.tintin(i);
-    }, ret + i * 380));
+    const svgsEstrellas = [...o.querySelectorAll(".ps-estrellas svg")];
+    const activas = fracsFinal.map((f, i) => ({ f, i })).filter((x) => x.f > 0);
+    const encender = (ret) => activas.forEach(({ f, i }, k) => setTimeout(() => {
+      const svg = svgsEstrellas[i], rell = svg.querySelector(".rell");
+      rell.style.clipPath = "inset(0 ".concat((1 - f) * 100, "% 0 0)");
+      svg.classList.add("brilla");
+      this.tintin(k);
+    }, ret + k * 380));
     if (conSello && !quieto2) {
       setTimeout(() => {
         sello.classList.add("cae");
@@ -3761,7 +3771,7 @@ const Pasaporte = {
         }, 380);
       }, 2300);
       encender(3100);
-      setTimeout(() => bot.classList.add("ver"), 3300 + n * 380);
+      setTimeout(() => bot.classList.add("ver"), 3300 + activas.length * 380);
     } else {
       sello.style.opacity = ".93";
       sello.style.transform = "translate(-50%,-50%) rotate(-14deg)";
@@ -3853,28 +3863,36 @@ const Pasaporte = {
         x.fillText(this.fechaTxt(d.fecha), W / 2, py + 850);
         x.font = "600 22px Poppins, sans-serif";
         x.fillText("".concat(t.ocu.toUpperCase(), " · ").concat(d.ocultos || 0, "/").concat(RUTA.ocultos.length), W / 2, py + 900);
-        const est = (cx0, cy0, R, si) => {
-          x.beginPath();
-          for (let i = 0; i < 10; i++) {
-            const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? R * 0.45 : R;
-            x.lineTo(cx0 + rr * Math.cos(a), cy0 + rr * Math.sin(a));
-          }
-          x.closePath();
-          if (si) {
+        const est = (cx0, cy0, R, frac) => {
+          const trazo = () => {
+            x.beginPath();
+            for (let i = 0; i < 10; i++) {
+              const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? R * 0.45 : R;
+              x.lineTo(cx0 + rr * Math.cos(a), cy0 + rr * Math.sin(a));
+            }
+            x.closePath();
+          };
+          if (frac > 0) {
             x.save();
+            trazo();
+            x.clip();
             x.shadowColor = "rgba(231,184,96,.9)";
             x.shadowBlur = 18;
             x.fillStyle = "#E7B860";
-            x.fill();
+            x.fillRect(cx0 - R, cy0 - R, 2 * R * frac, 2 * R);
             x.restore();
-            x.strokeStyle = "#C8912C";
-          } else x.strokeStyle = "#A9B3BE";
+          }
+          trazo();
+          x.strokeStyle = frac > 0 ? "#C8912C" : "#A9B3BE";
           x.lineWidth = 3;
           x.stroke();
         };
         {
-          const TT = RUTA.ocultos.length;
-          for (let i = 0; i < TT; i++) est(W / 2 + (i - (TT - 1) / 2) * 80, py + 962, 30, i < (d.ocultos || 0));
+          const TT = RUTA.ocultos.length, EST = Math.ceil(TT / 2);
+          for (let i = 0; i < EST; i++) {
+            const frac = Math.max(0, Math.min(2, (d.ocultos || 0) - i * 2)) / 2;
+            est(W / 2 + (i - (EST - 1) / 2) * 90, py + 962, 30, frac);
+          }
         }
         x.fillStyle = "#E7B860";
         x.font = "700 40px Poppins, sans-serif";
