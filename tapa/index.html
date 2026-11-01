@@ -765,18 +765,19 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 #carta-modal.on{display:flex}
 #carta-modal img{max-width:100%;max-height:85vh;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 
-#ranking-modal{position:fixed;inset:0;background:rgba(1,41,65,.92);z-index:70;display:none;align-items:center;justify-content:center;padding:20px}
-#ranking-modal.on{display:flex}
-.ranking-caja{position:relative;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;background:var(--cream);border-radius:16px;padding:24px 20px 20px}
-.ranking-caja h3{margin:0 0 2px;color:var(--navy);font:700 1.1rem Poppins}
-.ranking-sub{margin:0 0 16px;color:#5a6b7d;font-size:.82rem}
-#ranking-cerrar{position:absolute;top:10px;right:10px;width:30px;height:30px;border:none;border-radius:50%;background:rgba(1,41,65,.08);color:var(--navy);font-size:1rem;cursor:pointer;line-height:1}
-.ranking-fila{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #E4DCCB}
+/* Ranking en directo, pintado en el mismo hueco donde antes estaba la
+   foto de la tapa flotando (tapa360-wrap), una vez que ya se ha votado. */
+.tapa360-marco.ranking-modo{margin:40px 0 0}
+.tapa360-wrap.es-ranking{height:auto}
+.tapa360-ranking{background:#fff;border:1px solid #E4DCCB;border-radius:14px;padding:16px;max-height:300px;overflow-y:auto}
+.tapa360-ranking h4{margin:0 0 2px;color:var(--navy);font:700 .95rem Poppins}
+.ranking-sub{margin:0 0 10px;color:#5a6b7d;font-size:.78rem}
+.ranking-fila{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #E4DCCB}
 .ranking-fila:last-child{border-bottom:none}
-.ranking-pos{flex:none;width:24px;text-align:center;font:700 .85rem Poppins;color:var(--gold-dark)}
-.ranking-fila .ranking-nombre{flex:1;font:600 .88rem Poppins;color:var(--navy)}
-.ranking-fila .ranking-media{flex:none;font:700 .9rem Poppins;color:var(--gold-dark)}
-.ranking-vacio,.ranking-error{color:#5a6b7d;font-size:.88rem;text-align:center;padding:20px 0}
+.ranking-pos{flex:none;width:22px;text-align:center;font:700 .85rem Poppins;color:var(--gold-dark)}
+.ranking-fila .ranking-nombre{flex:1;font:600 .86rem Poppins;color:var(--navy)}
+.ranking-fila .ranking-media{flex:none;font:700 .88rem Poppins;color:var(--gold-dark)}
+.ranking-vacio,.ranking-error{color:#5a6b7d;font-size:.85rem;text-align:center;padding:14px 0}
 #carta-cerrar{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:1.2rem}
 
 .tapa360-marco{margin:40px -20px 0;padding:0}
@@ -933,7 +934,6 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
       <div class="voto-ok" id="voto-ok" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12l5 5L20 6"/></svg>
         <p><b>¡Voto registrado!</b><br>Ya has votado esta tapa desde este móvil.</p>
-        <button class="btn btn-fantasma" id="btn-ver-ranking" style="margin-top:14px;border-color:var(--navy);color:var(--navy)">Ver ranking en directo</button>
       </div>
     </div>
     <div class="bloque pz-sobre" id="pz-sobre">
@@ -992,15 +992,6 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 <div id="carta-modal">
   <button id="carta-cerrar" aria-label="Cerrar">✕</button>
   <img id="carta-img" alt="Carta del establecimiento">
-</div>
-
-<div id="ranking-modal">
-  <div class="ranking-caja">
-    <button id="ranking-cerrar" aria-label="Cerrar">✕</button>
-    <h3>Ranking en directo</h3>
-    <p class="ranking-sub">Media de las votaciones recibidas hasta ahora</p>
-    <div id="ranking-cuerpo"></div>
-  </div>
 </div>
 
 <script>/* @preserve
@@ -1274,6 +1265,72 @@ function cargarDatosRuta() {
     el.style.fontSize = mejor + "px";
   }
 
+  /* Pinta la foto (o el vídeo, si ya lo hay) de la tapa en su hueco.
+     Es el estado "antes de votar": sitio protagonista, de lado a lado. */
+  function pintarFotoEnFicha(p) {
+    const marco = $(".tapa360-marco"), wrap = $("#tapa360-wrap");
+    marco.classList.remove("ranking-modo");
+    wrap.classList.remove("es-ranking");
+    wrap.style.height = "";
+    // La tapa gira sola si no hay vídeo real todavía (placeholder de demo);
+    // en cuanto haya tapaVideoUrl, se sustituye por el vídeo real en bucle.
+    // Si es un enlace de YouTube se incrusta como iframe (con loop vía
+    // playlist=mismo-id, el truco necesario para que YouTube repita un
+    // único vídeo); si es cualquier otro enlace se trata como .mp4 directo.
+    const yt = p.tapaVideoUrl && p.tapaVideoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+    if (yt) {
+      const vid = yt[1];
+      wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + vid + '?autoplay=1&mute=1&loop=1&playlist=' + vid + '&controls=0&modestbranding=1&playsinline=1" frameborder="0" allow="autoplay" style="width:100%;height:100%"></iframe>';
+    } else if (p.tapaVideoUrl) {
+      wrap.innerHTML = '<video src="' + p.tapaVideoUrl + '" autoplay muted loop playsinline></video>';
+    } else {
+      // Sin vídeo real: si hay una foto de la tapa con el fondo quitado
+      // (tapaFotoUrl), se muestra fija, flotando. Si no hay nada todavía,
+      // se usa el marcador de posición con el giro simulado de demo.
+      const clase = p.tapaFotoUrl ? "" : "girando";
+      wrap.innerHTML = '<img id="pz-tapa" class="' + clase + '" alt="">';
+      $("#pz-tapa").src = p.tapa;
+    }
+  }
+
+  /* Pinta el ranking en directo en el mismo hueco donde antes estaba la
+     foto. Es el "premio" por haber votado: como en una encuesta, no se
+     puede ver cómo van los demás hasta que no participas. */
+  function pintarRankingEnFicha(p) {
+    const marco = $(".tapa360-marco"), wrap = $("#tapa360-wrap");
+    marco.classList.add("ranking-modo");
+    wrap.classList.add("es-ranking");
+    wrap.style.height = "auto";
+    wrap.innerHTML = '<div class="tapa360-ranking"><h4>Ranking en directo</h4>'
+      + '<p class="ranking-sub">Ya has votado — así va la clasificación ahora mismo</p>'
+      + '<div class="tr-cuerpo"><p class="ranking-vacio">Cargando…</p></div></div>';
+    const cuerpo = wrap.querySelector(".tr-cuerpo");
+    if (!CFG.urlVotos) {
+      cuerpo.innerHTML = '<p class="ranking-vacio">El ranking en directo todavía no está activado para esta ruta.</p>';
+      return;
+    }
+    fetch(CFG.urlVotos)
+      .then((r) => r.json())
+      .then((datos) => {
+        // Si mientras tanto se cerró la ficha o se abrió otra, no pintes encima.
+        if (panel.dataset.id !== p.id || !wrap.contains(cuerpo)) return;
+        const ranking = (datos && datos.ranking) || [];
+        if (!ranking.length) {
+          cuerpo.innerHTML = '<p class="ranking-vacio">Todavía no hay votos suficientes para mostrar un ranking.</p>';
+          return;
+        }
+        cuerpo.innerHTML = ranking.map((r, i) => (
+          '<div class="ranking-fila"><span class="ranking-pos">' + (i + 1) + '</span>'
+          + '<span class="ranking-nombre">' + r.nombre + '</span>'
+          + '<span class="ranking-media">' + r.media.toFixed(1) + '</span></div>'
+        )).join("");
+      })
+      .catch(() => {
+        if (panel.dataset.id !== p.id || !wrap.contains(cuerpo)) return;
+        cuerpo.innerHTML = '<p class="ranking-error">No se ha podido cargar el ranking ahora mismo. Inténtalo de nuevo en un momento.</p>';
+      });
+  }
+
   function abrirParada(id) {
     const p = PARADAS.find((x) => x.id === id);
     if (!p) return;
@@ -1289,36 +1346,19 @@ function cargarDatosRuta() {
     if (p.cartaUrl) { $("#pz-sobre-carta-img").src = p.cartaUrl; cartaBtn.hidden = false; }
     else { cartaBtn.hidden = true; }
     $("#pz-sobre").hidden = !p.palabrasJefe && !p.cartaUrl;
-    // La tapa gira sola si no hay vídeo real todavía (placeholder de demo);
-    // en cuanto haya tapaVideoUrl, se sustituye por el vídeo real en bucle.
-    // Si es un enlace de YouTube se incrusta como iframe (con loop vía
-    // playlist=mismo-id, el truco necesario para que YouTube repita un
-    // único vídeo); si es cualquier otro enlace se trata como .mp4 directo.
-    const wrap = $("#tapa360-wrap");
-    const yt = p.tapaVideoUrl && p.tapaVideoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
-    if (yt) {
-      const vid = yt[1];
-      wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + vid + '?autoplay=1&mute=1&loop=1&playlist=' + vid + '&controls=0&modestbranding=1&playsinline=1" frameborder="0" allow="autoplay" style="width:100%;height:100%"></iframe>';
-    } else if (p.tapaVideoUrl) {
-      wrap.innerHTML = '<video src="' + p.tapaVideoUrl + '" autoplay muted loop playsinline></video>';
-    } else {
-      // Sin vídeo real: si hay una foto de la tapa con el fondo quitado
-      // (tapaFotoUrl), se muestra fija, flotando. Si no hay nada todavía,
-      // se usa el marcador de posición con el giro simulado de demo.
-      const clase = p.tapaFotoUrl ? "" : "girando";
-      wrap.innerHTML = '<img id="pz-tapa" class="' + clase + '" alt="">';
-      $("#pz-tapa").src = p.tapa;
-    }
-    panel.dataset.id = p.id;
 
+    panel.dataset.id = p.id;
     const form = $("#voto-form"), ok = $("#voto-ok");
-    if (yaVotado(p.id)) { form.hidden = true; ok.hidden = false; }
-    else {
+    if (yaVotado(p.id)) {
+      form.hidden = true; ok.hidden = false;
+      pintarRankingEnFicha(p);
+    } else {
       form.hidden = false; ok.hidden = true;
       [...form.querySelectorAll("input[type=range]")].forEach((inp) => {
         inp.value = 3;
         inp.oninput = () => { inp.closest(".voto-criterio").querySelector("span").textContent = inp.value; };
       });
+      pintarFotoEnFicha(p);
     }
     panel.classList.add("on");
     document.body.style.overflow = "hidden";
@@ -1373,41 +1413,13 @@ function cargarDatosRuta() {
     [...document.querySelectorAll(".voto-criterio")].forEach((el) => { valores[el.dataset.c] = el.querySelector("input").value; });
     const media = Math.round(((Number(valores.presentacion) + Number(valores.gusto) + Number(valores.servicio)) / 3) * 100) / 100;
     localStorage.setItem("tapa_voto_" + id, JSON.stringify({ valores, media, fecha: new Date().toISOString() }));
-    if (p) enviarVotoAHoja(p, valores, media);
+    if (p) {
+      enviarVotoAHoja(p, valores, media);
+      pintarRankingEnFicha(p);
+    }
     $("#voto-form").hidden = true;
     $("#voto-ok").hidden = false;
   };
-
-  /* ---------- ranking en directo (se desbloquea al votar) ---------- */
-  function abrirRanking() {
-    const modal = $("#ranking-modal"), cuerpo = $("#ranking-cuerpo");
-    modal.classList.add("on");
-    if (!CFG.urlVotos) {
-      cuerpo.innerHTML = '<p class="ranking-vacio">El ranking en directo todavía no está activado para esta ruta.</p>';
-      return;
-    }
-    cuerpo.innerHTML = '<p class="ranking-vacio">Cargando…</p>';
-    fetch(CFG.urlVotos)
-      .then((r) => r.json())
-      .then((datos) => {
-        const ranking = (datos && datos.ranking) || [];
-        if (!ranking.length) {
-          cuerpo.innerHTML = '<p class="ranking-vacio">Todavía no hay votos suficientes para mostrar un ranking.</p>';
-          return;
-        }
-        cuerpo.innerHTML = ranking.map((r, i) => (
-          '<div class="ranking-fila"><span class="ranking-pos">' + (i + 1) + '</span>'
-          + '<span class="ranking-nombre">' + r.nombre + '</span>'
-          + '<span class="ranking-media">' + r.media.toFixed(1) + '</span></div>'
-        )).join("");
-      })
-      .catch(() => {
-        cuerpo.innerHTML = '<p class="ranking-error">No se ha podido cargar el ranking ahora mismo. Inténtalo de nuevo en un momento.</p>';
-      });
-  }
-  $("#btn-ver-ranking").onclick = abrirRanking;
-  $("#ranking-cerrar").onclick = () => $("#ranking-modal").classList.remove("on");
-  $("#ranking-modal").onclick = (ev) => { if (ev.target.id === "ranking-modal") $("#ranking-modal").classList.remove("on"); };
 
   /* ---------- Tapaporte digital (álbum de cromos) ---------- */
   function pintarTapaporte() {
