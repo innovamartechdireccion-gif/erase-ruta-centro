@@ -123,7 +123,19 @@ td.acciones{white-space:nowrap}
   </div>
 
   <div class="tarjeta">
-    <h2>4 · Exportar / enviar a Claude</h2>
+    <h2>4 · Tickets de voto de un solo uso</h2>
+    <p class="ayuda">Genera una hoja lista para imprimir y recortar con códigos QR de un solo uso para un establecimiento. El camarero o camarera entrega uno junto con la tapa; en cuanto se usa para votar, ese código deja de servir — ni desde el mismo móvil ni desde otro. El QR normal del bar (el del mapa) sigue funcionando igual para ver la ficha sin gastar ningún ticket.</p>
+    <div class="fila2">
+      <div><label>Establecimiento</label><select id="f-tickets-est"></select></div>
+      <div><label>Cantidad de tickets</label><input type="number" id="f-tickets-cantidad" value="50" min="1"></div>
+    </div>
+    <button class="btn btn-oro" id="b-generar-tickets">Generar e imprimir tickets</button>
+    <p class="ayuda">Se abre una pestaña nueva lista para imprimir. Hace falta tener configurada antes la "URL del marcador de votos" en la sección 1, y haber pegado en el script el código actualizado (te lo mando aparte).</p>
+    <div class="estado ok" id="estado-tickets" hidden></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2>5 · Exportar / enviar a Claude</h2>
     <p class="ayuda">Copia este bloque y pégamelo en el chat (o descárgalo) para que actualice la ruta pública con estos establecimientos reales.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
       <button class="btn btn-oro" id="b-copiar">Copiar código</button>
@@ -2595,7 +2607,94 @@ var qrcode = function() {
     [...document.querySelectorAll("[data-edit]")].forEach((b) => b.onclick = () => editar(b.dataset.edit));
     [...document.querySelectorAll("[data-del]")].forEach((b) => b.onclick = () => borrar(b.dataset.del));
     [...document.querySelectorAll("[data-qr]")].forEach((b) => b.onclick = () => verQR(b.dataset.qr));
+    pintarSelectTickets();
   }
+
+  /* ---------- tickets de voto de un solo uso ---------- */
+  function pintarSelectTickets() {
+    const sel = $("#f-tickets-est");
+    if (!sel) return;
+    const actual = sel.value;
+    sel.innerHTML = DATOS.establecimientos.map((e) => (
+      '<option value="' + e.id + '">' + e.nombre + "</option>"
+    )).join("");
+    if (actual && DATOS.establecimientos.some((e) => e.id === actual)) sel.value = actual;
+  }
+
+  function generarQRDataUrl(texto) {
+    const qr = qrcode(0, "M");
+    qr.addData(texto);
+    qr.make();
+    const n = qr.getModuleCount(), cell = 4, pad = 4;
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = n * cell + pad * 2;
+    const ctx = cv.getContext("2d");
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.fillStyle = "#012941";
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      if (qr.isDark(r, c)) ctx.fillRect(pad + c * cell, pad + r * cell, cell, cell);
+    }
+    return cv.toDataURL("image/png");
+  }
+
+  function imprimirTickets(estNombre, baseUrl, estId, codigos) {
+    const celdas = codigos.map((cod) => {
+      const url = baseUrl + "?est=" + estId + "&v=" + cod;
+      const img = generarQRDataUrl(url);
+      return '<div class="ticket"><img src="' + img + '"><span>' + estNombre + '</span><b>' + cod + '</b></div>';
+    }).join("");
+    const html = '<!doctype html><html><head><meta charset="utf-8"><title>Tickets — ' + estNombre + '</title><style>'
+      + 'body{font-family:sans-serif;margin:10mm;color:#012941}'
+      + '.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm}'
+      + '.ticket{border:1px dashed #999;border-radius:4px;padding:3mm;text-align:center;page-break-inside:avoid}'
+      + '.ticket img{width:100%;max-width:28mm}'
+      + '.ticket span{display:block;font-size:8px;color:#555;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+      + '.ticket b{display:block;font-size:10px;letter-spacing:.05em;margin-top:2px}'
+      + '@media print{body{margin:5mm}}'
+      + '</style></head><body><div class="grid">' + celdas + '</div>'
+      + '<script>window.onload=function(){window.print();};<\/script></body></html>';
+    const w = window.open("", "_blank");
+    if (!w) { alert("El navegador ha bloqueado la ventana nueva. Permite las ventanas emergentes para este sitio e inténtalo otra vez."); return; }
+    w.document.write(html);
+    w.document.close();
+  }
+
+  $("#b-generar-tickets").onclick = async () => {
+    const sel = $("#f-tickets-est");
+    const estId = sel.value;
+    const cantidad = parseInt($("#f-tickets-cantidad").value, 10);
+    const est = DATOS.establecimientos.find((e) => e.id === estId);
+    leerCfg();
+    if (!est) { alert("Añade primero un establecimiento en la sección 2."); return; }
+    if (!DATOS.cfg.urlVotos) { alert('Antes tienes que configurar la "URL del marcador de votos" en la sección 1.'); return; }
+    if (!cantidad || cantidad < 1) { alert("Pon cuántos tickets quieres generar."); return; }
+
+    const boton = $("#b-generar-tickets");
+    boton.disabled = true;
+    boton.textContent = "Generando…";
+    try {
+      const resp = await fetch(DATOS.cfg.urlVotos, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ accion: "generar_codigos", estId: estId, estNombre: est.nombre, cantidad: cantidad })
+      });
+      const datos = await resp.json();
+      if (!datos || !datos.ok) {
+        alert("No se han podido generar los códigos: " + ((datos && datos.error) || "fallo desconocido. ¿Has pegado y desplegado la última versión del script?"));
+        return;
+      }
+      imprimirTickets(est.nombre, DATOS.cfg.url.replace(/\/$/, ""), estId, datos.codigos);
+      const est2 = $("#estado-tickets");
+      est2.hidden = false;
+      est2.textContent = cantidad + " tickets generados para " + est.nombre + ". Revisa la pestaña nueva para imprimirlos.";
+      setTimeout(() => { est2.hidden = true; }, 4000);
+    } catch (e) {
+      alert("No se ha podido conectar con la hoja de votos. Revisa la URL configurada y tu conexión.");
+    } finally {
+      boton.disabled = false;
+      boton.textContent = "Generar e imprimir tickets";
+    }
+  };
 
   function pintarSalida() {
     leerCfg();

@@ -796,6 +796,8 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 .voto-ok{background:#fff;border:1px solid #E4DCCB;border-radius:14px;padding:18px;text-align:center;margin-top:14px}
 .voto-ok svg{width:38px;height:38px;color:var(--gold)}
 .voto-ok p{margin:8px 0 0;color:#3c4c5e;font-size:.88rem}
+.voto-ticket{background:#fff;border:1px solid #E4DCCB;border-radius:14px;padding:18px;text-align:center}
+.voto-ticket p{margin:0;color:#3c4c5e;font-size:.88rem;line-height:1.5}
 .pz-seguir{position:sticky;bottom:0;display:flex;gap:10px;background:linear-gradient(0deg,var(--cream) 75%,transparent);padding:16px 20px 22px;max-width:560px;margin:0 auto}
 .pz-seguir .btn{flex:1}
 .pz-sobre{background:#fff;border:1px solid #E4DCCB;border-radius:14px;padding:16px}
@@ -934,6 +936,9 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
       <div class="voto-ok" id="voto-ok" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12l5 5L20 6"/></svg>
         <p><b>¡Voto registrado!</b><br>Ya has votado esta tapa desde este móvil.</p>
+      </div>
+      <div class="voto-ticket" id="voto-ticket" hidden>
+        <p id="voto-ticket-msg"></p>
       </div>
     </div>
     <div class="bloque pz-sobre" id="pz-sobre">
@@ -1331,7 +1336,29 @@ function cargarDatosRuta() {
       });
   }
 
-  function abrirParada(id) {
+  /* Muestra en #voto-ticket un mensaje en vez del formulario de voto
+     (se usa mientras se comprueba un ticket de un solo uso, o cuando
+     resulta que ya está gastado / no es válido). */
+  function mostrarEstadoTicket(msgHtml) {
+    $("#voto-form").hidden = true;
+    $("#voto-ok").hidden = true;
+    const bloque = $("#voto-ticket");
+    bloque.hidden = false;
+    $("#voto-ticket-msg").innerHTML = msgHtml;
+  }
+
+  function mostrarFormularioVoto() {
+    const form = $("#voto-form");
+    form.hidden = false;
+    $("#voto-ok").hidden = true;
+    $("#voto-ticket").hidden = true;
+    [...form.querySelectorAll("input[type=range]")].forEach((inp) => {
+      inp.value = 3;
+      inp.oninput = () => { inp.closest(".voto-criterio").querySelector("span").textContent = inp.value; };
+    });
+  }
+
+  function abrirParada(id, codigo) {
     const p = PARADAS.find((x) => x.id === id);
     if (!p) return;
     $("#pz-tapa-nombre").textContent = p.tapaNombre;
@@ -1348,16 +1375,34 @@ function cargarDatosRuta() {
     $("#pz-sobre").hidden = !p.palabrasJefe && !p.cartaUrl;
 
     panel.dataset.id = p.id;
-    const form = $("#voto-form"), ok = $("#voto-ok");
+    panel.dataset.codigo = codigo || "";
+
     if (yaVotado(p.id)) {
-      form.hidden = true; ok.hidden = false;
+      $("#voto-form").hidden = true; $("#voto-ok").hidden = false; $("#voto-ticket").hidden = true;
       pintarRankingEnFicha(p);
+    } else if (codigo && CFG.urlVotos) {
+      // Llega por un ticket de un solo uso: antes de dejar votar hay que
+      // comprobar en la hoja si ese código ya se ha gastado. Si falla la
+      // conexión, no bloqueamos al usuario: dejamos votar igualmente y
+      // que sea el envío del voto el que, al final, lo valide de verdad.
+      mostrarEstadoTicket("Comprobando tu ticket…");
+      pintarFotoEnFicha(p);
+      fetch(CFG.urlVotos + "?accion=comprobar&codigo=" + encodeURIComponent(codigo))
+        .then((r) => r.json())
+        .then((datos) => {
+          if (panel.dataset.id !== p.id) return; // se cambió de ficha mientras tanto
+          const estado = datos && datos.estado;
+          if (estado === "usado") {
+            mostrarEstadoTicket("<b>Este ticket ya se ha usado</b><br>Si has sido tú, ¡gracias por votar! Si no, pide un ticket nuevo en el establecimiento.");
+          } else if (estado === "no_existe") {
+            mostrarEstadoTicket("<b>Este código no es válido</b><br>Pide un ticket nuevo en el establecimiento.");
+          } else {
+            mostrarFormularioVoto();
+          }
+        })
+        .catch(() => { if (panel.dataset.id === p.id) mostrarFormularioVoto(); });
     } else {
-      form.hidden = false; ok.hidden = true;
-      [...form.querySelectorAll("input[type=range]")].forEach((inp) => {
-        inp.value = 3;
-        inp.oninput = () => { inp.closest(".voto-criterio").querySelector("span").textContent = inp.value; };
-      });
+      mostrarFormularioVoto();
       pintarFotoEnFicha(p);
     }
     panel.classList.add("on");
@@ -1384,39 +1429,72 @@ function cargarDatosRuta() {
   };
   $("#carta-cerrar").onclick = () => $("#carta-modal").classList.remove("on");
   $("#carta-modal").onclick = (ev) => { if (ev.target.id === "carta-modal") $("#carta-modal").classList.remove("on"); };
-  /* Envía el voto a la hoja de Google Sheets (vía Apps Script), si está
-     configurada. Es un "fire and forget": el voto ya ha quedado guardado
-     en este móvil antes de llamar a esto, así que un fallo de red aquí
-     no le impide al usuario ver su "voto registrado". Se manda como
-     text/plain (no application/json) a propósito: así el navegador no
-     lanza antes una petición OPTIONS de verificación, que Apps Script
-     no sabe responder. */
-  function enviarVotoAHoja(p, valores, media) {
-    if (!CFG.urlVotos) return;
-    try {
-      fetch(CFG.urlVotos, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          estId: p.id, estNombre: p.nombre, tapaNombre: p.tapaNombre,
-          presentacion: valores.presentacion, gustacion: valores.gusto, servicio: valores.servicio,
-          media
-        })
-      }).catch(() => {});
-    } catch (e) { /* sin conexión: el voto local ya quedó guardado */ }
+  /* Manda el voto a la hoja de Google Sheets (vía Apps Script), si está
+     configurada. Se manda como text/plain (no application/json) a
+     propósito: así el navegador no lanza antes una petición OPTIONS de
+     verificación, que Apps Script no sabe responder.
+     Devuelve la respuesta ya convertida en JSON (o null si no hay
+     CFG.urlVotos / falla la conexión), para que quien llame decida qué
+     hacer según venga o no de un ticket de un solo uso. */
+  function enviarVotoAHoja(p, valores, media, codigo) {
+    if (!CFG.urlVotos) return Promise.resolve(null);
+    const cuerpo = {
+      estId: p.id, estNombre: p.nombre, tapaNombre: p.tapaNombre,
+      presentacion: valores.presentacion, gustacion: valores.gusto, servicio: valores.servicio,
+      media
+    };
+    if (codigo) cuerpo.codigo = codigo;
+    return fetch(CFG.urlVotos, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(cuerpo)
+    }).then((r) => r.json()).catch(() => null);
+  }
+
+  function registrarVotoLocal(id, valores, media) {
+    localStorage.setItem("tapa_voto_" + id, JSON.stringify({ valores, media, fecha: new Date().toISOString() }));
   }
 
   $("#btn-votar").onclick = () => {
     const id = panel.dataset.id;
+    const codigo = panel.dataset.codigo || "";
     const p = PARADAS.find((x) => x.id === id);
     const valores = {};
     [...document.querySelectorAll(".voto-criterio")].forEach((el) => { valores[el.dataset.c] = el.querySelector("input").value; });
     const media = Math.round(((Number(valores.presentacion) + Number(valores.gusto) + Number(valores.servicio)) / 3) * 100) / 100;
-    localStorage.setItem("tapa_voto_" + id, JSON.stringify({ valores, media, fecha: new Date().toISOString() }));
-    if (p) {
-      enviarVotoAHoja(p, valores, media);
-      pintarRankingEnFicha(p);
+    if (!p) return;
+
+    if (codigo && CFG.urlVotos) {
+      // Voto con ticket de un solo uso: hay que esperar la confirmación
+      // del servidor (es quien de verdad sabe si ese código ya se gastó)
+      // antes de dar el voto por bueno.
+      const boton = $("#btn-votar");
+      boton.disabled = true;
+      boton.textContent = "Enviando…";
+      enviarVotoAHoja(p, valores, media, codigo).then((resp) => {
+        boton.disabled = false;
+        boton.textContent = "Enviar voto";
+        if (resp && resp.ok) {
+          registrarVotoLocal(id, valores, media);
+          $("#voto-form").hidden = true; $("#voto-ticket").hidden = true;
+          $("#voto-ok").hidden = false;
+          pintarRankingEnFicha(p);
+        } else if (resp && resp.error === "codigo_usado") {
+          mostrarEstadoTicket("<b>Este ticket ya se ha usado</b><br>Alguien se te ha adelantado justo ahora. Pide un ticket nuevo en el establecimiento.");
+        } else if (resp && resp.error === "codigo_no_valido") {
+          mostrarEstadoTicket("<b>Este código no es válido</b><br>Pide un ticket nuevo en el establecimiento.");
+        } else {
+          mostrarEstadoTicket("<b>No se ha podido registrar el voto</b><br>Revisa tu conexión e inténtalo de nuevo.");
+        }
+      });
+      return;
     }
+
+    // Voto abierto (sin ticket): se confirma al instante en este móvil
+    // y el envío a la hoja es en segundo plano, sin bloquear.
+    registrarVotoLocal(id, valores, media);
+    enviarVotoAHoja(p, valores, media, "");
+    pintarRankingEnFicha(p);
     $("#voto-form").hidden = true;
     $("#voto-ok").hidden = false;
   };
@@ -1477,7 +1555,9 @@ function cargarDatosRuta() {
     const p = PARADAS.find((x) => x.id === est);
     if (!p) return false;
     abrirApp();
-    abrirParada(est);
+    // El QR del mapa solo trae "est" (voto abierto, como siempre). El QR
+    // de un ticket de un solo uso trae además "v" con el código a gastar.
+    abrirParada(est, params.get("v"));
     return true;
   }
 
