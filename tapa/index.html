@@ -1103,19 +1103,19 @@ function completarParada(p, i) {
 /* Si Víctor ha usado admin.html en este mismo navegador, sus datos
    reales sustituyen a los de ejemplo automáticamente. */
 function cargarDatosRuta() {
-  try {
-    const guardado = JSON.parse(localStorage.getItem("tapa_admin_v1"));
-    if (guardado && guardado.establecimientos && guardado.establecimientos.length) {
-      return {
-        cfg: Object.assign({}, RUTA_TAPA_CFG_DEFECTO, guardado.cfg),
-        paradas: guardado.establecimientos.map(completarParada)
-      };
-    }
-  } catch (e) { /* noop */ }
-  return {
-    cfg: RUTA_TAPA_CFG_DEFECTO,
-    paradas: PARADAS_TAPA_DEFECTO.map(completarParada)
-  };
+  let guardado = null;
+  try { guardado = JSON.parse(localStorage.getItem("tapa_admin_v1")); } catch (e) { /* noop */ }
+  // La configuración (nombre, fechas, URL del marcador de votos...) se
+  // aplica en cuanto está guardada, aunque todavía no se haya añadido
+  // ningún establecimiento real desde el panel de alta — antes, sin
+  // establecimientos, se ignoraba también la configuración guardada y
+  // la ruta se quedaba con los valores de la demo (incluida la URL del
+  // ranking vacía), aunque ya se hubiera rellenado en el panel.
+  const cfg = Object.assign({}, RUTA_TAPA_CFG_DEFECTO, (guardado && guardado.cfg) || {});
+  const paradas = (guardado && guardado.establecimientos && guardado.establecimientos.length)
+    ? guardado.establecimientos.map(completarParada)
+    : PARADAS_TAPA_DEFECTO.map(completarParada);
+  return { cfg, paradas };
 }
 
 
