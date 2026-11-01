@@ -36,6 +36,9 @@ td.acciones{white-space:nowrap}
 .pill{display:inline-block;background:#F6EEDA;color:var(--gold-dark);border-radius:999px;padding:2px 9px;font-size:.72rem;font-weight:600}
 .estado{font-size:.82rem;padding:10px 12px;border-radius:9px;margin-top:10px}
 .estado.ok{background:#E8F3EA;color:#1F7A3C}
+.alergenos-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin-top:6px;background:#FBF8F0;border:1px solid #E4DCCB;border-radius:10px;padding:10px 12px}
+.alergeno-check{display:flex;align-items:center;gap:7px;font:400 .84rem Poppins;text-transform:none;letter-spacing:0;color:var(--navy);margin:3px 0}
+.alergeno-check input{margin:0;accent-color:var(--gold-dark)}
 .qr-caja{display:flex;align-items:center;gap:14px;background:#FBF8F0;border:1px solid #E4DCCB;border-radius:10px;padding:10px;margin-top:8px}
 .qr-caja canvas{flex:none;border-radius:6px}
 .qr-caja .link{font-size:.76rem;color:#45586b;word-break:break-all}
@@ -105,6 +108,25 @@ td.acciones{white-space:nowrap}
     <label>Palabras del dueño/a sobre su establecimiento (opcional)</label>
     <textarea id="f-jefe-palabras" placeholder="Unas frases suyas, en primera persona. Aparecerán como cita en la ficha de la tapa, para quien haga scroll hacia abajo."></textarea>
     <p class="ayuda">No hace falta foto del jefe/a — solo sus palabras, como una pequeña presentación del negocio.</p>
+
+    <label>Alérgenos que contiene la tapa (opcional)</label>
+    <div class="alergenos-grid" id="f-alergenos">
+      <label class="alergeno-check"><input type="checkbox" value="Gluten"> Gluten</label>
+      <label class="alergeno-check"><input type="checkbox" value="Crustáceos"> Crustáceos</label>
+      <label class="alergeno-check"><input type="checkbox" value="Huevo"> Huevo</label>
+      <label class="alergeno-check"><input type="checkbox" value="Pescado"> Pescado</label>
+      <label class="alergeno-check"><input type="checkbox" value="Cacahuetes"> Cacahuetes</label>
+      <label class="alergeno-check"><input type="checkbox" value="Soja"> Soja</label>
+      <label class="alergeno-check"><input type="checkbox" value="Lácteos"> Lácteos</label>
+      <label class="alergeno-check"><input type="checkbox" value="Frutos de cáscara"> Frutos de cáscara</label>
+      <label class="alergeno-check"><input type="checkbox" value="Apio"> Apio</label>
+      <label class="alergeno-check"><input type="checkbox" value="Mostaza"> Mostaza</label>
+      <label class="alergeno-check"><input type="checkbox" value="Sésamo"> Sésamo</label>
+      <label class="alergeno-check"><input type="checkbox" value="Sulfitos"> Sulfitos</label>
+      <label class="alergeno-check"><input type="checkbox" value="Altramuces"> Altramuces</label>
+      <label class="alergeno-check"><input type="checkbox" value="Moluscos"> Moluscos</label>
+    </div>
+    <p class="ayuda">Marca los que contenga esta tapa (los 14 alérgenos de declaración obligatoria). Se muestran como aviso junto al nombre de la tapa, antes de votar. Si no marcas ninguno, no sale ningún aviso — así que revísalo con el establecimiento, no lo dejes a medias.</p>
     <p class="ayuda">Si prefieres un vídeo girando en vez de la foto fija, sube el vídeo a YouTube como <b>"No listado"</b> y pega aquí ese enlace — o, si lo tienes colgado en otro sitio como archivo .mp4 directo, ese enlace. El vídeo tiene prioridad sobre la foto si pones los dos.</p>
     <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-oro" id="b-guardar">Añadir a la ruta</button>
@@ -2498,6 +2520,7 @@ var qrcode = function() {
 
   function limpiarForm() {
     ["f-nombre", "f-tapa", "f-lat", "f-lng", "f-logo", "f-fondo", "f-carta", "f-tapa-foto", "f-video-url", "f-jefe-palabras"].forEach((id) => $("#" + id).value = "");
+    document.querySelectorAll("#f-alergenos input").forEach((cb) => cb.checked = false);
     editandoId = null;
     $("#b-cancelar").hidden = true;
     $("#b-guardar").textContent = "Añadir a la ruta";
@@ -2519,7 +2542,8 @@ var qrcode = function() {
       cartaUrls: $("#f-carta").value.split("\n").map((s) => s.trim()).filter(Boolean),
       tapaFotoUrl: $("#f-tapa-foto").value.trim(),
       tapaVideoUrl: $("#f-video-url").value.trim(),
-      palabrasJefe: $("#f-jefe-palabras").value.trim()
+      palabrasJefe: $("#f-jefe-palabras").value.trim(),
+      alergenos: Array.from(document.querySelectorAll("#f-alergenos input:checked")).map((cb) => cb.value)
     };
     if (editandoId) {
       const i = DATOS.establecimientos.findIndex((e) => e.id === editandoId);
@@ -2553,6 +2577,8 @@ var qrcode = function() {
     $("#f-tapa-foto").value = e.tapaFotoUrl || "";
     $("#f-video-url").value = e.tapaVideoUrl || "";
     $("#f-jefe-palabras").value = e.palabrasJefe || "";
+    const alergenosGuardados = e.alergenos || [];
+    document.querySelectorAll("#f-alergenos input").forEach((cb) => cb.checked = alergenosGuardados.includes(cb.value));
     $("#b-cancelar").hidden = false;
     $("#b-guardar").textContent = "Guardar cambios";
     window.scrollTo({ top: 0, behavior: "smooth" });
