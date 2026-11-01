@@ -900,7 +900,8 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 .tp-tapa-img img{width:100%;height:100%;border-radius:50%;object-fit:cover;filter:grayscale(1) contrast(.9);opacity:.42;transition:filter .5s,opacity .5s;display:block}
 .tp-tic{position:absolute;top:-2px;right:-2px;width:30%;aspect-ratio:1;border-radius:50%;background:#2E9E4F;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #fff;transform:scale(0);transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
 .tp-tic svg{width:62%;height:62%}
-.tp-num{position:absolute;bottom:-2px;left:-2px;min-width:24%;aspect-ratio:1;border-radius:50%;background:var(--navy);color:#fff;font:700 .62rem/1 Poppins;font-style:normal;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.tp-num{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);min-width:26%;padding:0 5px;box-sizing:border-box;height:26%;border-radius:999px;background:var(--navy);color:#fff;font:700 .62rem/1 Poppins;font-style:normal;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.tp-tapa.hecha .tp-num{background:linear-gradient(135deg,#FFCC33,var(--gold));color:var(--navy);font-size:.72rem}
 .tp-tapa.hecha .tp-tapa-img{background:linear-gradient(135deg,#FFCC33,var(--gold))}
 .tp-tapa.hecha img{filter:none;opacity:1}
 .tp-tapa.hecha .tp-tic{transform:scale(1)}
@@ -2332,9 +2333,9 @@ function cargarDatosRuta() {
       return '<button class="tp-tapa' + (hecha ? " hecha" : "") + (q.id === ultimoSello ? " recien" : "") + '" data-id="' + q.id + '">'
         + '<span class="tp-tapa-img"><img src="' + q.mini + '" alt="" loading="lazy">'
         + '<i class="tp-tic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>'
-        + '<i class="tp-num">' + (i + 1) + "</i></span>"
+        + '<i class="tp-num">' + (v && typeof v.media === "number" ? v.media.toFixed(1) : (i + 1)) + "</i></span>"
         + "<b>" + q.nombre + "</b>"
-        + "<small>" + (v && typeof v.media === "number" ? "Tu nota: " + v.media.toFixed(1) : q.tapaNombre) + "</small>"
+        + "<small>" + q.tapaNombre + "</small>"
         + "</button>";
     }).join("");
     $("#tp-cuerpo").innerHTML =
