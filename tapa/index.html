@@ -993,13 +993,6 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
     <select id="filtro-estab" aria-label="Ver un establecimiento en el mapa"></select>
   </div>
   <div class="gps-pista" id="gps-pista"></div>
-  <div class="hoja fondo-cartel">
-    <div class="hoja-cab" id="hoja-cab">
-      <div class="hoja-asa"></div>
-      <h3>Establecimientos</h3>
-    </div>
-    <ul class="lista-estab" id="lista-estab"></ul>
-  </div>
 </div>
 
 <!-- ======= PANEL DE PARADA ======= -->
@@ -1561,6 +1554,7 @@ function cargarDatosRuta() {
   }
 
   function pintarLista() {
+    if (!$("#lista-estab")) return; // la lista de abajo se quitó: basta el desplegable
     $("#lista-estab").innerHTML = PARADAS.map((p, i) => (
       '<li class="' + (yaVotado(p.id) ? "visitada" : "") + '" data-id="' + p.id + '">'
       + '<div class="num">' + (i + 1) + "</div>"
