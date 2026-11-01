@@ -839,11 +839,13 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 .tp-sorteo-ok svg{width:36px;height:36px;color:var(--gold-dark)}
 
 .aviso-demo{position:fixed;top:0;left:0;right:0;z-index:60;background:#B3261E;color:#fff;text-align:center;font:600 .68rem/1.3 Poppins;letter-spacing:.02em;padding:6px 14px}
+.aviso-demo button{margin-left:8px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.55);color:#fff;font:600 .64rem Poppins;padding:2px 9px;border-radius:99px;cursor:pointer;vertical-align:1px}
+.aviso-demo button:active{background:rgba(255,255,255,.32)}
 </style>
 </head>
 <body>
 
-<div class="aviso-demo" id="aviso-demo">DEMO — contenidos de ejemplo</div>
+<div class="aviso-demo" id="aviso-demo">DEMO — contenidos de ejemplo <button id="btn-reiniciar-demo" type="button">↺ Reiniciar demo</button></div>
 
 <!-- ======= PORTADA ======= -->
 <section class="pantalla" id="portada">
@@ -1560,6 +1562,21 @@ function cargarDatosRuta() {
     abrirParada(est, params.get("v"));
     return true;
   }
+
+  /* ---------- reiniciar demo: borra solo los votos y el sorteo de
+     este móvil, sin tocar los establecimientos configurados desde
+     el panel de alta (eso vive en la misma clave "tapa_admin_v1",
+     así que no se toca). ---------- */
+  function reiniciarDemo() {
+    const ok = confirm("¿Reiniciar la demo?\n\nSe borran los votos y la participación en el sorteo guardados en este móvil. Los establecimientos de la ruta no se tocan.");
+    if (!ok) return;
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith("tapa_voto_") || k === "tapa_sorteo_enviado")
+      .forEach((k) => localStorage.removeItem(k));
+    location.href = location.pathname; // recarga limpia, sin un ?est=/&v= que quedara en la URL
+  }
+  const btnReiniciar = $("#btn-reiniciar-demo");
+  if (btnReiniciar) btnReiniciar.onclick = reiniciarDemo;
 
   pintarTextos();
   if (!entradaPorQR()) mostrarPantalla("portada");
