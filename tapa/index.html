@@ -778,11 +778,16 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 .tapa360-ranking{background:#fff;border:1px solid #E4DCCB;border-radius:14px;padding:16px;max-height:300px;overflow-y:auto}
 .tapa360-ranking h4{margin:0 0 2px;color:var(--navy);font:700 .95rem Poppins}
 .ranking-sub{margin:0 0 10px;color:#5a6b7d;font-size:.78rem}
-.ranking-fila{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #E4DCCB}
+.ranking-fila{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #E4DCCB}
 .ranking-fila:last-child{border-bottom:none}
-.ranking-pos{flex:none;width:22px;text-align:center;font:700 .85rem Poppins;color:var(--gold-dark)}
-.ranking-fila .ranking-nombre{flex:1;font:600 .86rem Poppins;color:var(--navy)}
-.ranking-fila .ranking-media{flex:none;font:700 .88rem Poppins;color:var(--gold-dark)}
+.ranking-pos{flex:none;width:16px;text-align:center;font:700 .78rem Poppins;color:var(--gold-dark)}
+.tapa360-wrap img.ranking-thumb{flex:none;width:38px;height:38px;border-radius:9px;object-fit:cover;background:#EAE2CB}
+.ranking-info{flex:1;min-width:0}
+.ranking-cab{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px}
+.ranking-fila .ranking-nombre{font:600 .82rem Poppins;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ranking-fila .ranking-media{flex:none;font:700 .82rem Poppins;color:var(--gold-dark)}
+.ranking-barra-fondo{height:7px;border-radius:99px;background:#EAE2CB;overflow:hidden}
+.ranking-barra{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-dark))}
 .ranking-vacio,.ranking-error{color:#5a6b7d;font-size:.85rem;text-align:center;padding:14px 0}
 #carta-cerrar{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:1.2rem}
 
@@ -1313,6 +1318,21 @@ function cargarDatosRuta() {
     }
   }
 
+  /* Una fila del ranking: miniatura de la tapa (si el establecimiento
+     sigue en la ruta cargada en este móvil), nombre, media y una barra
+     horizontal cuyo ancho es proporcional a la media sobre 5 — así el
+     ranking se lee de un vistazo, como una pequeña gráfica de barras. */
+  function pintarFilaRanking(r, i) {
+    const est = PARADAS.find((x) => x.id === r.id);
+    const thumb = est ? '<img class="ranking-thumb" src="' + est.tapa + '" alt="">' : "";
+    const pct = Math.max(4, Math.min(100, (r.media / 5) * 100));
+    return '<div class="ranking-fila"><span class="ranking-pos">' + (i + 1) + "</span>" + thumb
+      + '<div class="ranking-info">'
+      + '<div class="ranking-cab"><span class="ranking-nombre">' + r.nombre + '</span><span class="ranking-media">' + r.media.toFixed(1) + "</span></div>"
+      + '<div class="ranking-barra-fondo"><div class="ranking-barra" style="width:' + pct + '%"></div></div>'
+      + "</div></div>";
+  }
+
   /* Pinta el ranking en directo en el mismo hueco donde antes estaba la
      foto. Es el "premio" por haber votado: como en una encuesta, no se
      puede ver cómo van los demás hasta que no participas. */
@@ -1339,11 +1359,7 @@ function cargarDatosRuta() {
           cuerpo.innerHTML = '<p class="ranking-vacio">Todavía no hay votos suficientes para mostrar un ranking.</p>';
           return;
         }
-        cuerpo.innerHTML = ranking.map((r, i) => (
-          '<div class="ranking-fila"><span class="ranking-pos">' + (i + 1) + '</span>'
-          + '<span class="ranking-nombre">' + r.nombre + '</span>'
-          + '<span class="ranking-media">' + r.media.toFixed(1) + '</span></div>'
-        )).join("");
+        cuerpo.innerHTML = ranking.map(pintarFilaRanking).join("");
       })
       .catch(() => {
         if (panel.dataset.id !== p.id || !wrap.contains(cuerpo)) return;
