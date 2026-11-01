@@ -768,7 +768,7 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 #carta-cerrar{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:1.2rem}
 
 .tapa360-marco{margin:40px -20px 0;padding:0}
-.tapa360-wrap{width:100%;height:185px;position:relative}
+.tapa360-wrap{width:100%;height:260px;position:relative}
 .tapa360-wrap img,.tapa360-wrap video,.tapa360-wrap iframe{width:100%;height:100%;object-fit:contain}
 .tapa360-wrap img.girando{animation:girar360 7s linear infinite}
 @keyframes girar360{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
@@ -1273,7 +1273,9 @@ function cargarDatosRuta() {
     }
     panel.classList.add("on");
     document.body.style.overflow = "hidden";
-    ajustarFuenteTapaNombre();
+    // Dos frames de margen: en algunos móviles la medición justo después
+    // de hacerse visible el panel devuelve un ancho todavía sin asentar.
+    requestAnimationFrame(() => requestAnimationFrame(ajustarFuenteTapaNombre));
   }
   function cerrarParada() {
     panel.classList.remove("on");
