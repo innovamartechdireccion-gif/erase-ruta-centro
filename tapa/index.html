@@ -750,16 +750,15 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 .pz-cerrar{position:absolute;top:14px;right:14px;z-index:5;width:36px;height:36px;border-radius:50%;background:rgba(1,41,65,.55);color:#fff;border:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center}
 .pz-cover{position:relative;height:138px;background:linear-gradient(160deg,#1c3a57,#0B2A4A)}
 .pz-cover img.fondo{width:100%;height:100%;object-fit:cover;opacity:.9}
-.pz-cuerpo{padding:14px 20px 26px;max-width:560px;margin:0 auto}
-.pz-cuerpo h2{font-size:1.32rem;margin:0;padding-left:136px;line-height:1.15}
-.pz-cuerpo .tapa-nombre{display:block;width:100%;margin-top:8px;font:700 2rem 'Playfair Display',Georgia,serif;color:var(--gold-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.08}
+.pz-cuerpo{padding:0 20px 26px;max-width:560px;margin:0 auto}
+.pz-cuerpo .tapa-nombre{display:block;width:100%;margin-top:4px;text-align:center;font:700 2rem 'Playfair Display',Georgia,serif;color:var(--gold-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.08}
 .bloque{margin-top:14px}
 .bloque h3{font:700 .8rem Poppins;text-transform:uppercase;letter-spacing:.08em;color:var(--navy);margin-bottom:6px}
 .bloque p{color:#3c4c5e;font-size:.92rem}
 
 .pz-logo-wrap{position:absolute;left:20px;bottom:-40px;width:104px;height:104px;border-radius:50%;border:4px solid var(--cream);overflow:hidden;background:#141414;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .pz-logo-wrap img{width:100%;height:100%;object-fit:contain}
-.pz-fila-tapa{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+.pz-fila-tapa{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;flex-wrap:wrap}
 .btn-carta{flex:none;background:transparent;border:1.4px solid var(--navy);color:var(--navy);border-radius:999px;padding:7px 14px;font:600 .76rem Poppins;cursor:pointer;white-space:nowrap}
 
 /* ---- modal de la carta ---- */
@@ -768,12 +767,11 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 #carta-modal img{max-width:100%;max-height:85vh;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 #carta-cerrar{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:1.2rem}
 
-.tapa360-marco{background:#fff;margin:6px -20px 0;padding:14px 20px}
-.tapa360-wrap{width:220px;height:220px;margin:0 auto;position:relative}
+.tapa360-marco{margin:40px -20px 0;padding:16px 0}
+.tapa360-wrap{width:100%;height:300px;position:relative}
 .tapa360-wrap img,.tapa360-wrap video,.tapa360-wrap iframe{width:100%;height:100%;object-fit:contain}
 .tapa360-wrap img.girando{animation:girar360 7s linear infinite}
 @keyframes girar360{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
-.tapa360-eti{text-align:center;font:600 .7rem Poppins;color:#8A94A0;margin-top:8px;background:#fff;padding-bottom:10px}
 
 .video-caja{aspect-ratio:16/9;border-radius:12px;background:#0B2A4A;color:#cfe0ee;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:.8rem;text-align:center;padding:12px}
 .video-caja svg{width:34px;height:34px;opacity:.85}
@@ -894,18 +892,14 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
     <div class="pz-logo-wrap"><img id="pz-logo" alt=""></div>
   </div>
   <div class="pz-cuerpo">
-    <h2 id="pz-nombre">—</h2>
-    <span class="tapa-nombre" id="pz-tapa-nombre">—</span>
-    <div class="pz-fila-tapa">
-      <button class="btn-carta" id="pz-carta" hidden>Ver la carta</button>
-    </div>
-
     <div class="bloque tapa360-marco">
-      <h3 style="text-align:center">La tapa, girando 360º</h3>
       <div class="tapa360-wrap" id="tapa360-wrap">
         <img id="pz-tapa" alt="" class="girando">
       </div>
-      <p class="tapa360-eti" id="pz-video-nota">—</p>
+    </div>
+    <div class="pz-fila-tapa">
+      <span class="tapa-nombre" id="pz-tapa-nombre">—</span>
+      <button class="btn-carta" id="pz-carta" hidden>Ver la carta</button>
     </div>
 
     <div class="bloque" id="bloque-voto">
@@ -1239,7 +1233,6 @@ function cargarDatosRuta() {
   function abrirParada(id) {
     const p = PARADAS.find((x) => x.id === id);
     if (!p) return;
-    $("#pz-nombre").textContent = p.nombre;
     $("#pz-tapa-nombre").textContent = p.tapaNombre;
     $("#pz-fondo").src = p.fondo;
     $("#pz-tapa").src = p.tapa;
@@ -1262,7 +1255,6 @@ function cargarDatosRuta() {
       wrap.innerHTML = '<img id="pz-tapa" class="girando" alt="">';
       $("#pz-tapa").src = p.tapa;
     }
-    $("#pz-video-nota").textContent = p.tapaVideoUrl ? "Vídeo real" : (p.videoNota ? "(" + p.videoNota + " — placeholder de demo)" : "(vídeo girando pendiente)");
     panel.dataset.id = p.id;
 
     const form = $("#voto-form"), ok = $("#voto-ok");
