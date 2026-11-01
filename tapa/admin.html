@@ -91,9 +91,9 @@ td.acciones{white-space:nowrap}
     <input type="text" id="f-fondo" placeholder="https://...">
     <p class="ayuda">Es la foto grande de fondo de la ficha. Súbela a cualquier sitio que dé enlace directo a la imagen (Google Drive en modo "cualquiera con el enlace", Imgur, etc.) y pega aquí el enlace.</p>
 
-    <label>Carta / menú — foto de la carta (enlace a imagen, opcional)</label>
-    <input type="text" id="f-carta" placeholder="https://...">
-    <p class="ayuda">Al pulsar "Ver la carta" se abrirá esta imagen a pantalla completa dentro de la propia app, sin salir a ningún sitio externo.</p>
+    <label>Carta / menú — fotos de las páginas (un enlace por línea, opcional)</label>
+    <textarea id="f-carta" placeholder="https://.../pagina-1.jpg&#10;https://.../pagina-2.jpg&#10;https://.../pagina-3.jpg"></textarea>
+    <p class="ayuda">Un enlace de imagen por línea, en el orden en que deben verse. Al pulsar "Ver la carta" se abren a pantalla completa dentro de la propia app, y el cliente puede pasar de una página a otra deslizando el dedo. Si solo pones una línea, se ve como una carta de una sola página.</p>
 
     <label>Foto de la tapa, con el fondo quitado (PNG transparente, enlace)</label>
     <input type="text" id="f-tapa-foto" placeholder="https://...">
@@ -2516,7 +2516,7 @@ var qrcode = function() {
       lat, lng,
       logoUrl: $("#f-logo").value.trim(),
       fondoUrl: $("#f-fondo").value.trim(),
-      cartaUrl: $("#f-carta").value.trim(),
+      cartaUrls: $("#f-carta").value.split("\n").map((s) => s.trim()).filter(Boolean),
       tapaFotoUrl: $("#f-tapa-foto").value.trim(),
       tapaVideoUrl: $("#f-video-url").value.trim(),
       palabrasJefe: $("#f-jefe-palabras").value.trim()
@@ -2549,7 +2549,7 @@ var qrcode = function() {
     $("#f-lng").value = e.lng;
     $("#f-logo").value = e.logoUrl || "";
     $("#f-fondo").value = e.fondoUrl || "";
-    $("#f-carta").value = e.cartaUrl || "";
+    $("#f-carta").value = (e.cartaUrls || (e.cartaUrl ? [e.cartaUrl] : [])).join("\n");
     $("#f-tapa-foto").value = e.tapaFotoUrl || "";
     $("#f-video-url").value = e.tapaVideoUrl || "";
     $("#f-jefe-palabras").value = e.palabrasJefe || "";
