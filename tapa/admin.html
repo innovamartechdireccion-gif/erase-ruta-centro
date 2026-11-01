@@ -97,6 +97,10 @@ td.acciones{white-space:nowrap}
 
     <label>Vídeo de la tapa girando 360º (enlace, opcional)</label>
     <input type="text" id="f-video-url" placeholder="Enlace de YouTube (No listado) o a un .mp4">
+
+    <label>Palabras del dueño/a sobre su establecimiento (opcional)</label>
+    <textarea id="f-jefe-palabras" placeholder="Unas frases suyas, en primera persona. Aparecerán como cita en la ficha de la tapa, para quien haga scroll hacia abajo."></textarea>
+    <p class="ayuda">No hace falta foto del jefe/a — solo sus palabras, como una pequeña presentación del negocio.</p>
     <p class="ayuda">Si prefieres un vídeo girando en vez de la foto fija, sube el vídeo a YouTube como <b>"No listado"</b> y pega aquí ese enlace — o, si lo tienes colgado en otro sitio como archivo .mp4 directo, ese enlace. El vídeo tiene prioridad sobre la foto si pones los dos.</p>
     <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-oro" id="b-guardar">Añadir a la ruta</button>
@@ -2475,7 +2479,7 @@ var qrcode = function() {
   });
 
   function limpiarForm() {
-    ["f-nombre", "f-tapa", "f-lat", "f-lng", "f-logo", "f-fondo", "f-carta", "f-tapa-foto", "f-video-url"].forEach((id) => $("#" + id).value = "");
+    ["f-nombre", "f-tapa", "f-lat", "f-lng", "f-logo", "f-fondo", "f-carta", "f-tapa-foto", "f-video-url", "f-jefe-palabras"].forEach((id) => $("#" + id).value = "");
     editandoId = null;
     $("#b-cancelar").hidden = true;
     $("#b-guardar").textContent = "Añadir a la ruta";
@@ -2496,7 +2500,8 @@ var qrcode = function() {
       fondoUrl: $("#f-fondo").value.trim(),
       cartaUrl: $("#f-carta").value.trim(),
       tapaFotoUrl: $("#f-tapa-foto").value.trim(),
-      tapaVideoUrl: $("#f-video-url").value.trim()
+      tapaVideoUrl: $("#f-video-url").value.trim(),
+      palabrasJefe: $("#f-jefe-palabras").value.trim()
     };
     if (editandoId) {
       const i = DATOS.establecimientos.findIndex((e) => e.id === editandoId);
@@ -2529,6 +2534,7 @@ var qrcode = function() {
     $("#f-carta").value = e.cartaUrl || "";
     $("#f-tapa-foto").value = e.tapaFotoUrl || "";
     $("#f-video-url").value = e.tapaVideoUrl || "";
+    $("#f-jefe-palabras").value = e.palabrasJefe || "";
     $("#b-cancelar").hidden = false;
     $("#b-guardar").textContent = "Guardar cambios";
     window.scrollTo({ top: 0, behavior: "smooth" });
