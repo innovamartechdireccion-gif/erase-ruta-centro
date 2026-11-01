@@ -845,6 +845,7 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 .tp-cromo .tp-check{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(0,0,0,.3)}
 .tp-cromo .tp-check svg{width:11px;height:11px;color:#201505}
 .tp-cromo svg{width:18px;height:18px}
+.tp-cromo .tp-nota{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:27px;height:27px;border-radius:50%;background:var(--gold);color:#201505;display:flex;align-items:center;justify-content:center;font:700 .66rem Poppins;box-shadow:0 2px 6px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.92)}
 .tp-sorteo{margin:22px 20px 30px;max-width:520px;margin-left:auto;margin-right:auto;background:#fff;border:1px solid #E4DCCB;border-radius:16px;padding:18px}
 .tp-sorteo h3{font-size:1.05rem;margin-bottom:4px}
 .tp-sorteo p{color:#3c4c5e;font-size:.86rem;margin-top:0}
@@ -1578,9 +1579,19 @@ function cargarDatosRuta() {
     const hechos = PARADAS.filter((p) => yaVotado(p.id));
     $("#tp-grid").innerHTML = PARADAS.map((p) => {
       const lleno = yaVotado(p.id);
+      let nota = "";
+      if (lleno) {
+        try {
+          const voto = JSON.parse(localStorage.getItem("tapa_voto_" + p.id));
+          if (voto && typeof voto.media === "number") {
+            nota = '<span class="tp-nota">' + voto.media.toFixed(1) + "</span>";
+          }
+        } catch (e) { /* noop */ }
+      }
       return '<div class="tp-cromo' + (lleno ? " lleno" : "") + '">'
         + '<img src="' + p.tapa + '" alt="">'
         + (lleno ? '<span class="tp-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5L20 6"/></svg></span>' : "")
+        + nota
         + '<span class="nom">' + p.nombre + "</span></div>";
     }).join("");
     const pct = PARADAS.length ? Math.round((hechos.length / PARADAS.length) * 100) : 0;
