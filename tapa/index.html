@@ -720,8 +720,10 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 /* ---- mapa + chrome ---- */
 #app{position:fixed;inset:0;display:none}
 #app.on{display:block}
-#mapa{position:absolute;inset:0}
-.pastilla{position:absolute;top:max(14px,env(safe-area-inset-top));left:14px;right:14px;z-index:20;background:rgba(1,41,65,.82);backdrop-filter:blur(8px);border:1px solid rgba(246,241,231,.18);border-radius:16px;padding:10px 14px;display:flex;align-items:center;gap:10px;color:var(--cream)}
+/* z-index:0 encierra las capas de Leaflet (z 200-700) para que no tapen
+   la barra de arriba ni la lista de bares. */
+#mapa{position:absolute;inset:0;z-index:0}
+.pastilla{position:absolute;top:max(14px,env(safe-area-inset-top));left:14px;right:14px;z-index:20;background:rgba(1,41,65,.94);border:1px solid rgba(246,241,231,.18);border-radius:16px;padding:10px 14px;display:flex;align-items:center;gap:10px;color:var(--cream)}
 .pastilla img{width:26px;height:26px;flex:none}
 .pa-volver{flex:none;width:30px;height:30px;border-radius:50%;background:rgba(246,241,231,.12);border:1px solid rgba(246,241,231,.3);color:var(--cream);font:700 1.15rem/1 Poppins;display:flex;align-items:center;justify-content:center;padding:0 0 2px}
 .pastilla .t{flex:1;min-width:0}
@@ -737,7 +739,12 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 .marker-num{width:28px;height:28px;border-radius:50%;background:var(--navy);border:2.5px solid var(--gold);color:var(--cream);display:flex;align-items:center;justify-content:center;font:700 .78rem Poppins;box-shadow:0 2px 7px rgba(0,0,0,.4)}
 .marker-num.visitado{background:var(--gold);border-color:var(--navy);color:#201505}
 
-.hoja{position:absolute;left:0;right:0;bottom:0;z-index:18;color:var(--navy);border-radius:20px 20px 0 0;max-height:42vh;overflow-y:auto;box-shadow:0 -8px 24px rgba(0,0,0,.25)}
+.hoja{position:absolute;left:0;right:0;bottom:0;z-index:18;color:var(--navy);border-radius:20px 20px 0 0;max-height:34vh;overflow-y:auto;overscroll-behavior:contain;transition:max-height .25s ease;box-shadow:0 -8px 24px rgba(0,0,0,.25)}
+/* Lista plegable: tocando el asa o el título se recoge y deja el mapa casi entero. */
+.hoja-cab{cursor:pointer;padding-bottom:8px}
+.hoja.plegada{max-height:64px;overflow:hidden}
+.hoja-cab h3::after{content:' ▾';color:#9AA6B2;font-size:.8em}
+.hoja.plegada .hoja-cab h3::after{content:' ▴'}
 .hoja-asa{width:40px;height:4px;border-radius:99px;background:#D8CEB7;margin:10px auto}
 .hoja h3{font-size:.92rem;padding:0 16px;color:var(--navy)}
 .lista-estab{list-style:none;margin:0;padding:0 10px 14px}
@@ -901,6 +908,11 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 .aviso-demo{position:fixed;top:0;left:0;right:0;z-index:60;background:#B3261E;color:#fff;text-align:center;font:600 .68rem/1.3 Poppins;letter-spacing:.02em;padding:6px 14px}
 .aviso-demo button{margin-left:8px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.55);color:#fff;font:600 .64rem Poppins;padding:2px 9px;border-radius:99px;cursor:pointer;vertical-align:1px}
 .aviso-demo button:active{background:rgba(255,255,255,.32)}
+/* Mientras sea demo, la franja roja (≈34px) ocupa arriba: bajar lo que va fijo arriba. */
+.pastilla{top:calc(max(14px,env(safe-area-inset-top)) + 34px)}
+.gps-pista{top:112px}
+.pz-cerrar{top:calc(max(14px,env(safe-area-inset-top)) + 34px)}
+#panel .pz-cartel{margin-top:34px}
 </style>
 </head>
 <body>
@@ -965,8 +977,10 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
   </div>
   <div class="gps-pista" id="gps-pista"></div>
   <div class="hoja fondo-cartel">
-    <div class="hoja-asa"></div>
-    <h3>Establecimientos</h3>
+    <div class="hoja-cab" id="hoja-cab">
+      <div class="hoja-asa"></div>
+      <h3>Establecimientos</h3>
+    </div>
     <ul class="lista-estab" id="lista-estab"></ul>
   </div>
 </div>
@@ -1420,6 +1434,11 @@ function cargarDatosRuta() {
       ? [PARADAS.reduce((s, p) => s + p.lat, 0) / PARADAS.length, PARADAS.reduce((s, p) => s + p.lng, 0) / PARADAS.length]
       : [36.1614, -5.3493];
     mapa = L.map("mapa", { zoomControl: false, attributionControl: true }).setView(centro, 17);
+    const cab = document.getElementById("hoja-cab");
+    if (cab) cab.onclick = () => {
+      cab.parentElement.classList.toggle("plegada");
+      setTimeout(() => mapa.invalidateSize(), 300);
+    };
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19, attribution: "© OpenStreetMap"
     }).addTo(mapa);
