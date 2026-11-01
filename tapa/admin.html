@@ -138,7 +138,7 @@ td.acciones{white-space:nowrap}
   <div class="tarjeta">
     <h2>3 · Establecimientos de la ruta (<span id="num-total">0</span>)</h2>
     <table>
-      <thead><tr><th>Nombre</th><th>Tapa</th><th>Coordenadas</th><th>QR</th><th></th></tr></thead>
+      <thead><tr><th>Nombre</th><th>Tapa</th><th>Coordenadas</th><th></th></tr></thead>
       <tbody id="tabla-cuerpo"></tbody>
     </table>
     <p class="ayuda" id="sin-datos">Todavía no has añadido ningún establecimiento.</p>
@@ -168,14 +168,6 @@ td.acciones{white-space:nowrap}
 
 </main>
 
-<div id="qr-modal" style="display:none;position:fixed;inset:0;background:rgba(1,41,65,.7);align-items:center;justify-content:center;z-index:50">
-  <div style="background:#fff;border-radius:16px;padding:22px;max-width:320px;text-align:center">
-    <h3 id="qr-modal-titulo" style="font-size:1rem"></h3>
-    <canvas id="qr-modal-canvas"></canvas>
-    <p class="ayuda" id="qr-modal-link" style="word-break:break-all"></p>
-    <button class="btn btn-linea btn-peq" id="qr-modal-cerrar">Cerrar</button>
-  </div>
-</div>
 
 <script>//---------------------------------------------------------------------
 //
@@ -2594,27 +2586,6 @@ var qrcode = function() {
     pintarSalida();
   }
 
-  function verQR(id) {
-    const e = DATOS.establecimientos.find((x) => x.id === id);
-    if (!e) return;
-    const url = ($("#cfg-url").value.trim().replace(/\/?$/, "/")) + "?est=" + e.id;
-    const qr = qrcode(0, "M");
-    qr.addData(url);
-    qr.make();
-    $("#qr-modal-titulo").textContent = e.nombre;
-    $("#qr-modal-link").textContent = url;
-    const cv = $("#qr-modal-canvas"), ctx = cv.getContext("2d");
-    const n = qr.getModuleCount(), cell = 6, pad = 10;
-    cv.width = cv.height = n * cell + pad * 2;
-    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height);
-    ctx.fillStyle = "#012941";
-    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
-      if (qr.isDark(r, c)) ctx.fillRect(pad + c * cell, pad + r * cell, cell, cell);
-    }
-    $("#qr-modal").style.display = "flex";
-  }
-  $("#qr-modal-cerrar").onclick = () => { $("#qr-modal").style.display = "none"; };
-  $("#qr-modal").onclick = (ev) => { if (ev.target.id === "qr-modal") $("#qr-modal").style.display = "none"; };
 
   function pintarTabla() {
     const lista = DATOS.establecimientos;
@@ -2625,14 +2596,12 @@ var qrcode = function() {
       + "<td><b>" + e.nombre + "</b><br><span class='pill'>" + e.id + "</span></td>"
       + "<td>" + (e.tapaNombre || "—") + "</td>"
       + "<td>" + e.lat.toFixed(5) + ", " + e.lng.toFixed(5) + "</td>"
-      + "<td><button class='btn btn-linea btn-peq' data-qr='" + e.id + "'>Ver QR</button></td>"
       + "<td class='acciones'><button class='btn btn-linea btn-peq' data-edit='" + e.id + "'>Editar</button> "
       + "<button class='btn btn-rojo btn-peq' data-del='" + e.id + "'>Borrar</button></td>"
       + "</tr>"
     )).join("");
     [...document.querySelectorAll("[data-edit]")].forEach((b) => b.onclick = () => editar(b.dataset.edit));
     [...document.querySelectorAll("[data-del]")].forEach((b) => b.onclick = () => borrar(b.dataset.del));
-    [...document.querySelectorAll("[data-qr]")].forEach((b) => b.onclick = () => verQR(b.dataset.qr));
     pintarSelectTickets();
   }
 

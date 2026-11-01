@@ -1450,8 +1450,11 @@ function cargarDatosRuta() {
         })
         .catch(() => { if (panel.dataset.id === p.id) mostrarFormularioVoto(); });
     } else {
-      mostrarFormularioVoto();
+      // Sin ticket no se puede votar: solo se entra aquí a ver la ficha
+      // (foto, alérgenos, carta...). El voto exige venir de un ticket de
+      // un solo uso válido, para que el voto quede atado a estar en el bar.
       pintarFotoEnFicha(p);
+      mostrarEstadoTicket("<b>Para votar esta tapa necesitas un ticket</b><br>Pide uno en la barra cuando te sirvan la tapa, y escanea el código QR que viene impreso en él.");
     }
     panel.classList.add("on");
     document.body.style.overflow = "hidden";
@@ -1640,8 +1643,8 @@ function cargarDatosRuta() {
     const p = PARADAS.find((x) => x.id === est);
     if (!p) return false;
     abrirApp();
-    // El QR del mapa solo trae "est" (voto abierto, como siempre). El QR
-    // de un ticket de un solo uso trae además "v" con el código a gastar.
+    // Solo se puede votar si el enlace trae "v" (el código de un ticket
+    // de un solo uso). Sin él se abre la ficha, pero sin formulario de voto.
     abrirParada(est, params.get("v"));
     return true;
   }
