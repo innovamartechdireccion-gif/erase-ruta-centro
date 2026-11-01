@@ -764,6 +764,19 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
 #carta-modal{position:fixed;inset:0;background:rgba(1,41,65,.92);z-index:70;display:none;align-items:center;justify-content:center;padding:20px}
 #carta-modal.on{display:flex}
 #carta-modal img{max-width:100%;max-height:85vh;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+
+#ranking-modal{position:fixed;inset:0;background:rgba(1,41,65,.92);z-index:70;display:none;align-items:center;justify-content:center;padding:20px}
+#ranking-modal.on{display:flex}
+.ranking-caja{position:relative;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;background:var(--cream);border-radius:16px;padding:24px 20px 20px}
+.ranking-caja h3{margin:0 0 2px;color:var(--navy);font:700 1.1rem Poppins}
+.ranking-sub{margin:0 0 16px;color:#5a6b7d;font-size:.82rem}
+#ranking-cerrar{position:absolute;top:10px;right:10px;width:30px;height:30px;border:none;border-radius:50%;background:rgba(1,41,65,.08);color:var(--navy);font-size:1rem;cursor:pointer;line-height:1}
+.ranking-fila{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #E4DCCB}
+.ranking-fila:last-child{border-bottom:none}
+.ranking-pos{flex:none;width:24px;text-align:center;font:700 .85rem Poppins;color:var(--gold-dark)}
+.ranking-fila .ranking-nombre{flex:1;font:600 .88rem Poppins;color:var(--navy)}
+.ranking-fila .ranking-media{flex:none;font:700 .9rem Poppins;color:var(--gold-dark)}
+.ranking-vacio,.ranking-error{color:#5a6b7d;font-size:.88rem;text-align:center;padding:20px 0}
 #carta-cerrar{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:1.2rem}
 
 .tapa360-marco{margin:40px -20px 0;padding:0}
@@ -920,6 +933,7 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
       <div class="voto-ok" id="voto-ok" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12l5 5L20 6"/></svg>
         <p><b>¡Voto registrado!</b><br>Ya has votado esta tapa desde este móvil.</p>
+        <button class="btn btn-fantasma" id="btn-ver-ranking" style="margin-top:14px;border-color:var(--navy);color:var(--navy)">Ver ranking en directo</button>
       </div>
     </div>
     <div class="bloque pz-sobre" id="pz-sobre">
@@ -980,6 +994,15 @@ h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0 0 .3em}
   <img id="carta-img" alt="Carta del establecimiento">
 </div>
 
+<div id="ranking-modal">
+  <div class="ranking-caja">
+    <button id="ranking-cerrar" aria-label="Cerrar">✕</button>
+    <h3>Ranking en directo</h3>
+    <p class="ranking-sub">Media de las votaciones recibidas hasta ahora</p>
+    <div id="ranking-cuerpo"></div>
+  </div>
+</div>
+
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
  * (c) 2010-2023 Vladimir Agafonkin, (c) 2010-2011 CloudMade
@@ -1028,7 +1051,8 @@ const RUTA_TAPA_CFG_DEFECTO = {
   ciudad: "La Línea de la Concepción",
   fechas: "4 al 8 de noviembre",
   lema: "Este año se han presentado {{n}} establecimientos. ¿Serás capaz de tapear todas las tapas?",
-  url: "https://erase-la-linea.es/tapa/"
+  url: "https://erase-la-linea.es/tapa/",
+  urlVotos: ""
 };
 
 /* Establecimientos reales dados de alta por Víctor en admin.html.
@@ -1320,14 +1344,70 @@ function cargarDatosRuta() {
   };
   $("#carta-cerrar").onclick = () => $("#carta-modal").classList.remove("on");
   $("#carta-modal").onclick = (ev) => { if (ev.target.id === "carta-modal") $("#carta-modal").classList.remove("on"); };
+  /* Envía el voto a la hoja de Google Sheets (vía Apps Script), si está
+     configurada. Es un "fire and forget": el voto ya ha quedado guardado
+     en este móvil antes de llamar a esto, así que un fallo de red aquí
+     no le impide al usuario ver su "voto registrado". Se manda como
+     text/plain (no application/json) a propósito: así el navegador no
+     lanza antes una petición OPTIONS de verificación, que Apps Script
+     no sabe responder. */
+  function enviarVotoAHoja(p, valores, media) {
+    if (!CFG.urlVotos) return;
+    try {
+      fetch(CFG.urlVotos, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          estId: p.id, estNombre: p.nombre, tapaNombre: p.tapaNombre,
+          presentacion: valores.presentacion, gustacion: valores.gusto, servicio: valores.servicio,
+          media
+        })
+      }).catch(() => {});
+    } catch (e) { /* sin conexión: el voto local ya quedó guardado */ }
+  }
+
   $("#btn-votar").onclick = () => {
     const id = panel.dataset.id;
+    const p = PARADAS.find((x) => x.id === id);
     const valores = {};
     [...document.querySelectorAll(".voto-criterio")].forEach((el) => { valores[el.dataset.c] = el.querySelector("input").value; });
-    localStorage.setItem("tapa_voto_" + id, JSON.stringify({ valores, fecha: new Date().toISOString() }));
+    const media = Math.round(((Number(valores.presentacion) + Number(valores.gusto) + Number(valores.servicio)) / 3) * 100) / 100;
+    localStorage.setItem("tapa_voto_" + id, JSON.stringify({ valores, media, fecha: new Date().toISOString() }));
+    if (p) enviarVotoAHoja(p, valores, media);
     $("#voto-form").hidden = true;
     $("#voto-ok").hidden = false;
   };
+
+  /* ---------- ranking en directo (se desbloquea al votar) ---------- */
+  function abrirRanking() {
+    const modal = $("#ranking-modal"), cuerpo = $("#ranking-cuerpo");
+    modal.classList.add("on");
+    if (!CFG.urlVotos) {
+      cuerpo.innerHTML = '<p class="ranking-vacio">El ranking en directo todavía no está activado para esta ruta.</p>';
+      return;
+    }
+    cuerpo.innerHTML = '<p class="ranking-vacio">Cargando…</p>';
+    fetch(CFG.urlVotos)
+      .then((r) => r.json())
+      .then((datos) => {
+        const ranking = (datos && datos.ranking) || [];
+        if (!ranking.length) {
+          cuerpo.innerHTML = '<p class="ranking-vacio">Todavía no hay votos suficientes para mostrar un ranking.</p>';
+          return;
+        }
+        cuerpo.innerHTML = ranking.map((r, i) => (
+          '<div class="ranking-fila"><span class="ranking-pos">' + (i + 1) + '</span>'
+          + '<span class="ranking-nombre">' + r.nombre + '</span>'
+          + '<span class="ranking-media">' + r.media.toFixed(1) + '</span></div>'
+        )).join("");
+      })
+      .catch(() => {
+        cuerpo.innerHTML = '<p class="ranking-error">No se ha podido cargar el ranking ahora mismo. Inténtalo de nuevo en un momento.</p>';
+      });
+  }
+  $("#btn-ver-ranking").onclick = abrirRanking;
+  $("#ranking-cerrar").onclick = () => $("#ranking-modal").classList.remove("on");
+  $("#ranking-modal").onclick = (ev) => { if (ev.target.id === "ranking-modal") $("#ranking-modal").classList.remove("on"); };
 
   /* ---------- Tapaporte digital (álbum de cromos) ---------- */
   function pintarTapaporte() {

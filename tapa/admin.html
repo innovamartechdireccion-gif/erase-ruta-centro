@@ -65,6 +65,10 @@ td.acciones{white-space:nowrap}
     <label>URL base donde estará publicada la ruta (pídemela si no la sabes — mientras tanto deja la de ejemplo)</label>
     <input type="text" id="cfg-url" value="https://erase-la-linea.es/tapa/">
     <p class="ayuda">El QR de cada bar añadirá <code>?est=su-id</code> a esta URL. Si todavía no está publicada, usa esta de ejemplo y la cambiamos luego.</p>
+
+    <label>URL del marcador de votos (Google Apps Script), opcional</label>
+    <input type="text" id="cfg-url-votos" placeholder="https://script.google.com/macros/s/..../exec">
+    <p class="ayuda">Aquí va el enlace que te dará Google al desplegar el script que guarda los votos en tu hoja de cálculo. Mientras lo dejes vacío, el voto solo se guarda en el móvil de cada persona y el botón "Ver ranking" no mostrará datos.</p>
   </div>
 
   <div class="tarjeta">
@@ -2464,6 +2468,7 @@ var qrcode = function() {
     $("#cfg-fechas").value = DATOS.cfg.fechas || "4 al 8 de noviembre";
     $("#cfg-lema").value = DATOS.cfg.lema || "Este año se han presentado {{n}} establecimientos. ¿Serás capaz de tapear todas las tapas?";
     $("#cfg-url").value = DATOS.cfg.url || "https://erase-la-linea.es/tapa/";
+    $("#cfg-url-votos").value = DATOS.cfg.urlVotos || "";
   }
   function leerCfg() {
     DATOS.cfg = {
@@ -2471,10 +2476,11 @@ var qrcode = function() {
       ciudad: $("#cfg-ciudad").value.trim(),
       fechas: $("#cfg-fechas").value.trim(),
       lema: $("#cfg-lema").value.trim(),
-      url: $("#cfg-url").value.trim().replace(/\/?$/, "/")
+      url: $("#cfg-url").value.trim().replace(/\/?$/, "/"),
+      urlVotos: $("#cfg-url-votos").value.trim()
     };
   }
-  ["cfg-nombre", "cfg-ciudad", "cfg-fechas", "cfg-lema", "cfg-url"].forEach((id) => {
+  ["cfg-nombre", "cfg-ciudad", "cfg-fechas", "cfg-lema", "cfg-url", "cfg-url-votos"].forEach((id) => {
     document.getElementById(id).addEventListener("change", () => { leerCfg(); guardar(DATOS); pintarSalida(); });
   });
 
