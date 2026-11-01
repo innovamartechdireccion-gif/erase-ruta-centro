@@ -91,9 +91,13 @@ td.acciones{white-space:nowrap}
     <input type="text" id="f-carta" placeholder="https://...">
     <p class="ayuda">Al pulsar "Ver la carta" se abrirá esta imagen a pantalla completa dentro de la propia app, sin salir a ningún sitio externo.</p>
 
+    <label>Foto de la tapa, con el fondo quitado (PNG transparente, enlace)</label>
+    <input type="text" id="f-tapa-foto" placeholder="https://...">
+    <p class="ayuda">Dile a Claude que te quite el fondo de la foto de la tapa y te la pase como enlace o archivo — así sale flotando en la ficha, sin fondo ni marco. Mientras no la tengas, se usa un marcador de posición.</p>
+
     <label>Vídeo de la tapa girando 360º (enlace, opcional)</label>
     <input type="text" id="f-video-url" placeholder="Enlace de YouTube (No listado) o a un .mp4">
-    <p class="ayuda">Sube el vídeo a YouTube como <b>"No listado"</b> y pega aquí ese enlace — o, si lo tienes colgado en otro sitio como archivo .mp4 directo, ese enlace. Mientras no haya vídeo, la tapa gira sola con la foto como marcador de posición.</p>
+    <p class="ayuda">Si prefieres un vídeo girando en vez de la foto fija, sube el vídeo a YouTube como <b>"No listado"</b> y pega aquí ese enlace — o, si lo tienes colgado en otro sitio como archivo .mp4 directo, ese enlace. El vídeo tiene prioridad sobre la foto si pones los dos.</p>
     <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-oro" id="b-guardar">Añadir a la ruta</button>
       <button class="btn btn-linea" id="b-cancelar" hidden>Cancelar edición</button>
@@ -2471,7 +2475,7 @@ var qrcode = function() {
   });
 
   function limpiarForm() {
-    ["f-nombre", "f-tapa", "f-lat", "f-lng", "f-logo", "f-fondo", "f-carta", "f-video-url"].forEach((id) => $("#" + id).value = "");
+    ["f-nombre", "f-tapa", "f-lat", "f-lng", "f-logo", "f-fondo", "f-carta", "f-tapa-foto", "f-video-url"].forEach((id) => $("#" + id).value = "");
     editandoId = null;
     $("#b-cancelar").hidden = true;
     $("#b-guardar").textContent = "Añadir a la ruta";
@@ -2491,6 +2495,7 @@ var qrcode = function() {
       logoUrl: $("#f-logo").value.trim(),
       fondoUrl: $("#f-fondo").value.trim(),
       cartaUrl: $("#f-carta").value.trim(),
+      tapaFotoUrl: $("#f-tapa-foto").value.trim(),
       tapaVideoUrl: $("#f-video-url").value.trim()
     };
     if (editandoId) {
@@ -2522,6 +2527,7 @@ var qrcode = function() {
     $("#f-logo").value = e.logoUrl || "";
     $("#f-fondo").value = e.fondoUrl || "";
     $("#f-carta").value = e.cartaUrl || "";
+    $("#f-tapa-foto").value = e.tapaFotoUrl || "";
     $("#f-video-url").value = e.tapaVideoUrl || "";
     $("#b-cancelar").hidden = false;
     $("#b-guardar").textContent = "Guardar cambios";
