@@ -738,6 +738,22 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 
 .marker-num{width:28px;height:28px;border-radius:50%;background:var(--navy);border:2.5px solid var(--gold);color:var(--cream);display:flex;align-items:center;justify-content:center;font:700 .78rem Poppins;box-shadow:0 2px 7px rgba(0,0,0,.4)}
 .marker-num.visitado{background:var(--gold);border-color:var(--navy);color:#201505}
+/* Nombres junto a los números: solo con el mapa acercado. */
+.leaflet-tooltip.mk-nombre{display:none;background:rgba(255,255,255,.95);border:1px solid #D8CEB7;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.25);color:var(--navy);font:700 .7rem Poppins;padding:2px 7px}
+.leaflet-tooltip.mk-nombre::before{display:none}
+#mapa.con-nombres .leaflet-tooltip.mk-nombre{display:block}
+/* Etiqueta al tocar un número. */
+.mk-pop{display:flex;flex-direction:column;gap:2px;min-width:150px;font-family:Poppins}
+.mk-pop b{color:var(--navy);font-size:.88rem;line-height:1.2}
+.mk-pop span{color:#5d6b7a;font-size:.74rem}
+.mk-pop button{margin-top:7px;background:#FFCC33;color:var(--navy);border:none;border-radius:99px;font:700 .78rem Poppins;padding:7px 12px}
+/* "Solo este bar": los demás se apagan. */
+#mapa.solo-uno .leaflet-marker-icon{opacity:.18}
+#mapa.solo-uno .leaflet-tooltip.mk-nombre{opacity:0!important}
+#mapa.solo-uno .leaflet-marker-icon:has(.destacado){opacity:1}
+.marker-num.destacado{transform:scale(1.25);background:#FFCC33;color:var(--navy);border-color:var(--navy)}
+.lista-estab .ver-mapa{flex:none;margin-left:auto;background:#fff;border:1px solid #E3D9C3;border-radius:50%;width:34px;height:34px;font-size:.95rem;display:flex;align-items:center;justify-content:center;padding:0}
+.lista-estab .ver-mapa + .chev{margin-left:6px}
 
 .hoja{position:absolute;left:0;right:0;bottom:0;z-index:18;color:var(--navy);border-radius:20px 20px 0 0;max-height:34vh;overflow-y:auto;overscroll-behavior:contain;transition:max-height .25s ease;box-shadow:0 -8px 24px rgba(0,0,0,.25)}
 /* Lista plegable: tocando el asa o el título se recoge y deja el mapa casi entero. */
@@ -1437,6 +1453,7 @@ function cargarDatosRuta() {
     const cab = document.getElementById("hoja-cab");
     if (cab) cab.onclick = () => {
       cab.parentElement.classList.toggle("plegada");
+      cab.parentElement.scrollTop = 0;
       setTimeout(() => mapa.invalidateSize(), 300);
     };
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -1479,14 +1496,48 @@ function cargarDatosRuta() {
         iconSize: [28, 28], iconAnchor: [14, 14]
       });
       const m = L.marker([lat, lng], { icon, riseOnHover: true }).addTo(mapa);
-      m.on("click", () => abrirParada(p.id));
+      // Nombre junto al número (solo se ve con el mapa acercado).
+      m.bindTooltip(p.nombre, { permanent: true, direction: "right", offset: [12, 0], className: "mk-nombre" });
+      // Tocar el número: etiqueta con nombre + "Ver ficha" (no abre la ficha a ciegas).
+      m.bindPopup(
+        '<div class="mk-pop"><b>' + (i + 1) + ". " + p.nombre + "</b><span>" + p.tapaNombre + "</span>"
+        + '<button type="button" data-id="' + p.id + '">Ver ficha ›</button></div>',
+        { closeButton: false, offset: [0, -10], autoPanPaddingTopLeft: [10, 130] }
+      );
       marcadores[p.id] = m;
     });
+
+    mapa.on("popupopen", (e) => {
+      const btn = e.popup.getElement().querySelector("button[data-id]");
+      if (btn) btn.onclick = () => abrirParada(btn.dataset.id);
+    });
+    // Al cerrar la etiqueta, se quita el modo "solo este bar".
+    mapa.on("popupclose", () => {
+      document.getElementById("mapa").classList.remove("solo-uno");
+      document.querySelectorAll(".marker-num.destacado").forEach((e) => e.classList.remove("destacado"));
+    });
+    const nombresSegunZoom = () => document.getElementById("mapa").classList.toggle("con-nombres", mapa.getZoom() >= 18);
+    mapa.on("zoomend", nombresSegunZoom);
+    nombresSegunZoom();
 
     if (PARADAS.length > 1) {
       const grupo = L.featureGroup(Object.values(marcadores));
       mapa.fitBounds(grupo.getBounds().pad(0.25));
     }
+  }
+
+  // Lleva a un bar en el mapa y apaga los demás hasta que se cierre su etiqueta.
+  function verEnMapa(id) {
+    const m = marcadores[id]; if (!m) return;
+    const hoja = document.querySelector(".hoja"); if (hoja) { hoja.classList.add("plegada"); hoja.scrollTop = 0; }
+    document.querySelectorAll(".marker-num.destacado").forEach((e) => e.classList.remove("destacado"));
+    const el = document.getElementById("mk-" + id); if (el) el.classList.add("destacado");
+    mapa.closePopup();
+    mapa.flyTo(m.getLatLng(), 18, { duration: 0.6 });
+    mapa.once("moveend", () => {
+      m.openPopup();
+      document.getElementById("mapa").classList.add("solo-uno");
+    });
   }
 
   function refrescarMarcador(id) {
@@ -1504,9 +1555,13 @@ function cargarDatosRuta() {
       '<li class="' + (yaVotado(p.id) ? "visitada" : "") + '" data-id="' + p.id + '">'
       + '<div class="num">' + (i + 1) + "</div>"
       + "<div><b>" + p.nombre + "</b><span>" + p.tapaNombre + (yaVotado(p.id) ? " · ya votada" : "") + "</span></div>"
+      + '<button class="ver-mapa" type="button" aria-label="Ver en el mapa" title="Ver en el mapa">📍</button>'
       + '<span class="chev">›</span></li>'
     )).join("");
-    [...document.querySelectorAll(".lista-estab li")].forEach((el) => el.onclick = () => abrirParada(el.dataset.id));
+    [...document.querySelectorAll(".lista-estab li")].forEach((el) => {
+      el.onclick = () => abrirParada(el.dataset.id);
+      el.querySelector(".ver-mapa").onclick = (ev) => { ev.stopPropagation(); verEnMapa(el.dataset.id); };
+    });
   }
 
   /* ---------- GPS opcional: distancia al más cercano sin votar ---------- */
