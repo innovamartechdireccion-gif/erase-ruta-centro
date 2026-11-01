@@ -760,13 +760,19 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 #panel.on{display:flex;flex-direction:column}
 
 /* Cabecera común (logo Diputación + título de la ruta), igual en todas las
-   fichas, con los accesos rápidos en su hueco blanco en lugar de flotar
-   sobre la foto. */
+   fichas. */
 .pz-cabecera{position:relative;flex:none;background:#fff}
 .pz-cabecera-img{width:100%;display:block}
-.pz-menu-cab{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;padding:8px 44px 11px;background:#fff}
-.pz-menu-cab button{display:flex;align-items:center;gap:6px;background:#FFCC33;color:var(--navy);border:none;border-radius:99px;font:700 .68rem Poppins;padding:7px 12px 7px 9px;box-shadow:0 1px 5px rgba(0,0,0,.18);white-space:nowrap}
-.pz-menu-cab button svg{width:14px;height:14px;flex:none}
+
+/* Accesos rápidos en la esquina derecha: el título "Ruta de la Tapa de
+   La Línea" ocupa toda la cabecera de arriba abajo, así que el hueco
+   real está justo debajo, al arrancar la foto, encima del matasellos
+   decorativo que trae cada cartel ahí — la cabecera (571:266) y la foto
+   (571:475) tienen cada una su proporción fija, así que todo se ancla en
+   vw para no depender del alto real en px. */
+.pz-menu-cab{position:absolute;top:calc(100vw / 2.1466 + 4px);right:2%;width:46%;z-index:4;display:flex;flex-direction:column;gap:6px}
+.pz-menu-cab button{display:flex;align-items:center;gap:6px;background:#FFCC33;color:var(--navy);border:none;border-radius:99px;font:700 .68rem Poppins;padding:7px 12px 7px 9px;box-shadow:0 1px 5px rgba(0,0,0,.22);white-space:nowrap}
+.pz-menu-cab button svg{width:15px;height:15px;flex:none}
 
 /* La ficha es la foto del cartel del bar, debajo de la cabecera; nada
    se recorta (object-fit:contain), y el fondo "fondo-cartel" del panel
@@ -980,16 +986,19 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
   <button class="pz-cerrar" id="pz-cerrar">✕</button>
 
   <!-- Cabecera común a todas las fichas: logo Diputación + título de la
-       ruta, con los accesos rápidos en su hueco blanco. -->
+       ruta. -->
   <div class="pz-cabecera">
     <img class="pz-cabecera-img" id="pz-cabecera-img" src="" alt="XI Ruta de la Tapa de La Línea">
-    <nav class="pz-menu-cab">
-      <button id="pz-menu-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg>Información +carta</button>
-      <button id="pz-menu-seguir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Seguir tapeando</button>
-      <button id="pz-menu-tapaporte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/></svg>Mi Tapaporte</button>
-      <button id="pz-menu-votar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9.5 16.5 14 18.5 21 12 17 5.5 21 7.5 14 2 9.5 9 9"/></svg>Votación</button>
-    </nav>
   </div>
+
+  <!-- Accesos rápidos, en la esquina derecha, a caballo entre la cabecera
+       y la foto (encima del matasellos decorativo de cada cartel). -->
+  <nav class="pz-menu-cab">
+    <button id="pz-menu-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg><span>Info +carta</span></button>
+    <button id="pz-menu-seguir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Seguir</span></button>
+    <button id="pz-menu-tapaporte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/></svg><span>Tapaporte</span></button>
+    <button id="pz-menu-votar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9.5 16.5 14 18.5 21 12 17 5.5 21 7.5 14 2 9.5 9 9"/></svg><span>Votar</span></button>
+  </nav>
 
   <!-- La ficha es la foto del cartel, debajo de la cabecera; nada se tapa
        ni se recorta. -->
