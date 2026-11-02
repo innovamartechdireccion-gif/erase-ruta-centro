@@ -66,7 +66,7 @@ td.acciones{white-space:nowrap}
     <label>Frase de bienvenida (usa {{n}} donde quieras que aparezca el número de establecimientos)</label>
     <textarea id="cfg-lema">Este año se han presentado {{n}} establecimientos. ¿Serás capaz de tapear todas las tapas?</textarea>
     <label>URL base donde estará publicada la ruta (pídemela si no la sabes — mientras tanto deja la de ejemplo)</label>
-    <input type="text" id="cfg-url" value="https://erase-la-linea.es/tapa/">
+    <input type="text" id="cfg-url" value="https://lalinea.xn--rase-9oa.es/tapa/">
     <p class="ayuda">El QR de cada bar añadirá <code>?est=su-id</code> a esta URL. Si todavía no está publicada, usa esta de ejemplo y la cambiamos luego.</p>
 
     <label>URL del marcador de votos (Google Apps Script), opcional</label>
@@ -2493,7 +2493,7 @@ var qrcode = function() {
     $("#cfg-ciudad").value = DATOS.cfg.ciudad || "La Línea de la Concepción";
     $("#cfg-fechas").value = DATOS.cfg.fechas || "4 al 8 de noviembre";
     $("#cfg-lema").value = DATOS.cfg.lema || "Este año se han presentado {{n}} establecimientos. ¿Serás capaz de tapear todas las tapas?";
-    $("#cfg-url").value = DATOS.cfg.url || "https://erase-la-linea.es/tapa/";
+    $("#cfg-url").value = DATOS.cfg.url || "https://lalinea.xn--rase-9oa.es/tapa/";
     $("#cfg-url-votos").value = DATOS.cfg.urlVotos || "";
   }
   function leerCfg() {
@@ -2636,7 +2636,7 @@ var qrcode = function() {
     const celdas = codigos.map((cod) => {
       const url = baseUrl + "?est=" + estId + "&v=" + cod;
       const img = generarQRDataUrl(url);
-      return '<div class="ticket"><img src="' + img + '"><span>' + estNombre + '</span><b>' + cod + '</b></div>';
+      return '<div class="ticket"><em>XI RUTA DE LA TAPA</em><img src="' + img + '"><span>' + estNombre + '</span><small>Escanea para votar tu tapa</small><b>' + cod + '</b></div>';
     }).join("");
     const html = '<!doctype html><html><head><meta charset="utf-8"><title>Tickets — ' + estNombre + '</title><style>'
       + 'body{font-family:sans-serif;margin:10mm;color:#012941}'
@@ -2644,6 +2644,7 @@ var qrcode = function() {
       + '.ticket{border:1px dashed #999;border-radius:4px;padding:3mm;text-align:center;page-break-inside:avoid}'
       + '.ticket img{width:100%;max-width:28mm}'
       + '.ticket span{display:block;font-size:8px;color:#555;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+      + '.ticket em{display:block;font-style:normal;font-weight:700;font-size:7px;letter-spacing:.08em;color:#012941;margin-bottom:2px}.ticket small{display:block;font-size:7px;color:#555}'
       + '.ticket b{display:block;font-size:10px;letter-spacing:.05em;margin-top:2px}'
       + '@media print{body{margin:5mm}}'
       + '</style></head><body><div class="grid">' + celdas + '</div>'
