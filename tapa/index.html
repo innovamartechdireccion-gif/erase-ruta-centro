@@ -1322,7 +1322,7 @@ const RUTA_TAPA_CFG_DEFECTO = {
   lema: "Este año se han presentado {{n}} establecimientos. ¿Serás capaz de tapear todas las tapas?",
   url: "https://lalinea.xn--rase-9oa.es/tapa/",
   urlVotos: "https://script.google.com/macros/s/AKfycbwoINBQjRfbEXj5cnv4_9ryHV1GA08jydZ35k6xX-PSDsymhDp7PeorwwWQVoG2Kt2Xgw/exec",
-  supabase: { url: "https://jcjvrjprvkjrtczdgatk.supabase.co", key: "sb_publishable_zq3mJViuquFeHiBiZScRPA_Fvw7mF0G", ruta: "lalinea-xi", produccion: false }
+  supabase: { url: "https://jcjvrjprvkjrtczdgatk.supabase.co", key: "sb_publishable_zq3mJViuquFeHiBiZScRPA_Fvw7mF0G", ruta: "lalinea-xi", produccion: false, sinCodigo: true }
 };
 
 /* Establecimientos reales dados de alta por Víctor en admin.html.
@@ -1711,6 +1711,8 @@ function cargarDatosRuta() {
      - clasificación "directo" (por defecto) | "oculto" hasta el cierre | "parcial" (podio).
      ===================================================================== */
   const QS = new URLSearchParams(location.search);
+  // Votación libre (sin QR ni código): cualquiera puede votar la tapa de un bar sin escanear nada.
+  const SB_LIBRE = !!(SB && (SB.sinCodigo || QS.get("libre") === "1"));
   const VOTO_FINAL = !SB && QS.get("voto") === "final";
   const RANKING = (() => { const r = SB ? (SB.ranking || "directo") : QS.get("ranking"); return r === "oculto" || r === "parcial" ? r : "directo"; })();
   const MIN_FINAL = Math.min(PARADAS.length, Math.max(1, Number(QS.get("min")) || 5));
@@ -1972,6 +1974,9 @@ function cargarDatosRuta() {
     } else if (SOBRE_DEMO && codigo) {
       // Demo del flujo real: la tarjeta del camarero se da por válida.
       conRegistro(() => { mostrarFormularioVoto(); abrirHojaFicha("#pz-sheet-voto"); });
+    } else if (SB_LIBRE && !codigo) {
+      // Votación libre: se vota directamente (el registro se pide al enviar el voto).
+      mostrarFormularioVoto();
     } else if (codigo && SB) {
       // Servidor profesional: se pregunta por el código (no hace falta sesión).
       // Si no hay conexión se deja continuar; el voto lo validará de verdad.
@@ -2126,12 +2131,13 @@ function cargarDatosRuta() {
     }
 
     if (SB) {
-      if (!codigo) { mostrarEstadoTicket(sbMensajeVoto({ error: "codigo_no_valido" })); return; }
+      if (!codigo && !SB_LIBRE) { mostrarEstadoTicket(sbMensajeVoto({ error: "codigo_no_valido" })); return; }
+      if (SB_LIBRE && !usuario()) { conRegistro(() => $("#btn-votar").click()); return; }
       const boton = $("#btn-votar");
       boton.disabled = true;
       boton.textContent = "Enviando…";
       const fin = () => { boton.disabled = false; boton.textContent = "Enviar voto"; };
-      const args = { p_est: id, p_codigo: codigo, p_pres: Number(valores.presentacion), p_gust: Number(valores.gusto), p_serv: Number(valores.servicio) };
+      const args = { p_est: id, p_codigo: codigo || null, p_pres: Number(valores.presentacion), p_gust: Number(valores.gusto), p_serv: Number(valores.servicio) };
       const exito = () => { sbReintentoRegistro = false; fin(); registrarVotoLocal(id, valores, media); trasVotar(p); };
       const tras = (resp) => {
         if (resp && resp.ok) { exito(); return; }
@@ -2932,7 +2938,7 @@ function cargarDatosRuta() {
     if (SB) {
       // Servidor profesional: sin móvil/SMS (el derecho a votar lo da el código único del posavasos).
       if (SB.produccion) $("#aviso-demo").hidden = true;
-      else $("#aviso-demo").firstChild.textContent = "PRUEBA — servidor real: se vota con el ticket QR ";
+      else $("#aviso-demo").firstChild.textContent = SB_LIBRE ? "PRUEBA ABIERTA — vota la tapa de cada bar, sin escanear nada " : "PRUEBA — servidor real: se vota con el ticket QR ";
       const lm = $("#rg-movil"); if (lm && lm.closest("label")) lm.closest("label").style.display = "none";
       $("#rg-enviar").textContent = "Registrarme y votar";
       $("#cm-sb").hidden = false; $("#cm-demo-nota").style.display = "none";
