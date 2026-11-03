@@ -967,6 +967,18 @@ img.ranking-thumb{flex:none;width:36px;height:36px;border-radius:50%;object-fit:
 .capa-cerrar{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:#EFE8D6;border:none;color:var(--navy);font-size:1rem}
 .capa-caja h3{font-size:1.25rem;margin:0 40px 4px 0}
 .capa-sub{margin:0 0 14px;font-size:.86rem;color:#5d6b7a}
+.capa-caja h4.md-t{margin:14px 0 6px;font:700 .8rem Poppins;text-transform:uppercase;letter-spacing:.04em;color:#8A6A1E}
+.opc{display:flex!important;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid #CFC5AC;border-radius:12px;margin-bottom:8px!important;background:#fff;font-weight:500!important}
+.opc input{margin-top:4px;flex:none}.opc b{display:block;font:700 .9rem Poppins}.opc em{display:block;font:500 .78rem/1.3 Poppins;color:#5d6b7a;font-style:normal}
+.capa-caja .opc input[type=radio],.capa-caja .vf-item input[type=radio]{display:inline-block;width:auto;margin:3px 0 0;padding:0;flex:none;accent-color:#C8912C}
+.capa-caja .opc select{margin-left:auto;width:auto;padding:6px 8px;border:1.5px solid #CFC5AC;border-radius:8px;font:600 .9rem Poppins;background:#fff;color:var(--navy)}
+.opc>span{flex:1;min-width:0}.vf-item>span{flex:1;min-width:0}
+.opc:has(input:checked){border-color:#C8912C;background:#FFF8E6}
+.vf-item{display:flex!important;align-items:center;gap:10px;padding:8px 10px;border:1.5px solid #CFC5AC;border-radius:12px;margin-bottom:8px!important;background:#fff;font-weight:500!important}
+.vf-item img{width:52px;height:52px;border-radius:10px;object-fit:cover;flex:none}.vf-item b{display:block;font:700 .9rem Poppins}.vf-item small{display:block;font:500 .75rem Poppins;color:#5d6b7a}
+.vf-item:has(input:checked){border-color:#C8912C;background:#FFF8E6}
+.tp-final{margin:10px 14px;padding:12px;border-radius:14px;background:rgba(255,255,255,.93);color:var(--navy);text-align:center;font:500 .85rem/1.35 Poppins}
+.tp-final .btn{margin-top:8px;width:100%}
 .capa-caja label{display:block;font:600 .8rem Poppins;margin-bottom:10px}
 .capa-caja label small{font-weight:500;color:#8A94A0}
 .capa-caja input:not([type=checkbox]){display:block;width:100%;margin-top:4px;padding:11px 12px;border:1.5px solid #CFC5AC;border-radius:10px;font:500 1rem Poppins;background:#fff;color:var(--navy)}
@@ -1007,7 +1019,7 @@ img.ranking-thumb{flex:none;width:36px;height:36px;border-radius:50%;object-fit:
 </head>
 <body>
 
-<div class="aviso-demo" id="aviso-demo">DEMO — vota en cualquier bar sin QR <button id="btn-reiniciar-demo" type="button">↺ Reiniciar demo</button></div>
+<div class="aviso-demo" id="aviso-demo">DEMO — vota en cualquier bar sin QR <button id="btn-modos" type="button">⚙ Modos</button> <button id="btn-reiniciar-demo" type="button">↺ Reiniciar demo</button></div>
 
 <!-- ======= PORTADA ======= -->
 <section class="pantalla" id="portada">
@@ -1216,6 +1228,36 @@ img.ranking-thumb{flex:none;width:36px;height:36px;border-radius:50%;object-fit:
 </div>
 
 <!-- ======= CLASIFICACIÓN ======= -->
+<!-- ======= VOTO FINAL (modo diario) ======= -->
+<div class="capa" id="vfinal">
+  <div class="capa-caja">
+    <button class="capa-cerrar" id="vf-cerrar" aria-label="Cerrar">✕</button>
+    <h3>Tu voto final</h3>
+    <p class="capa-sub">Elige la tapa que más te ha gustado de las que has probado. Solo hay <b>un voto</b> y no se puede cambiar.</p>
+    <div id="vf-lista"></div>
+    <button class="btn btn-oro" id="vf-enviar" type="button">Votar esta tapa</button>
+  </div>
+</div>
+
+<!-- ======= DEMO: modos de votación ======= -->
+<div class="capa" id="modos">
+  <div class="capa-caja">
+    <button class="capa-cerrar" id="md-cerrar" aria-label="Cerrar">✕</button>
+    <h3>Modos de votación</h3>
+    <p class="capa-sub">Prueba las dos formas de votar y cuándo se ve la clasificación. Lo decide la organización.</p>
+    <h4 class="md-t">Cómo se vota</h4>
+    <label class="opc"><input type="radio" name="vm" value="momento"><span><b>En el momento</b><em>Cada tapa se puntúa al probarla (presentación, gustación y servicio).</em></span></label>
+    <label class="opc"><input type="radio" name="vm" value="final"><span><b>Diario de tapas y voto final</b><em>Se van apuntando las tapas probadas y al final se da un único voto.</em></span></label>
+    <h4 class="md-t">Tapas necesarias para el voto final</h4>
+    <label class="opc"><span><b>Mínimo</b></span><select id="md-min"><option value="2">2</option><option value="3">3</option><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="22">Todas</option></select></label>
+    <h4 class="md-t">Clasificación</h4>
+    <label class="opc"><input type="radio" name="rk" value="directo"><span><b>En directo</b><em>Se ve siempre y se actualiza con cada voto.</em></span></label>
+    <label class="opc"><input type="radio" name="rk" value="oculto"><span><b>Oculta hasta el cierre</b><em>Nadie la ve hasta la entrega de premios.</em></span></label>
+    <label class="opc"><input type="radio" name="rk" value="parcial"><span><b>Solo los 3 primeros</b><em>Se enseña el podio y el resto se descubre al final.</em></span></label>
+    <button class="btn btn-oro" id="md-aplicar" type="button">Aplicar (reinicia la demo)</button>
+  </div>
+</div>
+
 <div class="capa" id="clasif">
   <div class="capa-caja">
     <button class="capa-cerrar" id="cl-cerrar" aria-label="Cerrar">✕</button>
@@ -1662,6 +1704,18 @@ function cargarDatosRuta() {
     return "<b>No se ha podido registrar el voto</b><br>Inténtalo de nuevo en unos segundos.";
   }
 
+  /* =====================================================================
+     MODOS (los elige la organización; en la demo se cambian con "⚙ Modos"):
+     - voto "momento" (por defecto): cada tapa se puntúa al probarla.
+     - voto "final": diario de tapas + UN voto final entre las probadas.
+     - clasificación "directo" (por defecto) | "oculto" hasta el cierre | "parcial" (podio).
+     ===================================================================== */
+  const QS = new URLSearchParams(location.search);
+  const VOTO_FINAL = !SB && QS.get("voto") === "final";
+  const RANKING = (() => { const r = SB ? (SB.ranking || "directo") : QS.get("ranking"); return r === "oculto" || r === "parcial" ? r : "directo"; })();
+  const MIN_FINAL = Math.min(PARADAS.length, Math.max(1, Number(QS.get("min")) || 5));
+  function votoFinal() { try { return JSON.parse(localStorage.getItem("tapa_voto_final")); } catch (e) { return null; } }
+
   function haversine(lat1, lng1, lat2, lng2) {
     const R = 6371000, toRad = (d) => d * Math.PI / 180;
     const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
@@ -2063,6 +2117,14 @@ function cargarDatosRuta() {
     const media = Math.round(((Number(valores.presentacion) + Number(valores.gusto) + Number(valores.servicio)) / 3) * 100) / 100;
     if (!p) return;
 
+    if (VOTO_FINAL) {
+      // Diario: se apunta la tapa (con una nota personal opcional). El voto de verdad es el final.
+      const nota = Number(valores.gusto);
+      localStorage.setItem("tapa_voto_" + id, JSON.stringify({ valores: { gusto: nota }, media: nota, fecha: new Date().toISOString(), diario: true }));
+      trasVotar(p);
+      return;
+    }
+
     if (SB) {
       if (!codigo) { mostrarEstadoTicket(sbMensajeVoto({ error: "codigo_no_valido" })); return; }
       const boton = $("#btn-votar");
@@ -2235,6 +2297,15 @@ function cargarDatosRuta() {
     $("#voto-form").hidden = true; $("#voto-ticket").hidden = true; $("#voto-ok").hidden = false;
     const n = PARADAS.filter((q) => yaVotado(q.id)).length;
     $("#vo-mini").src = p.mini;
+    if (VOTO_FINAL) {
+      const faltan = Math.max(0, MIN_FINAL - n);
+      $("#vo-titulo").textContent = recien ? "¡Tapa apuntada!" : "Ya la tienes en tu diario";
+      $("#vo-sub").innerHTML = "<b>" + p.nombre + "</b> está en tu diario · " + n + " de " + PARADAS.length + "<br>"
+        + (votoFinal() ? "Tu voto final ya está dado." : faltan > 0 ? "Te faltan <b>" + faltan + "</b> para poder dar tu voto final." : "¡Ya puedes dar tu <b>voto final</b> desde tu Tapaporte!");
+      $("#voto-ok").classList.toggle("recien", !!recien);
+      $("#pz-ranking").innerHTML = "";
+      return;
+    }
     $("#vo-titulo").textContent = recien ? "¡Sello conseguido!" : "Ya votaste esta tapa";
     const sig = HITOS.find((h) => n < h.n);
     $("#vo-sub").innerHTML = "<b>" + p.nombre + "</b> ya está en tu Tapaporte · " + n + " de " + PARADAS.length
@@ -2279,7 +2350,28 @@ function cargarDatosRuta() {
     }));
   }
 
+  function rankingFinalSimulado() {
+    const vf = votoFinal();
+    return PARADAS.map((q) => ({ id: q.id, nombre: q.nombre, votos: 20 + (hashStr(q.id + "final") % 70) + (vf && vf.est === q.id ? 1 : 0) })).sort((a, b) => b.votos - a.votos);
+  }
+  function pintarRankingFinal(destino) {
+    let lista = rankingFinalSimulado(); const max = lista[0].votos;
+    if (RANKING === "parcial") lista = lista.slice(0, 3);
+    destino.innerHTML = '<div class="tapa360-ranking"><h4>Clasificación en directo</h4><div class="tr-cuerpo">' + lista.map((r, i) => {
+      const est = PARADAS.find((x) => x.id === r.id), pct = Math.max(4, r.votos / max * 100);
+      return '<div class="ranking-fila"><span class="ranking-pos">' + (i + 1) + "</span>" + (est ? '<img class="ranking-thumb" src="' + est.mini + '" alt="">' : "")
+        + '<div class="ranking-info"><div class="ranking-cab"><span class="ranking-nombre">' + r.nombre + '</span><span class="ranking-media">' + r.votos + ' votos</span></div>'
+        + '<div class="ranking-barra-fondo"><div class="ranking-barra" data-w="' + pct + '" style="width:0"></div></div></div></div>';
+    }).join("") + '</div><p class="ranking-nota">' + (RANKING === "parcial" ? "Solo se muestra el podio; el resto se conocerá en la entrega de premios. " : "") + 'Demo: votos de ejemplo + el tuyo</p></div>';
+    animarBarras(destino);
+  }
   function pintarRankingEn(destino, p) {
+    if (RANKING === "oculto") {
+      destino.innerHTML = '<div class="tapa360-ranking"><h4>Clasificación</h4><p class="ranking-nota" style="font-size:.9rem;line-height:1.4">La clasificación se publicará al cerrar la ruta, en la entrega de premios.'
+        + ((p && yaVotado(p.id)) || VOTO_FINAL ? " ¡Tu participación ya cuenta!" : "") + "</p></div>";
+      return;
+    }
+    if (VOTO_FINAL) { pintarRankingFinal(destino); return; }
     if (SB) {
       destino.innerHTML = '<div class="tapa360-ranking"><h4>Clasificación en directo</h4><div class="tr-cuerpo"><p class="ranking-vacio">Cargando…</p></div></div>';
       const cuerpo = destino.querySelector(".tr-cuerpo");
@@ -2288,6 +2380,7 @@ function cargarDatosRuta() {
         const ranking = datos.filter((r) => PARADAS.some((q) => q.id === r.est_id))
           .map((r) => ({ id: r.est_id, nombre: r.nombre, media: Number(r.media), votos: Number(r.votos) }))
           .sort((a, b) => b.media - a.media);
+        if (RANKING === "parcial") ranking.length = Math.min(ranking.length, 3);
         cuerpo.innerHTML = ranking.length ? ranking.map((r, i) => pintarFilaRanking(r, i, p && r.id === p.id)).join("")
           : '<p class="ranking-vacio">Todavía no hay votos suficientes para mostrar la clasificación.</p>';
         animarBarras(cuerpo);
@@ -2295,15 +2388,16 @@ function cargarDatosRuta() {
       return;
     }
     if (DEMO_TOTAL || SOBRE_DEMO || !CFG.urlVotos) {
-      const ahora = rankingSimulado();
+      let ahora = rankingSimulado();
       let movimiento = "";
-      if (p && votoDe(p.id)) {
+      if (p && votoDe(p.id) && RANKING !== "parcial") {
         const antes = rankingSimulado(p.id).findIndex((r) => r.id === p.id);
         const despues = ahora.findIndex((r) => r.id === p.id);
         const dif = antes - despues;
         movimiento = '<p class="ranking-mov">Con tu voto, <b>' + p.nombre + "</b> está en el puesto <b>" + (despues + 1) + "º</b>"
           + (dif > 0 ? ' <span class="sube">▲ sube ' + dif + "</span>" : dif < 0 ? ' <span class="baja">▼ baja ' + (-dif) + "</span>" : "") + "</p>";
       }
+      if (RANKING === "parcial") ahora = ahora.slice(0, 3);
       destino.innerHTML = '<div class="tapa360-ranking"><h4>Clasificación en directo</h4>' + movimiento
         + '<div class="tr-cuerpo">' + ahora.map((r, i) => pintarFilaRanking(r, i, p && r.id === p.id)).join("") + "</div>"
         + '<p class="ranking-nota">Demo: votos de ejemplo + los tuyos</p></div>';
@@ -2685,17 +2779,26 @@ function cargarDatosRuta() {
         + "<small>" + q.tapaNombre + "</small>"
         + "</button>";
     }).join("");
+    let finalHtml = "";
+    if (VOTO_FINAL) {
+      const vf = votoFinal();
+      if (vf) { const e = PARADAS.find((q) => q.id === vf.est); finalHtml = '<div class="tp-final"><b>Tu voto final</b><br>' + (e ? e.nombre + " — " + e.tapaNombre : "") + "</div>"; }
+      else if (n >= MIN_FINAL) finalHtml = '<div class="tp-final"><b>¡Ya puedes votar!</b><br>Elige tu tapa favorita de las que has probado. Solo hay un voto.<button class="btn btn-oro" id="tp-votar-final" type="button">Dar mi voto final</button></div>';
+      else finalHtml = '<div class="tp-final"><b>Voto final</b><br>Apunta al menos ' + MIN_FINAL + " tapas para poder votar. Te faltan <b>" + (MIN_FINAL - n) + "</b>.</div>";
+    }
     $("#tp-cuerpo").innerHTML =
       '<div class="tp-titular">'
       + '<p class="tp-quien">' + (u ? "Tapaporte de <b>" + u.nombre + "</b>" : "Te registras al votar tu primera tapa") + "</p>"
       + '<p class="tp-cuenta"><b>' + n + "</b> de " + total + " tapas</p>"
       + '<div class="tp-barra"><i class="tp-relleno" style="width:' + (n / total * 100) + '%"></i>' + marcas + "</div>"
       + "</div>"
+      + finalHtml
       + '<div class="tp-hitos">' + hitosHtml + "</div>"
       + '<div class="tp-rejilla">' + rejilla + "</div>";
     ultimoSello = "";
   }
   $("#tp-cuerpo").addEventListener("click", (ev) => {
+    if (ev.target.closest("#tp-votar-final")) { abrirVotoFinal(); return; }
     const dip = ev.target.closest("[data-diploma]");
     if (dip) { abrirDiploma(dip.dataset.diploma, false); return; }
     const t = ev.target.closest(".tp-tapa");
@@ -2738,6 +2841,43 @@ function cargarDatosRuta() {
     if (!SOBRE_DEMO) setTimeout(intentarVotar, 350);
   };
 
+  /* ---------- VOTO FINAL (modo diario) ---------- */
+  let vfConfirmar = false;
+  function abrirVotoFinal() {
+    const hechas = PARADAS.filter((q) => yaVotado(q.id));
+    $("#vf-lista").innerHTML = hechas.map((q, i) => '<label class="vf-item"><input type="radio" name="vf" value="' + q.id + '"' + (i === 0 ? " checked" : "") + '><img src="' + q.mini + '" alt=""><span><b>' + q.nombre + "</b><small>" + q.tapaNombre + "</small></span></label>").join("");
+    vfConfirmar = false; $("#vf-enviar").textContent = "Votar esta tapa";
+    $("#vfinal").classList.add("on");
+  }
+  $("#vf-cerrar").onclick = () => $("#vfinal").classList.remove("on");
+  $("#vf-enviar").onclick = () => {
+    const sel = document.querySelector('input[name="vf"]:checked'); if (!sel) return;
+    if (!vfConfirmar) { vfConfirmar = true; $("#vf-enviar").textContent = "¿Seguro? Pulsa otra vez para confirmar"; return; }
+    localStorage.setItem("tapa_voto_final", JSON.stringify({ est: sel.value, fecha: new Date().toISOString() }));
+    $("#vfinal").classList.remove("on");
+    pintarTapaporte();
+    pintarRankingEn($("#cl-cuerpo"), null); $("#clasif").classList.add("on");
+  };
+
+  /* ---------- DEMO: selector de modos de votación ---------- */
+  $("#btn-modos").onclick = () => {
+    document.querySelector('input[name="vm"][value="' + (VOTO_FINAL ? "final" : "momento") + '"]').checked = true;
+    document.querySelector('input[name="rk"][value="' + RANKING + '"]').checked = true;
+    $("#md-min").value = String(MIN_FINAL >= PARADAS.length ? 22 : MIN_FINAL);
+    $("#modos").classList.add("on");
+  };
+  $("#md-cerrar").onclick = () => $("#modos").classList.remove("on");
+  $("#md-aplicar").onclick = () => {
+    const q = new URLSearchParams(location.search);
+    q.set("voto", document.querySelector('input[name="vm"]:checked').value);
+    q.set("ranking", document.querySelector('input[name="rk"]:checked').value);
+    q.set("min", $("#md-min").value);
+    q.delete("est"); q.delete("v");
+    // Se limpian los votos de la demo para no mezclar los dos modos.
+    Object.keys(localStorage).filter((k) => k.startsWith("tapa_voto_") || ["tapa_diplomas", "tapa_registro_diplomas"].includes(k)).forEach((k) => localStorage.removeItem(k));
+    location.search = q.toString();
+  };
+
   /* ---------- entrada por QR: ?est=id salta directo a la ficha ---------- */
   function entradaPorQR() {
     const params = new URLSearchParams(location.search);
@@ -2762,12 +2902,23 @@ function cargarDatosRuta() {
     Object.keys(localStorage)
       .filter((k) => k.startsWith("tapa_voto_") || ["tapa_sorteo_enviado", "tapa_usuario", "tapa_diplomas", "tapa_registro_diplomas"].includes(k))
       .forEach((k) => localStorage.removeItem(k));
-    location.href = location.pathname + (SOBRE_DEMO ? "?modo=sobre" : ""); // recarga limpia, sin un ?est=/&v= que quedara en la URL
+    const conservar = new URLSearchParams();
+    ["modo", "voto", "ranking", "min"].forEach((k) => { if (QS.get(k)) conservar.set(k, QS.get(k)); });
+    location.href = location.pathname + (conservar.toString() ? "?" + conservar.toString() : ""); // recarga limpia, sin un ?est=/&v= que quedara en la URL
   }
   const btnReiniciar = $("#btn-reiniciar-demo");
   if (btnReiniciar) btnReiniciar.onclick = reiniciarDemo;
 
   pintarTextos();
+  if (!(DEMO_TOTAL || SOBRE_DEMO)) $("#btn-modos").hidden = true;
+  if (VOTO_FINAL) {
+    $("#pz-menu-votar span").textContent = "Apuntar";
+    $("#bloque-voto h3").textContent = "Apunta esta tapa en tu diario";
+    $("#voto-demo").textContent = "Marca que te la has comido. Si quieres, ponle tu nota personal: solo la ves tú.";
+    document.querySelectorAll('.voto-criterio[data-c="presentacion"], .voto-criterio[data-c="servicio"]').forEach((el) => { el.style.display = "none"; });
+    const g = document.querySelector('.voto-criterio[data-c="gusto"] .cab b'); if (g) g.textContent = "Tu nota personal";
+    $("#btn-votar").textContent = "Apuntar en mi diario";
+  }
   if (SOBRE_DEMO) {
     $("#voto-demo").hidden = true;
     $("#aviso-demo").firstChild.textContent = "DEMO — flujo real: QR de la mesa + tarjeta del camarero ";
