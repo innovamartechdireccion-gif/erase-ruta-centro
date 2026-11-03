@@ -3006,7 +3006,7 @@ function cargarDatosRuta() {
     $("#aviso-demo").firstChild.textContent = "DEMO — modo real: se vota con el ticket QR ";
     if (SB) {
       // Servidor profesional: sin móvil/SMS (el derecho a votar lo da el código único del posavasos).
-      if (SB.produccion) $("#aviso-demo").hidden = true;
+      if (SB.produccion || SB_LIBRE) $("#aviso-demo").hidden = true;
       else $("#aviso-demo").firstChild.textContent = SB_LIBRE ? "PRUEBA ABIERTA — vota la tapa de cada bar, sin escanear nada " : "PRUEBA — servidor real: se vota con el ticket QR ";
       const lm = $("#rg-movil"); if (lm && lm.closest("label")) lm.closest("label").style.display = "none";
       $("#rg-enviar").textContent = "Registrarme y votar";
