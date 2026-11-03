@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel del servidor · Ruta de la Tapa</title>
+<style>
+:root{--azul:#012941;--oro:#C8912C;--fondo:#F4F1EA;--ok:#1F7A3D;--mal:#B3261E}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,sans-serif;background:var(--fondo);color:#1a1a1a}
+header{background:var(--azul);color:#fff;padding:14px 16px}header h1{margin:0;font-size:18px}header small{color:#E7C98A}
+main{max-width:860px;margin:0 auto;padding:12px 16px 60px}
+section{background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px;margin:12px 0}
+h2{margin:0 0 8px;font-size:16px;color:var(--azul)}
+label{display:block;font-size:13px;margin:8px 0 2px;color:#444}
+input,select,textarea{width:100%;padding:9px;border:1px solid #bbb;border-radius:6px;font:inherit}
+button{background:var(--azul);color:#fff;border:0;border-radius:6px;padding:10px 14px;font:inherit;cursor:pointer;margin-top:8px}
+button.sec{background:#fff;color:var(--azul);border:1px solid var(--azul)}
+button:disabled{opacity:.5}
+.fila{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.fila{grid-template-columns:1fr}}
+pre{background:#101820;color:#d8e6f0;padding:10px;border-radius:6px;overflow:auto;white-space:pre-wrap;font-size:13px;max-height:260px}
+.ok{color:var(--ok)}.mal{color:var(--mal)}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px solid #eee;padding:4px 6px;text-align:left}
+.aviso{background:#FFF6DD;border:1px solid #E7C98A;border-radius:6px;padding:8px;font-size:13px}
+</style></head><body>
+<header><h1>Panel del servidor <small>· Ruta de la Tapa</small></h1></header>
+<main>
+<section>
+  <h2>Acceso</h2>
+  <div class="fila">
+    <div><label>PIN de administrador</label><input id="pin" type="password" autocomplete="off"></div>
+    <div><label>Ruta</label><input id="ruta" value="lalinea-xi"></div>
+  </div>
+  <p class="aviso">El PIN solo se guarda mientras esta página está abierta. Tras 5 fallos seguidos se bloquea 15 minutos.</p>
+</section>
+
+<section>
+  <h2>1 · Estado de la ruta</h2>
+  <button id="b-resumen">Ver resumen</button>
+  <pre id="o-resumen" hidden></pre>
+</section>
+
+<section>
+  <h2>2 · Dar de alta la ruta y sus bares</h2>
+  <p>Crea la ruta (con su ventana de votación) y carga los <b id="n-bares"></b> establecimientos.</p>
+  <div class="fila">
+    <div><label>Votación desde</label><input id="desde" value="2026-11-04 12:00+01"></div>
+    <div><label>Votación hasta</label><input id="hasta" value="2026-11-09 00:00+01"></div>
+  </div>
+  <button id="b-alta">Crear ruta y cargar bares</button>
+  <button class="sec" id="b-ventana">Solo cambiar la ventana</button>
+  <pre id="o-alta" hidden></pre>
+</section>
+
+<section>
+  <h2>3 · PIN de cada bar (para entregar premios)</h2>
+  <p>Genera un PIN de 6 caracteres por bar. Se muestran <b>una sola vez</b>: descarga la lista y entrégala a ALAHO.</p>
+  <button id="b-pins">Generar PIN de todos los bares</button>
+  <pre id="o-pins" hidden></pre>
+</section>
+
+<section>
+  <h2>4 · Códigos para imprimir en los posavasos</h2>
+  <div class="fila">
+    <div><label>Códigos por bar</label><input id="n-cod" type="number" value="150" min="1" max="2000"></div>
+    <div><label>Dirección de la app</label><input id="base" value="https://lalinea.xn--rase-9oa.es/tapa/"></div>
+  </div>
+  <button id="b-cod">Generar y descargar CSV para la imprenta</button>
+  <p class="aviso">Cada vez que pulsas se generan códigos <b>nuevos</b> y se suman a los anteriores. Entrega el CSV solo a la imprenta.</p>
+  <pre id="o-cod" hidden></pre>
+</section>
+
+<section>
+  <h2>5 · Investigar o reactivar un código</h2>
+  <label>Código (16 caracteres) o el enlace completo del QR</label><input id="cod">
+  <button class="sec" id="b-estado">Ver estado</button>
+  <button id="b-react">Reactivar (borra su voto)</button>
+  <pre id="o-cod2" hidden></pre>
+</section>
+</main>
+<script>
+const SB={url:"https://jcjvrjprvkjrtczdgatk.supabase.co",key:"sb_publishable_zq3mJViuquFeHiBiZScRPA_Fvw7mF0G"}, BARES=[{"id":"la-revola","nombre":"La Revolá","tapa":"Cordero de las Mil y Una Noches","lat":36.161544,"lng":-5.350765},{"id":"la-pikara","nombre":"La Píkara","tapa":"El Secreto de la Tierra","lat":36.162679,"lng":-5.349038},{"id":"la-nueva","nombre":"La Nueva","tapa":"La Gamba Viajera","lat":36.16237,"lng":-5.351051},{"id":"la-chimenea","nombre":"La Chimenea","tapa":"Delicia de Rabo de Toro","lat":36.163086,"lng":-5.353639},{"id":"estoico","nombre":"Estoico","tapa":"La 11300 (Española y Gaditana)","lat":36.161478,"lng":-5.349254},{"id":"rincon-de-juan","nombre":"El Rincón de Juan","tapa":"Muhammara Bao","lat":36.161796,"lng":-5.351843},{"id":"meson-de-lolo","nombre":"El Mesón de Lolo","tapa":"Gamba Felicia","lat":36.161852,"lng":-5.352591},{"id":"el-cuchareo","nombre":"El Cuchareo de Ignacio","tapa":"Toro y Trufa","lat":36.16246,"lng":-5.353166},{"id":"dama-juana","nombre":"Dama Juana","tapa":"Croquetón de Langostinos a la Donostiarra","lat":36.163786,"lng":-5.343744},{"id":"chaboo","nombre":"Chaboo","tapa":"Rulada de Cerdo con Velouté de Coliflor y Queso","lat":36.161139,"lng":-5.349417},{"id":"carboneros-27","nombre":"Carboneros 27","tapa":"El Donut Canalla del 27","lat":36.161415,"lng":-5.351296},{"id":"bodebar","nombre":"Bodebar","tapa":"Saam de Panceta a Baja Temperatura y Mejillones","lat":36.161663,"lng":-5.350553},{"id":"bitacora","nombre":"Bitácora","tapa":"Solomillo a la Pimienta con Patatas","lat":36.159187,"lng":-5.354461},{"id":"bar-carlos","nombre":"Bar Carlos","tapa":"Dulce Engaño de Costilla","lat":36.162539,"lng":-5.350015},{"id":"barbas","nombre":"Barbas","tapa":"Kefta que Quiere ser un Sam","lat":36.161274,"lng":-5.350906},{"id":"ardente","nombre":"Ardente","tapa":"Cannellone Otoñal","lat":36.162077,"lng":-5.347595},{"id":"alma","nombre":"Alma","tapa":"Alma Mía","lat":36.161733,"lng":-5.350635},{"id":"west","nombre":"West","tapa":"El Murmullo de Poniente","lat":36.157316,"lng":-5.353144},{"id":"sintesis","nombre":"Síntesis","tapa":"Roca del Estrecho","lat":36.160443,"lng":-5.347853},{"id":"pino","nombre":"Pino","tapa":"El Pinito","lat":36.164102,"lng":-5.355167},{"id":"mebe-space","nombre":"Mebe Space","tapa":"Pulpo Violeta","lat":36.161473,"lng":-5.346025},{"id":"la-taberna","nombre":"La Taberna","tapa":"Sexy Bomb!","lat":36.16162,"lng":-5.349927}];
+const $=s=>document.querySelector(s); $("#n-bares").textContent=BARES.length;
+async function rpc(n,b){
+  try{const r=await fetch(SB.url+"/rest/v1/rpc/"+n,{method:"POST",headers:{apikey:SB.key,"Content-Type":"application/json",Authorization:"Bearer "+SB.key},body:JSON.stringify(b)});
+    return r.ok?await r.json():{ok:false,error:"http_"+r.status};}catch(e){return{ok:false,error:"sin_conexion"}}}
+const A=()=>({p_admin_pin:$("#pin").value}), RUTA=()=>$("#ruta").value.trim();
+function sal(id,t){const e=$(id);e.hidden=false;e.textContent=typeof t==="string"?t:JSON.stringify(t,null,2)}
+function bajar(nombre,texto){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+texto],{type:"text/csv;charset=utf-8"}));a.download=nombre;a.click()}
+function err(r){return r&&r.error==="pin_incorrecto"?"PIN de administrador incorrecto":r&&r.error==="pin_bloqueado"?"PIN bloqueado unos minutos por demasiados fallos":"Error: "+(r&&r.error||"desconocido")}
+$("#b-resumen").onclick=async()=>{const r=await rpc("admin_resumen",{...A(),p_ruta:RUTA()});sal("#o-resumen",r.ok?`Personas registradas: ${r.usuarios}\nVotos válidos: ${r.votos}\nDiplomas emitidos: ${r.diplomas}\nPremios entregados: ${r.canjeados}\nCódigos sin usar: ${r.codigos_sin_usar}`:err(r))};
+$("#b-ventana").onclick=async()=>{const r=await rpc("admin_fijar_ventana",{...A(),p_ruta:RUTA(),p_desde:$("#desde").value,p_hasta:$("#hasta").value});sal("#o-alta",r.ok?"Ventana actualizada.":err(r))};
+$("#b-alta").onclick=async()=>{
+  const b=$("#b-alta");b.disabled=true;let t="";
+  const r=await rpc("admin_crear_ruta",{...A(),p_id:RUTA(),p_municipio:"La Línea de la Concepción",p_nombre:"XI Ruta de la Tapa de La Línea",p_desde:$("#desde").value,p_hasta:$("#hasta").value});
+  if(!r.ok){sal("#o-alta",err(r));b.disabled=false;return}
+  t+="Ruta creada.\n";let n=0;
+  for(const x of BARES){const q=await rpc("admin_alta_bar",{...A(),p_id:x.id,p_ruta:RUTA(),p_nombre:x.nombre,p_tapa:x.tapa,p_lat:x.lat,p_lng:x.lng});if(q.ok)n++;else t+=`✕ ${x.nombre}: ${err(q)}\n`}
+  sal("#o-alta",t+`Bares cargados: ${n} de ${BARES.length}.`);b.disabled=false};
+const ALF="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function pinAleatorio(){const a=new Uint32Array(6);crypto.getRandomValues(a);return[...a].map(v=>ALF[v%ALF.length]).join("")}
+$("#b-pins").onclick=async()=>{
+  if(!confirm("Se sustituirá el PIN actual de todos los bares. ¿Continuar?"))return;
+  const b=$("#b-pins");b.disabled=true;const filas=["bar_id;bar;pin"];let t="";
+  for(const x of BARES){const pin=pinAleatorio();const r=await rpc("admin_fijar_pin_bar",{...A(),p_est:x.id,p_pin:pin});
+    if(r.ok){filas.push(`${x.id};${x.nombre};${pin}`);t+=`${x.nombre.padEnd(22)} ${pin}\n`}else{t+=`✕ ${x.nombre}: ${err(r)}\n`}}
+  sal("#o-pins",t);if(filas.length>1)bajar("pin-bares.csv",filas.join("\n"));b.disabled=false};
+$("#b-cod").onclick=async()=>{
+  const n=Math.min(2000,Math.max(1,+$("#n-cod").value||1));const b=$("#b-cod");b.disabled=true;
+  const base=$("#base").value.replace(/\/?$/,"/"),filas=["bar_id;bar;codigo;enlace"];let t="";
+  for(const x of BARES){const r=await rpc("admin_generar_codigos",{...A(),p_est:x.id,p_n:n});
+    if(r.ok){r.codigos.forEach(c=>filas.push(`${x.id};${x.nombre};${c};${base}?modo=real&est=${x.id}&v=${c}`));t+=`✓ ${x.nombre}: ${r.codigos.length}\n`}else{t+=`✕ ${x.nombre}: ${err(r)}\n`;if(r.error&&r.error.startsWith("pin"))break}}
+  sal("#o-cod",t+`Total filas: ${filas.length-1}`);if(filas.length>1)bajar("codigos-posavasos.csv",filas.join("\n"));b.disabled=false};
+const codigoDe=()=>{const v=$("#cod").value.trim();const m=v.match(/[?&]v=([0-9a-f]+)/i);return(m?m[1]:v).toLowerCase()};
+$("#b-estado").onclick=async()=>{const r=await rpc("admin_estado_codigo",{...A(),p_codigo:codigoDe()});sal("#o-cod2",r.ok?`Bar: ${r.bar}\nUsado: ${r.usado?"sí":"no"}${r.usado?`\nCuándo: ${r.usado_en}\nPor: ${r.por||"—"}`:""}`:r.error==="no_existe"?"Ese código no existe.":err(r))};
+$("#b-react").onclick=async()=>{if(!confirm("Se borrará el voto asociado y el código volverá a valer. ¿Seguro?"))return;
+  const r=await rpc("admin_reactivar_codigo",{...A(),p_codigo:codigoDe()});sal("#o-cod2",r.ok?`Código reactivado. Votos borrados: ${r.votos_borrados}`:r.error==="no_existe"?"Ese código no existe.":err(r))};
+</script></body></html>
