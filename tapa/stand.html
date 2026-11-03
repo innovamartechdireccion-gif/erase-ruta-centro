@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Stand ALAHO · Entrega de premios</title>
+<style>
+:root{--azul:#012941;--oro:#C8912C;--fondo:#F4F1EA;--ok:#1F7A3D;--mal:#B3261E}
+*{box-sizing:border-box}body{margin:0;font:17px/1.45 system-ui,sans-serif;background:var(--fondo);color:#1a1a1a}
+header{background:var(--azul);color:#fff;padding:14px 16px}header h1{margin:0;font-size:18px}header small{color:#E7C98A}
+main{max-width:520px;margin:0 auto;padding:12px 16px 60px}
+section{background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px;margin:12px 0}
+label{display:block;font-size:14px;margin:8px 0 3px;color:#444}
+input{width:100%;padding:12px;border:1px solid #bbb;border-radius:6px;font:inherit}
+#codigo{font-size:24px;letter-spacing:2px;text-transform:uppercase;text-align:center}
+button{background:var(--azul);color:#fff;border:0;border-radius:6px;padding:12px 16px;font:inherit;width:100%;margin-top:10px}
+button.oro{background:var(--oro);color:#1a1a1a;font-weight:700}
+button:disabled{opacity:.5}
+.res{border-radius:10px;padding:14px;margin-top:12px}.res b{font-size:20px;display:block;margin-bottom:6px}
+.res.ok{background:#E6F4EA;border:2px solid var(--ok)}.res.mal{background:#FCE8E6;border:2px solid var(--mal)}
+.nom{font-size:22px;font-weight:700}.aviso{background:#FFF6DD;border:1px solid #E7C98A;border-radius:6px;padding:8px;font-size:14px}
+</style></head><body>
+<header><h1>Entrega de premios <small>· Ruta de la Tapa · stand</small></h1></header>
+<main>
+<section id="s-clave">
+  <label for="clave">Clave del stand</label>
+  <input id="clave" type="password" autocomplete="off">
+</section>
+<section>
+  <label for="codigo">Código del diploma (ej. B-1234-ABCD)</label>
+  <input id="codigo" autocomplete="off" autocapitalize="characters" placeholder="B-XXXX-XXXX">
+  <button id="comprobar">Comprobar diploma</button>
+  <div id="out"></div>
+</section>
+<p class="aviso">Antes de entregar el premio, comprueba que el nombre del diploma coincide con el DNI de la persona. Cada diploma solo se puede canjear una vez.</p>
+</main>
+<script>
+const URL_="https://jcjvrjprvkjrtczdgatk.supabase.co", KEY="sb_publishable_zq3mJViuquFeHiBiZScRPA_Fvw7mF0G";
+const $=i=>document.getElementById(i);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const NIVEL={bronce:"Bronce",plata:"Plata",oro:"Oro"};
+async function rpc(n,a){
+  const r=await fetch(URL_+"/rest/v1/rpc/"+n,{method:"POST",headers:{apikey:KEY,Authorization:"Bearer "+KEY,"Content-Type":"application/json"},body:JSON.stringify(a)});
+  if(!r.ok) throw new Error("servidor"); return r.json();
+}
+function norm(t){ let s=(t||"").toUpperCase().replace(/[^A-Z0-9]/g,""); if(s[0]==="0") s="O"+s.slice(1);
+  return s.length===9&&"BPO".includes(s[0])?s[0]+"-"+s.slice(1,5)+"-"+s.slice(5):""; }
+function mal(t,d){ $("out").innerHTML='<div class="res mal"><b>'+t+'</b><p>'+d+'</p></div>'; }
+async function comprobar(){
+  const clave=$("clave").value, cod=norm($("codigo").value);
+  if(!clave){ mal("Falta la clave","Escribe la clave del stand."); return; }
+  if(!cod){ mal("Código no válido","Debe tener el formato B-XXXX-XXXX (la primera letra es B, P u O)."); return; }
+  $("out").innerHTML="<p>Comprobando…</p>";
+  try{
+    const r=await rpc("stand_consultar_diploma",{p_clave:clave,p_codigo:cod});
+    if(!r.ok){ if(r.error==="clave_incorrecta") mal("Clave incorrecta","Revisa la clave del stand."); else if(r.error==="clave_bloqueada") mal("Demasiados intentos","Espera 15 minutos."); else mal("No consta en el registro","El código no se ha emitido: puede ser una copia o una falsificación. No vale."); return; }
+    const datos='<p class="nom">'+esc(r.nombre)+'</p><p>Trofeo de '+esc(NIVEL[r.nivel]||r.nivel)+'</p>';
+    if(r.canjeado){ mal("Premio ya entregado",esc(r.nombre)+" — entregado el "+new Date(r.canjeado_en).toLocaleString("es-ES")+". No se puede entregar otra vez."); return; }
+    $("out").innerHTML='<div class="res ok"><b>✓ Diploma válido</b>'+datos+'<button class="oro" id="entregar">Marcar premio como entregado</button></div>';
+    $("entregar").onclick=async()=>{
+      $("entregar").disabled=true;
+      try{ const c=await rpc("stand_canjear_diploma",{p_clave:clave,p_codigo:cod});
+        if(c.ok){ $("out").innerHTML='<div class="res ok"><b>✓ Premio entregado</b>'+datos+'<p>Queda registrado. Si vuelven a presentar este código, saldrá como ya canjeado.</p></div>'; $("codigo").value=""; }
+        else if(c.error==="ya_canjeado") mal("Ya estaba entregado","Otra persona del stand lo marcó hace un momento.");
+        else mal("No se ha podido marcar","Inténtalo de nuevo.");
+      }catch(e){ $("entregar").disabled=false; mal("Sin conexión","Revisa internet e inténtalo de nuevo."); }
+    };
+  }catch(e){ mal("Sin conexión","Revisa internet e inténtalo de nuevo."); }
+}
+$("comprobar").onclick=comprobar; $("codigo").onkeydown=e=>{ if(e.key==="Enter") comprobar(); };
+</script></body></html>
