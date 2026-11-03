@@ -777,6 +777,8 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 .hoja.plegada .hoja-cab h3::after{content:' ▴'}
 .hoja-asa{width:40px;height:4px;border-radius:99px;background:#D8CEB7;margin:10px auto}
 .hoja h3{font-size:.92rem;padding:0 16px;color:var(--navy)}
+.gps-pill{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:8px;padding:11px 14px;border:none;border-radius:99px;background:#fff;color:var(--navy);font:700 .9rem Poppins,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.3);cursor:pointer}
+.gps-pill.buscando svg{animation:gpsgiro 1s linear infinite}
 .gps-btn{width:44px;height:44px;border-radius:50%;border:2px solid rgba(0,0,0,.25);background:#fff;color:var(--navy);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;margin-bottom:10px!important;padding:0}
 .gps-btn.buscando svg{animation:gpsgiro 1s linear infinite}@keyframes gpsgiro{to{transform:rotate(360deg)}}
 #cerca-card{position:fixed;left:12px;right:12px;bottom:84px;z-index:1200;max-width:460px;margin:0 auto;background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 6px 24px rgba(0,0,0,.3);font-size:14px;line-height:1.4;color:#1a1a1a}
@@ -1067,6 +1069,7 @@ img.ranking-thumb{flex:none;width:36px;height:36px;border-radius:50%;object-fit:
   <button class="b-tapaporte-flot" id="b-tapaporte-mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/></svg>Mi Tapaporte</button>
   <div class="filtro-estab">
     <select id="filtro-estab" aria-label="Ver un establecimiento en el mapa"></select>
+    <button type="button" id="btn-gps" class="gps-pill"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg><span>Situarme y ver el bar más cercano</span></button>
   </div>
 </div>
 
@@ -1786,19 +1789,6 @@ function cargarDatosRuta() {
       maxZoom: 19, attribution: "© OpenStreetMap"
     }).addTo(mapa);
     L.control.zoom({ position: "bottomright" }).addTo(mapa);
-    // Botón "Dónde estoy": sitúa al usuario en el mapa y dice cuál es el bar más cercano.
-    const CtlGps = L.Control.extend({
-      options: { position: "bottomright" },
-      onAdd() {
-        const b = L.DomUtil.create("button", "gps-btn");
-        b.type = "button"; b.id = "btn-gps"; b.title = "Dónde estoy y bar más cercano"; b.setAttribute("aria-label", "Dónde estoy y bar más cercano");
-        b.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg>';
-        L.DomEvent.disableClickPropagation(b);
-        b.onclick = localizarme;
-        return b;
-      }
-    });
-    new CtlGps().addTo(mapa);
 
     // Cuando dos establecimientos están a pocos metros (habitual en una
     // ruta de tapas, los bares suelen estar pegados), Leaflet apila sus
@@ -1853,6 +1843,8 @@ function cargarDatosRuta() {
   }
 
   { const c = document.querySelector(".portada-cartel"), f = document.getElementById("cartel-fondo"); if (c && f) f.src = c.src; }
+
+  { const g = document.getElementById("btn-gps"); if (g) g.onclick = localizarme; }
 
   /* ---------- Contador de personas participando (se refresca cada 30 s) ---------- */
   function iniciarContadorGente() {
