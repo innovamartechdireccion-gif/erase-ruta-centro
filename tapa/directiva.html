@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel de la directiva · Ruta de la Tapa</title>
+<style>
+:root{--azul:#012941;--oro:#C8912C;--fondo:#F4F1EA;--mal:#B3261E}
+*{box-sizing:border-box}body{margin:0;font:16px/1.45 system-ui,sans-serif;background:var(--fondo);color:#1a1a1a}
+header{background:var(--azul);color:#fff;padding:14px 16px}header h1{margin:0;font-size:18px}header small{color:#E7C98A}
+main{max-width:760px;margin:0 auto;padding:12px 16px 60px}
+section{background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px;margin:12px 0}
+input{width:100%;padding:10px;border:1px solid #bbb;border-radius:6px;font:inherit}
+button{background:var(--azul);color:#fff;border:0;border-radius:6px;padding:10px 16px;font:inherit;margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.k{background:var(--azul);color:#fff;border-radius:10px;padding:12px 8px;text-align:center}
+.k b{display:block;font-size:30px;color:#E7C98A}.k span{font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px solid #eee;padding:6px;text-align:left}
+td.n,th.n{text-align:right}
+.barra{height:8px;background:#eee;border-radius:4px;overflow:hidden}.barra i{display:block;height:100%;background:var(--oro)}
+.mal{color:var(--mal)}small.g{color:#666}
+</style></head><body>
+<header><h1>Ruta de la Tapa <small>· Panel de la directiva</small></h1></header>
+<main>
+<section id="login">
+  <label for="clave">Clave de la directiva</label>
+  <input id="clave" type="password" autocomplete="off">
+  <button id="entrar">Entrar</button>
+  <p class="mal" id="err" hidden></p>
+</section>
+<div id="panel" hidden>
+  <section><div class="kpis">
+    <div class="k"><b id="k-part">–</b><span>personas participando</span></div>
+    <div class="k"><b id="k-votos">–</b><span>votos emitidos</span></div>
+    <div class="k"><b id="k-hora">–</b><span>votos última hora</span></div>
+  </div>
+  <p><small class="g">Registradas: <span id="k-reg">–</span> · Se actualiza solo cada 30 s · Última lectura: <span id="k-ahora">–</span></small></p></section>
+  <section><h3 style="margin:0 0 8px">Votos por establecimiento</h3>
+    <table><thead><tr><th>Bar</th><th class="n">Votos</th><th class="n">Nota media</th></tr></thead><tbody id="bares"></tbody></table></section>
+  <section><h3 style="margin:0 0 8px">Votos por día</h3><table><tbody id="dias"></tbody></table></section>
+  <p><small class="g">Los datos no incluyen nombres ni teléfonos de los participantes.</small></p>
+</div>
+</main>
+<script>
+const URL_="https://jcjvrjprvkjrtczdgatk.supabase.co", KEY="sb_publishable_zq3mJViuquFeHiBiZScRPA_Fvw7mF0G", RUTA="lalinea-xi";
+let clave="", timer=null;
+const $=i=>document.getElementById(i);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function leer(){
+  try{
+    const r=await fetch(URL_+"/rest/v1/rpc/panel_directiva",{method:"POST",headers:{apikey:KEY,Authorization:"Bearer "+KEY,"Content-Type":"application/json"},body:JSON.stringify({p_clave:clave,p_ruta:RUTA})});
+    const j=await r.json(); if(!r.ok) throw new Error("servidor");
+    if(!j.ok){ error(j.error==="clave_bloqueada"?"Demasiados intentos. Espera 15 minutos.":"Clave incorrecta."); return false; }
+    pintar(j); return true;
+  }catch(e){ error("No se pudo conectar. Reintentando…"); return false; }
+}
+function error(t){ $("err").textContent=t; $("err").hidden=false; }
+function pintar(j){
+  $("err").hidden=true; $("login").hidden=true; $("panel").hidden=false;
+  $("k-part").textContent=j.participantes; $("k-votos").textContent=j.votos; $("k-hora").textContent=j.ultima_hora; $("k-reg").textContent=j.registrados;
+  $("k-ahora").textContent=new Date(j.ahora).toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  const max=Math.max(1,...j.bares.map(b=>b.votos));
+  $("bares").innerHTML=j.bares.slice().sort((a,b)=>b.votos-a.votos).map(b=>`<tr><td>${esc(b.nombre)}<div class="barra"><i style="width:${100*b.votos/max}%"></i></div></td><td class="n">${b.votos}</td><td class="n">${b.media==null?"–":Number(b.media).toFixed(2)}</td></tr>`).join("");
+  $("dias").innerHTML=j.por_dia.length?j.por_dia.map(d=>`<tr><td>${esc(new Date(d.dia+"T12:00").toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"}))}</td><td class="n">${d.votos}</td></tr>`).join(""):"<tr><td>Aún no hay votos.</td></tr>";
+}
+async function entrar(){
+  clave=$("clave").value; if(!clave) return;
+  if(await leer()){ try{sessionStorage.setItem("tapa_dir",clave)}catch(e){} clearInterval(timer); timer=setInterval(leer,30000); }
+}
+$("entrar").onclick=entrar; $("clave").onkeydown=e=>{ if(e.key==="Enter") entrar(); };
+try{ const g=sessionStorage.getItem("tapa_dir"); if(g){ $("clave").value=g; entrar(); } }catch(e){}
+</script></body></html>
