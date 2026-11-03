@@ -1028,6 +1028,14 @@ img.ranking-thumb{flex:none;width:36px;height:36px;border-radius:50%;object-fit:
 .aviso-demo button:active{background:rgba(255,255,255,.32)}
 /* Mientras sea demo, la franja roja (≈34px) ocupa arriba: bajar lo que va fijo arriba. */
 .pastilla{top:calc(max(14px,env(safe-area-inset-top)) + 34px)}
+/* Versión real (sin aviso de demo): banner arriba del todo, Tapaporte debajo y los dos botones grandes abajo */
+body.sin-aviso .pastilla{top:max(10px,env(safe-area-inset-top))}
+body.sin-aviso .b-tapaporte-flot{top:calc(max(10px,env(safe-area-inset-top)) + 76px);bottom:auto}
+body.sin-aviso .filtro-estab{top:auto;bottom:max(16px,env(safe-area-inset-bottom))}
+body.sin-aviso .filtro-estab .gps-pill{margin-top:0;margin-bottom:8px;order:-1}
+body.sin-aviso .filtro-estab{display:flex;flex-direction:column}
+body.sin-aviso .leaflet-bottom.leaflet-right{margin-bottom:112px}
+body.sin-aviso #cerca-card{bottom:128px}
 .pz-cerrar{top:calc(max(14px,env(safe-area-inset-top)) + 34px)}
 #panel .pz-cartel{margin-top:34px}
 </style>
@@ -1825,7 +1833,7 @@ function cargarDatosRuta() {
       m.bindPopup(
         '<div class="mk-pop"><b>' + (i + 1) + ". " + p.nombre + "</b><span>" + p.tapaNombre + "</span>"
         + '<button type="button" data-id="' + p.id + '">Ver ficha ›</button></div>',
-        { closeButton: false, offset: [0, -10], autoPanPaddingTopLeft: [10, 130] }
+        { closeButton: false, offset: [0, -10], autoPanPaddingTopLeft: [10, 140], autoPanPaddingBottomRight: [10, 130] }
       );
       marcadores[p.id] = m;
     });
@@ -3017,7 +3025,7 @@ function cargarDatosRuta() {
     $("#aviso-demo").firstChild.textContent = "DEMO — modo real: se vota con el ticket QR ";
     if (SB) {
       // Servidor profesional: sin móvil/SMS (el derecho a votar lo da el código único del posavasos).
-      if (SB.produccion || SB_LIBRE) $("#aviso-demo").hidden = true;
+      if (SB.produccion || SB_LIBRE) { $("#aviso-demo").hidden = true; document.body.classList.add("sin-aviso"); }
       else $("#aviso-demo").firstChild.textContent = SB_LIBRE ? "PRUEBA ABIERTA — vota la tapa de cada bar, sin escanear nada " : "PRUEBA — servidor real: se vota con el ticket QR ";
       iniciarContadorGente();
       if (SB_LIBRE) { const ap = $("#aviso-prueba"); if (ap) ap.hidden = false; }
