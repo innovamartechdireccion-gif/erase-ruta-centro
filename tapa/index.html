@@ -1036,6 +1036,12 @@ body.sin-aviso .filtro-estab .gps-pill{margin-top:0;margin-bottom:8px;order:-1}
 body.sin-aviso .filtro-estab{display:flex;flex-direction:column}
 body.sin-aviso .leaflet-bottom.leaflet-right{margin-bottom:max(6px,env(safe-area-inset-bottom))}
 body.sin-aviso #cerca-card{bottom:128px}
+/* Menú de la ficha: abajo del todo, en dos filas de botones grandes */
+.pz-menu-cab{position:fixed;left:12px;right:12px;top:auto;bottom:max(14px,env(safe-area-inset-bottom));width:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px;z-index:55}
+.pz-menu-cab button{justify-content:center;gap:8px;font:700 15px/1 Poppins,sans-serif;padding:16px 8px;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.pz-menu-cab button svg{width:21px;height:21px}
+body.sin-aviso .pz-cerrar{top:max(14px,env(safe-area-inset-top))}
+body.sin-aviso #panel .pz-cartel{margin-top:0}
 .pz-cerrar{top:calc(max(14px,env(safe-area-inset-top)) + 34px)}
 #panel .pz-cartel{margin-top:34px}
 </style>
@@ -1086,18 +1092,19 @@ body.sin-aviso #cerca-card{bottom:128px}
 <!-- ======= PANEL DE PARADA ======= -->
 <div id="panel" class="fondo-cartel">
   <button class="pz-cerrar" id="pz-cerrar">✕</button>
+  <nav class="pz-menu-cab">
+      <button id="pz-menu-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg><span>Info +carta</span></button>
+      <button id="pz-menu-seguir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Seguir tapeando</span></button>
+      <button id="pz-menu-tapaporte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/></svg><span>Tapaporte</span></button>
+      <button id="pz-menu-votar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9.5 16.5 14 18.5 21 12 17 5.5 21 7.5 14 2 9.5 9 9"/></svg><span>Votar</span></button>
+    </nav>
 
   <!-- La ficha es SOLO el cartel completo del bar (página del PDF), sin
        cortes ni cabecera añadida. Los accesos rápidos van encima, en el
        hueco blanco que trae el propio cartel debajo de "de La Línea". -->
   <div class="pz-cartel">
     <div class="pz-hoja" id="pz-hoja"></div>
-    <nav class="pz-menu-cab">
-      <button id="pz-menu-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg><span>Info +carta</span></button>
-      <button id="pz-menu-seguir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Seguir tapeando</span></button>
-      <button id="pz-menu-tapaporte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/></svg><span>Tapaporte</span></button>
-      <button id="pz-menu-votar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9.5 16.5 14 18.5 21 12 17 5.5 21 7.5 14 2 9.5 9 9"/></svg><span>Votar</span></button>
-    </nav>
+
   </div>
 
   <div class="pz-alergenos" id="pz-alergenos" hidden></div>
