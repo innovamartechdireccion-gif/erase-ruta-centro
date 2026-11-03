@@ -1591,7 +1591,7 @@ function cargarDatosRuta() {
     try { localStorage.setItem("tapa_sb_ses", JSON.stringify(s)); } catch (e) {}
     return s;
   }
-  let sbSesionP = null;
+  let sbSesionP = null, sbAvisoEspera = null;
   function sbToken(crear, forzar) {
     if (sbSesionP) return sbSesionP;
     const s = sbSesionGuardada();
@@ -1604,16 +1604,28 @@ function cargarDatosRuta() {
           if (n) return n.a;
         }
         if (!crear) return null;
-        const r = await sbPeticion("/auth/v1/signup", {});
-        const n = r.estado === 200 && sbGuardarSesion(r.j);
-        return n ? n.a : null;
+        // Si el servidor dice "demasiadas peticiones" (límite por IP compartida),
+        // se espera unos segundos y se reintenta, avisando al cliente.
+        const esperas = [0, 4000, 8000, 14000, 20000];
+        for (let i = 0; i < esperas.length; i++) {
+          if (esperas[i]) {
+            if (sbAvisoEspera) sbAvisoEspera(true);
+            await new Promise((res) => setTimeout(res, esperas[i] + Math.random() * 3000));
+          }
+          const r = await sbPeticion("/auth/v1/signup", {});
+          const n = r.estado === 200 && sbGuardarSesion(r.j);
+          if (n) { if (sbAvisoEspera) sbAvisoEspera(false); return n.a; }
+          if (r.estado !== 429) break;
+        }
+        if (sbAvisoEspera) sbAvisoEspera(false);
+        return null;
       } catch (e) { return null; } finally { sbSesionP = null; }
     })();
     return sbSesionP;
   }
   /* Llama a una función del servidor. conSesion=true la hace como usuario
      (crea la sesión si hace falta). Devuelve el JSON o {ok:false,error:"sin_conexion"}. */
-  async function sbRpc(nombre, args, conSesion) {
+  async function sbRpc(nombre, args, conSesion, reintentos) {
     const intentar = async (forzar) => {
       const tok = conSesion ? await sbToken(true, forzar) : null;
       if (conSesion && !tok) return { estado: 0, j: null };
@@ -1623,7 +1635,11 @@ function cargarDatosRuta() {
       let r = await intentar(false);
       if (conSesion && (r.estado === 401 || (r.j && r.j.code === "PGRST303"))) r = await intentar(true);
       if (r.estado === 200) return r.j;
-      return { ok: false, error: r.estado === 0 ? "sin_conexion" : "error_servidor" };
+      if (r.estado === 429 && (reintentos || 0) < 3) {
+        await new Promise((res) => setTimeout(res, 2000 * ((reintentos || 0) + 1) + Math.random() * 2000));
+        return sbRpc(nombre, args, conSesion, (reintentos || 0) + 1);
+      }
+      return { ok: false, error: r.estado === 0 ? "sin_conexion" : r.estado === 429 ? "mucha_gente" : "error_servidor" };
     } catch (e) { return { ok: false, error: "sin_conexion" }; }
   }
   function sbFechaLarga(iso) {
@@ -1641,6 +1657,7 @@ function cargarDatosRuta() {
     if (e === "codigo_no_valido") return "<b>Este código no es válido</b><br>Pide un ticket nuevo en el establecimiento.";
     if (e === "codigo_de_otro_bar") return "<b>Este ticket es de otro establecimiento</b><br>Cada tarjeta solo vale para el bar que te la ha dado.";
     if (e === "ya_votado") return "<b>Ya has votado en este bar</b><br>Solo se puede votar una vez por establecimiento.";
+    if (e === "mucha_gente") return "<b>Mucha gente votando a la vez</b><br>Espera un minuto y pulsa de nuevo. Tu ticket sigue sin gastar.";
     if (e === "sin_conexion") return "<b>No hay conexión</b><br>Revisa tu cobertura e inténtalo de nuevo. Tu ticket sigue sin gastar.";
     return "<b>No se ha podido registrar el voto</b><br>Inténtalo de nuevo en unos segundos.";
   }
@@ -2146,7 +2163,9 @@ function cargarDatosRuta() {
     if (SB) {
       // Sin SMS: el derecho a votar lo da el código único del posavasos.
       const b = $("#rg-enviar"); b.disabled = true; b.textContent = "Registrando…";
+      sbAvisoEspera = (esperando) => { b.textContent = esperando ? "Mucha gente a la vez… reintentando" : "Registrando…"; };
       sbRpc("registrar_usuario", { p_ruta: SB.ruta, p_nombre: nombre, p_mayor: true, p_consentimiento: true }, true).then((r) => {
+        sbAvisoEspera = null;
         b.disabled = false; b.textContent = "Registrarme y votar";
         if (r && r.ok) {
           const u = { nombre, movil: "", verificado: true, mayor18: true, rgpd: true, fecha: new Date().toISOString() };
@@ -2157,6 +2176,7 @@ function cargarDatosRuta() {
         } else {
           err.textContent = r && r.error === "nombre_no_valido" ? "Escribe tu nombre y apellidos tal como aparecen en tu DNI."
             : r && r.error === "sin_conexion" ? "No hay conexión. Inténtalo de nuevo en unos segundos."
+            : r && r.error === "mucha_gente" ? "Hay muchísima gente registrándose ahora mismo. Espera un minuto y vuelve a pulsar el botón."
             : "No se ha podido completar el registro. Inténtalo de nuevo.";
         }
       });
