@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Medir coordenadas · Ruta de la Tapa</title>
+<style>
+:root{--azul:#012941;--oro:#C8912C;--fondo:#F4F1EA;--ok:#1F7A3D;--mal:#B3261E;--ambar:#B26A00}
+*{box-sizing:border-box}body{margin:0;font:16px/1.4 system-ui,sans-serif;background:var(--fondo);color:#1a1a1a}
+header{background:var(--azul);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}header h1{margin:0;font-size:18px}header small{color:#E7C98A}
+main{max-width:640px;margin:0 auto;padding:10px 14px 90px}
+.aviso{background:#FFF6DD;border:1px solid #E7C98A;border-radius:8px;padding:10px;font-size:14px;margin:10px 0}
+.bar{background:#fff;border:1px solid #ddd;border-radius:12px;padding:12px;margin:10px 0}
+.bar.hecho{border-color:var(--ok);background:#F2FAF4}
+.bar h2{margin:0;font-size:16px;color:var(--azul)}.bar small{color:#555}
+.act{font-size:13px;color:#555;margin:4px 0}
+button{background:var(--azul);color:#fff;border:0;border-radius:8px;padding:12px 14px;font:inherit;font-weight:600;width:100%;margin-top:8px}
+button.sec{background:#fff;color:var(--azul);border:1px solid var(--azul);width:auto;padding:8px 12px;font-size:14px}
+button:disabled{opacity:.6}
+.res{margin-top:8px;font-size:14px}.ok{color:var(--ok)}.mal{color:var(--mal)}.amb{color:var(--ambar)}
+footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ccc;padding:8px 14px;display:flex;gap:8px;justify-content:center}
+footer button{width:auto;margin:0;flex:1;max-width:300px}
+</style></head><body>
+<header><h1>Medir coordenadas <small>· <span id="cuenta">0</span> de <span id="tot"></span> hechos</small></h1></header>
+<main>
+<p class="aviso"><b>Cómo se hace:</b> ponte <b>en la puerta del bar, fuera</b> (el GPS falla dentro de edificios), toca <b>«Estoy en la puerta»</b> y espera unos segundos sin moverte. Verás la precisión: si pone <b>±15 m o menos</b>, está bien; si es peor, espera y repite. Lo medido se guarda en este móvil. Al final pulsa <b>Copiar todo</b> y pégamelo.</p>
+<div id="lista"></div>
+</main>
+<footer><button id="copiar">Copiar todo</button><button class="sec" id="compartir">Compartir</button></footer>
+<script>
+const BARES=[{"id":"la-revola","nombre":"La Revolá","tapa":"Cordero de las Mil y Una Noches","lat":36.161544,"lng":-5.350765},{"id":"la-pikara","nombre":"La Píkara","tapa":"El Secreto de la Tierra","lat":36.162679,"lng":-5.349038},{"id":"la-nueva","nombre":"La Nueva","tapa":"La Gamba Viajera","lat":36.16237,"lng":-5.351051},{"id":"la-chimenea","nombre":"La Chimenea","tapa":"Delicia de Rabo de Toro","lat":36.163086,"lng":-5.353639},{"id":"estoico","nombre":"Estoico","tapa":"La 11300 (Española y Gaditana)","lat":36.161478,"lng":-5.349254},{"id":"rincon-de-juan","nombre":"El Rincón de Juan","tapa":"Muhammara Bao","lat":36.161796,"lng":-5.351843},{"id":"meson-de-lolo","nombre":"El Mesón de Lolo","tapa":"Gamba Felicia","lat":36.161852,"lng":-5.352591},{"id":"el-cuchareo","nombre":"El Cuchareo de Ignacio","tapa":"Toro y Trufa","lat":36.16246,"lng":-5.353166},{"id":"dama-juana","nombre":"Dama Juana","tapa":"Croquetón de Langostinos a la Donostiarra","lat":36.163786,"lng":-5.343744},{"id":"chaboo","nombre":"Chaboo","tapa":"Rulada de Cerdo con Velouté de Coliflor y Queso","lat":36.161139,"lng":-5.349417},{"id":"carboneros-27","nombre":"Carboneros 27","tapa":"El Donut Canalla del 27","lat":36.161415,"lng":-5.351296},{"id":"bodebar","nombre":"Bodebar","tapa":"Saam de Panceta a Baja Temperatura y Mejillones","lat":36.161663,"lng":-5.350553},{"id":"bitacora","nombre":"Bitácora","tapa":"Solomillo a la Pimienta con Patatas","lat":36.159187,"lng":-5.354461},{"id":"bar-carlos","nombre":"Bar Carlos","tapa":"Dulce Engaño de Costilla","lat":36.162539,"lng":-5.350015},{"id":"barbas","nombre":"Barbas","tapa":"Kefta que Quiere ser un Sam","lat":36.161274,"lng":-5.350906},{"id":"ardente","nombre":"Ardente","tapa":"Cannellone Otoñal","lat":36.162077,"lng":-5.347595},{"id":"alma","nombre":"Alma","tapa":"Alma Mía","lat":36.161733,"lng":-5.350635},{"id":"west","nombre":"West","tapa":"El Murmullo de Poniente","lat":36.157316,"lng":-5.353144},{"id":"sintesis","nombre":"Síntesis","tapa":"Roca del Estrecho","lat":36.160443,"lng":-5.347853},{"id":"pino","nombre":"Pino","tapa":"El Pinito","lat":36.164102,"lng":-5.355167},{"id":"mebe-space","nombre":"Mebe Space","tapa":"Pulpo Violeta","lat":36.161473,"lng":-5.346025},{"id":"la-taberna","nombre":"La Taberna","tapa":"Sexy Bomb!","lat":36.16162,"lng":-5.349927}];
+const $=s=>document.querySelector(s), CLAVE="tapa_coords_medidas_v1";
+let M={};try{M=JSON.parse(localStorage.getItem(CLAVE)||"{}")}catch(e){}
+const guardar=()=>{try{localStorage.setItem(CLAVE,JSON.stringify(M))}catch(e){}};
+function dist(a,b,c,d){const R=6371000,p=x=>x*Math.PI/180,q=Math.sin(p(c-a)/2)**2+Math.cos(p(a))*Math.cos(p(c))*Math.sin(p(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(q))}
+$("#tot").textContent=BARES.length;
+function pintar(){
+  $("#cuenta").textContent=Object.keys(M).length;
+  $("#lista").innerHTML=BARES.map((b,i)=>{
+    const m=M[b.id],d=m?dist(b.lat,b.lng,m.lat,m.lng):null;
+    const prec=m?(m.prec<=15?"ok":m.prec<=30?"amb":"mal"):"";
+    return `<div class="bar${m?" hecho":""}" id="b-${b.id}"><h2>${i+1}. ${b.nombre}</h2><small>${b.tapa||""}</small>
+    <div class="act">Ahora en la app: ${b.lat}, ${b.lng} · <a href="https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lng}" target="_blank">ver</a></div>
+    ${m?`<div class="res"><b class="${prec}">Medido: ${m.lat.toFixed(6)}, ${m.lng.toFixed(6)} (±${Math.round(m.prec)} m)</b><br>Diferencia con la app: <b>${Math.round(d)} m</b>${d>25?' <span class="mal">← conviene corregirlo</span>':' <span class="ok">← correcto</span>'}${m.prec>30?'<br><span class="amb">Precisión baja: repite sin estar bajo cubierta.</span>':''}</div>`:""}
+    <button data-id="${b.id}">${m?"Repetir medición":"📍 Estoy en la puerta"}</button></div>`}).join("");
+}
+$("#lista").addEventListener("click",e=>{
+  const bt=e.target.closest("button[data-id]");if(!bt)return;
+  const id=bt.dataset.id;
+  if(!navigator.geolocation){alert("Este navegador no da la ubicación.");return}
+  bt.disabled=true;let mejor=null,n=0;const t0=Date.now();
+  const fin=()=>{navigator.geolocation.clearWatch(w);clearTimeout(tm);
+    if(mejor){M[id]={lat:mejor.latitude,lng:mejor.longitude,prec:mejor.accuracy,fecha:new Date().toISOString()};guardar();}
+    else alert("No se pudo obtener la ubicación. Revisa que el permiso de ubicación esté activado y estés al aire libre.");
+    pintar();const el=document.getElementById("b-"+id);if(el)el.scrollIntoView({block:"center"})};
+  const w=navigator.geolocation.watchPosition(p=>{n++;if(!mejor||p.coords.accuracy<mejor.accuracy)mejor=p.coords;
+    bt.textContent=`Midiendo… ±${Math.round(mejor.accuracy)} m (${Math.round((Date.now()-t0)/1000)} s)`;
+    if(mejor.accuracy<=8&&n>=3)fin();},
+    err=>{bt.textContent="Error: "+err.message;},{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+  const tm=setTimeout(fin,12000);
+});
+function texto(){return "id;nombre;lat;lng;precision_m;fecha\n"+BARES.filter(b=>M[b.id]).map(b=>`${b.id};${b.nombre};${M[b.id].lat.toFixed(6)};${M[b.id].lng.toFixed(6)};${Math.round(M[b.id].prec)};${M[b.id].fecha}`).join("\n")}
+$("#copiar").onclick=async()=>{const t=texto();try{await navigator.clipboard.writeText(t);alert("Copiado. Pégalo en el chat con Claude.")}catch(e){prompt("Copia este texto:",t)}};
+$("#compartir").onclick=async()=>{const t=texto();if(navigator.share){try{await navigator.share({title:"Coordenadas medidas",text:t})}catch(e){}}else{try{await navigator.clipboard.writeText(t);alert("Copiado.")}catch(e){prompt("Copia este texto:",t)}}};
+pintar();
+</script></body></html>
