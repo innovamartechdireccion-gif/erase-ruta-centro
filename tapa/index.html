@@ -1798,31 +1798,23 @@ function cargarDatosRuta() {
     // ruta de tapas, los bares suelen estar pegados), Leaflet apila sus
     // marcadores y el de abajo deja de poder pulsarse. Los separamos
     // visualmente un poco en círculo alrededor del punto real.
-    const colocados = [];
-    PARADAS.forEach((p, i) => {
-      let lat = p.lat, lng = p.lng;
-      // 35 m: a los niveles de zoom habituales (16-18) el icono del
-      // marcador ocupa unos 30 m en pantalla, así que por debajo de
-      // eso dos marcadores se tapan visualmente aunque no coincidan
-      // exactamente en coordenadas.
-      const cerca = colocados.filter((c) => haversine(lat, lng, c.lat, c.lng) < 45);
-      if (cerca.length) {
-        // Empuja el punto en la dirección contraria a sus vecinos cercanos
-        // (no un ángulo fijo: así se aleja de verdad, no se acerca por casualidad)
-        let dx = 0, dy = 0;
-        cerca.forEach((c) => { dx += lng - c.lng; dy += lat - c.lat; });
-        let len = Math.hypot(dx, dy);
-        if (len < 1e-9) {
-          const ang = cerca.length * 137.5 * Math.PI / 180; // ángulo áureo si coinciden exactas
-          dx = Math.cos(ang); dy = Math.sin(ang); len = 1;
-        }
-        dx /= len; dy /= len;
-        const radioM = 22 + cerca.length * 9; // metros de separación añadida, crece si hay varios juntos
-        const radioDegLat = radioM / 111320;
-        lat += dy * radioDegLat;
-        lng += dx * radioDegLat / Math.cos(lat * Math.PI / 180);
+    // Posición visual: solo se separan lo justo los marcadores que se tapan
+    // (mínimo ~20 m entre centros), repartiendo el desplazamiento entre ambos.
+    const kx = 111320 * Math.cos(36.16 * Math.PI / 180), ky = 111320, MIN_M = 20;
+    const pts = PARADAS.map((p) => ({ x: p.lng * kx, y: p.lat * ky }));
+    for (let it = 0; it < 40; it++) {
+      let mov = false;
+      for (let a = 0; a < pts.length; a++) for (let b = a + 1; b < pts.length; b++) {
+        let dx = pts[b].x - pts[a].x, dy = pts[b].y - pts[a].y, d = Math.hypot(dx, dy);
+        if (d >= MIN_M) continue;
+        if (d < 0.01) { const ang = (a * 137.5 + b * 61) * Math.PI / 180; dx = Math.cos(ang); dy = Math.sin(ang); d = 0.01; }
+        const f = (MIN_M - d) / 2 / d;
+        pts[a].x -= dx * f; pts[a].y -= dy * f; pts[b].x += dx * f; pts[b].y += dy * f; mov = true;
       }
-      colocados.push({ lat: p.lat, lng: p.lng });
+      if (!mov) break;
+    }
+    PARADAS.forEach((p, i) => {
+      const lat = pts[i].y / ky, lng = pts[i].x / kx;
 
       const icon = L.divIcon({
         className: "", html: '<div class="marker-num' + (yaVotado(p.id) ? " visitado" : "") + '" id="mk-' + p.id + '"><span>' + (i + 1) + "</span></div>",
