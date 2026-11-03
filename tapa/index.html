@@ -1278,7 +1278,7 @@ const RUTA_TAPA_CFG_DEFECTO = {
   fechas: "4 al 8 de noviembre",
   lema: "Este año se han presentado {{n}} establecimientos. ¿Serás capaz de tapear todas las tapas?",
   url: "https://lalinea.xn--rase-9oa.es/tapa/",
-  urlVotos: "https://script.google.com/macros/s/AKfycbzv1AsR7IQUXQPKLA1-8jucuBbbjhtPEjKWHYCznPFwEtL10J0D9JyL00UpJAtywYs8fw/exec"
+  urlVotos: "https://script.google.com/macros/s/AKfycbwoINBQjRfbEXj5cnv4_9ryHV1GA08jydZ35k6xX-PSDsymhDp7PeorwwWQVoG2Kt2Xgw/exec"
 };
 
 /* Establecimientos reales dados de alta por Víctor en admin.html.
@@ -1927,11 +1927,19 @@ function cargarDatosRuta() {
       media
     };
     if (codigo) cuerpo.codigo = codigo;
-    return fetch(CFG.urlVotos, {
+    // Si el servidor dice explícitamente "servidor_ocupado" (voto NO guardado),
+    // se reintenta con una espera creciente. Solo en ese caso, para no duplicar.
+    const intentar = (n) => fetch(CFG.urlVotos, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(cuerpo)
-    }).then((r) => r.json()).catch(() => null);
+    }).then((r) => r.json()).catch(() => null).then((j) => {
+      if (j && j.ok === false && j.error === "servidor_ocupado" && n < 4) {
+        return new Promise((res) => setTimeout(res, 1500 + Math.random() * 2500 * (n + 1))).then(() => intentar(n + 1));
+      }
+      return j;
+    });
+    return intentar(0);
   }
 
   function registrarVotoLocal(id, valores, media) {
