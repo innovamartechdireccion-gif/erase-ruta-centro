@@ -21,23 +21,27 @@ footer button{width:auto;margin:0;flex:1;max-width:300px}
 <header><h1>Medir coordenadas <small>· <span id="cuenta">0</span> de <span id="tot"></span> hechos</small></h1></header>
 <main>
 <p class="aviso"><b>Cómo se hace:</b> ponte <b>en la puerta del bar, fuera</b> (el GPS falla dentro de edificios), toca <b>«Estoy en la puerta»</b> y espera unos segundos sin moverte. Verás la precisión: si pone <b>±15 m o menos</b>, está bien; si es peor, espera y repite. Lo medido se guarda en este móvil. Al final pulsa <b>Copiar todo</b> y pégamelo.</p>
+<button id="ordenar">🧭 Ordenar de más cerca a más lejos</button><p class="act" id="orden-txt"></p>
 <div id="lista"></div>
 </main>
 <footer><button id="copiar">Copiar todo</button><button class="sec" id="compartir">Compartir</button></footer>
 <script>
 const BARES=[{"id":"la-revola","nombre":"La Revolá","tapa":"Cordero de las Mil y Una Noches","lat":36.161544,"lng":-5.350765},{"id":"la-pikara","nombre":"La Píkara","tapa":"El Secreto de la Tierra","lat":36.162679,"lng":-5.349038},{"id":"la-nueva","nombre":"La Nueva","tapa":"La Gamba Viajera","lat":36.16237,"lng":-5.351051},{"id":"la-chimenea","nombre":"La Chimenea","tapa":"Delicia de Rabo de Toro","lat":36.163086,"lng":-5.353639},{"id":"estoico","nombre":"Estoico","tapa":"La 11300 (Española y Gaditana)","lat":36.161478,"lng":-5.349254},{"id":"rincon-de-juan","nombre":"El Rincón de Juan","tapa":"Muhammara Bao","lat":36.161796,"lng":-5.351843},{"id":"meson-de-lolo","nombre":"El Mesón de Lolo","tapa":"Gamba Felicia","lat":36.161852,"lng":-5.352591},{"id":"el-cuchareo","nombre":"El Cuchareo de Ignacio","tapa":"Toro y Trufa","lat":36.16246,"lng":-5.353166},{"id":"dama-juana","nombre":"Dama Juana","tapa":"Croquetón de Langostinos a la Donostiarra","lat":36.163786,"lng":-5.343744},{"id":"chaboo","nombre":"Chaboo","tapa":"Rulada de Cerdo con Velouté de Coliflor y Queso","lat":36.161139,"lng":-5.349417},{"id":"carboneros-27","nombre":"Carboneros 27","tapa":"El Donut Canalla del 27","lat":36.161415,"lng":-5.351296},{"id":"bodebar","nombre":"Bodebar","tapa":"Saam de Panceta a Baja Temperatura y Mejillones","lat":36.161663,"lng":-5.350553},{"id":"bitacora","nombre":"Bitácora","tapa":"Solomillo a la Pimienta con Patatas","lat":36.159187,"lng":-5.354461},{"id":"bar-carlos","nombre":"Bar Carlos","tapa":"Dulce Engaño de Costilla","lat":36.162539,"lng":-5.350015},{"id":"barbas","nombre":"Barbas","tapa":"Kefta que Quiere ser un Sam","lat":36.161274,"lng":-5.350906},{"id":"ardente","nombre":"Ardente","tapa":"Cannellone Otoñal","lat":36.162077,"lng":-5.347595},{"id":"alma","nombre":"Alma","tapa":"Alma Mía","lat":36.161733,"lng":-5.350635},{"id":"west","nombre":"West","tapa":"El Murmullo de Poniente","lat":36.157316,"lng":-5.353144},{"id":"sintesis","nombre":"Síntesis","tapa":"Roca del Estrecho","lat":36.160443,"lng":-5.347853},{"id":"pino","nombre":"Pino","tapa":"El Pinito","lat":36.164102,"lng":-5.355167},{"id":"mebe-space","nombre":"Mebe Space","tapa":"Pulpo Violeta","lat":36.161473,"lng":-5.346025},{"id":"la-taberna","nombre":"La Taberna","tapa":"Sexy Bomb!","lat":36.16162,"lng":-5.349927}];
 const $=s=>document.querySelector(s), CLAVE="tapa_coords_medidas_v1";
-let M={};try{M=JSON.parse(localStorage.getItem(CLAVE)||"{}")}catch(e){}
+let origen=null;let M={};try{M=JSON.parse(localStorage.getItem(CLAVE)||"{}")}catch(e){}
 const guardar=()=>{try{localStorage.setItem(CLAVE,JSON.stringify(M))}catch(e){}};
 function dist(a,b,c,d){const R=6371000,p=x=>x*Math.PI/180,q=Math.sin(p(c-a)/2)**2+Math.cos(p(a))*Math.cos(p(c))*Math.sin(p(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(q))}
 $("#tot").textContent=BARES.length;
 function pintar(){
   $("#cuenta").textContent=Object.keys(M).length;
-  $("#lista").innerHTML=BARES.map((b,i)=>{
+  const lista=BARES.map((b,i)=>({b,i,hecho:!!M[b.id],deMi:origen?dist(origen.lat,origen.lng,b.lat,b.lng):null}));
+  if(origen)lista.sort((x,y)=>(x.hecho-y.hecho)||(x.deMi-y.deMi));
+  $("#lista").innerHTML=lista.map(({b,i,deMi})=>{
     const m=M[b.id],d=m?dist(b.lat,b.lng,m.lat,m.lng):null;
     const prec=m?(m.prec<=15?"ok":m.prec<=30?"amb":"mal"):"";
     return `<div class="bar${m?" hecho":""}" id="b-${b.id}"><h2>${i+1}. ${b.nombre}</h2><small>${b.tapa||""}</small>
-    <div class="act">Ahora en la app: ${b.lat}, ${b.lng} · <a href="https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lng}" target="_blank">ver</a></div>
+    <div class="act">Ahora en la app: ${b.lat}, ${b.lng} · <a href="https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lng}" target="_blank">ver</a>${deMi!=null?` · <b>a ${deMi<1000?Math.round(deMi)+" m":(deMi/1000).toFixed(1)+" km"} de ti</b>`:""}</div>
+    <div class="act"><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.nombre+", La Línea de la Concepción")}&travelmode=walking" target="_blank">🧭 Cómo llegar (por nombre)</a> · <a href="https://www.google.com/maps/dir/?api=1&destination=${b.lat},${b.lng}&travelmode=walking" target="_blank">por coordenada</a></div>
     ${m?`<div class="res"><b class="${prec}">Medido: ${m.lat.toFixed(6)}, ${m.lng.toFixed(6)} (±${Math.round(m.prec)} m)</b><br>Diferencia con la app: <b>${Math.round(d)} m</b>${d>25?' <span class="mal">← conviene corregirlo</span>':' <span class="ok">← correcto</span>'}${m.prec>30?'<br><span class="amb">Precisión baja: repite sin estar bajo cubierta.</span>':''}</div>`:""}
     <button data-id="${b.id}">${m?"Repetir medición":"📍 Estoy en la puerta"}</button></div>`}).join("");
 }
@@ -59,5 +63,12 @@ $("#lista").addEventListener("click",e=>{
 function texto(){return "id;nombre;lat;lng;precision_m;fecha\n"+BARES.filter(b=>M[b.id]).map(b=>`${b.id};${b.nombre};${M[b.id].lat.toFixed(6)};${M[b.id].lng.toFixed(6)};${Math.round(M[b.id].prec)};${M[b.id].fecha}`).join("\n")}
 $("#copiar").onclick=async()=>{const t=texto();try{await navigator.clipboard.writeText(t);alert("Copiado. Pégalo en el chat con Claude.")}catch(e){prompt("Copia este texto:",t)}};
 $("#compartir").onclick=async()=>{const t=texto();if(navigator.share){try{await navigator.share({title:"Coordenadas medidas",text:t})}catch(e){}}else{try{await navigator.clipboard.writeText(t);alert("Copiado.")}catch(e){prompt("Copia este texto:",t)}}};
+$("#ordenar").onclick=()=>{
+  if(!navigator.geolocation){alert("Este navegador no da la ubicación.");return}
+  $("#orden-txt").textContent="Buscando tu posición…";
+  navigator.geolocation.getCurrentPosition(p=>{origen={lat:p.coords.latitude,lng:p.coords.longitude};
+    $("#orden-txt").textContent="Ordenados desde tu posición actual: primero los que te faltan por medir.";pintar();window.scrollTo({top:0,behavior:"smooth"})},
+    er=>{$("#orden-txt").textContent="No se pudo obtener tu posición: "+er.message},{enableHighAccuracy:true,timeout:15000});
+};
 pintar();
 </script></body></html>
