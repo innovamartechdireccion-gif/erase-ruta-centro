@@ -2941,6 +2941,7 @@ function cargarDatosRuta() {
       else $("#aviso-demo").firstChild.textContent = SB_LIBRE ? "PRUEBA ABIERTA — vota la tapa de cada bar, sin escanear nada " : "PRUEBA — servidor real: se vota con el ticket QR ";
       const lm = $("#rg-movil"); if (lm && lm.closest("label")) lm.closest("label").style.display = "none";
       $("#rg-enviar").textContent = "Registrarme y votar";
+      if (SB_LIBRE) { const z = $("#b-zona-camarero"); if (z) z.style.display = "none"; const d = $("#dp-camarero"); if (d) d.style.display = "none"; } // los premios se darán en un stand, no en los bares
       $("#cm-sb").hidden = false; $("#cm-demo-nota").style.display = "none";
       $("#cm-bar").innerHTML = PARADAS.map((q) => '<option value="' + q.id + '">' + q.nombre + "</option>").join("");
       $("#camarero .capa-sub").textContent = "Elige tu establecimiento, escribe tu PIN y el código del diploma del cliente.";
