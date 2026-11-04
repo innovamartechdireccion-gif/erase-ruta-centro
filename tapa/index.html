@@ -706,6 +706,7 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 #portada{overflow:hidden}
 #portada .cartel-fondo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(26px) saturate(1.15);transform:scale(1.15);z-index:0}
 #portada .acciones{position:relative;z-index:1}
+#portada .btn-compartir{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;background:transparent;color:#FFCC33;border:1.5px solid rgba(255,204,51,.75);font:600 .84rem/1.25 Poppins,sans-serif;padding:11px 14px;border-radius:99px;text-align:center}#portada .btn-compartir[hidden]{display:none}
 #portada .aviso-prueba{margin:0 0 12px;font:500 .74rem/1.4 Poppins,sans-serif;color:#E9E2D0;text-align:center}#portada .aviso-prueba b{color:#FFCC33}
 #portada .eti{font:600 .68rem Poppins;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
 #portada h1{font-size:clamp(1.9rem,8vw,2.5rem);color:var(--cream);margin-top:.2em;text-wrap:balance}
@@ -1067,6 +1068,7 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
   <div class="acciones">
     <p class="aviso-prueba" id="aviso-prueba" hidden><b>Prueba no oficial.</b> Esta aplicación es un ensayo de votación digital para futuras ediciones. No es la votación oficial de la XI Ruta de la Tapa.</p>
     <button class="btn btn-oro" id="b-entrar">Entrar en la ruta</button>
+    <button class="btn btn-compartir" id="b-compartir" type="button" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg><span id="b-compartir-t">Compártelo con tus amigos y ayúdanos a mejorar</span></button>
     <button class="btn btn-qr" id="b-simular-qr"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/><path d="M13 7h4v2M7 13v4h2"/></svg>Demo: simular que escaneo el QR de un bar</button>
     <button class="enlace" id="b-ver-mapa">Ver el mapa de establecimientos</button>
     <button class="enlace enlace-mini" id="b-zona-camarero">Zona camarero · comprobar diploma</button>
@@ -3036,6 +3038,20 @@ function cargarDatosRuta() {
       else $("#aviso-demo").firstChild.textContent = SB_LIBRE ? "PRUEBA ABIERTA — vota la tapa de cada bar, sin escanear nada " : "PRUEBA — servidor real: se vota con el ticket QR ";
       iniciarContadorGente();
       if (SB_LIBRE) { const ap = $("#aviso-prueba"); if (ap) ap.hidden = false; }
+      if (SB_LIBRE) {
+        const bc = $("#b-compartir"); if (bc) {
+          bc.hidden = false;
+          bc.onclick = async () => {
+            const url = location.origin + location.pathname;
+            const texto = "Estoy probando una app para votar las tapas de la Ruta de la Tapa de La Línea. Es una prueba no oficial: entra, vota las que pruebes y ayúdanos a mejorarla 👇";
+            const t = $("#b-compartir-t");
+            try { if (navigator.share) { await navigator.share({ title: "Ruta de la Tapa · La Línea", text: texto, url }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+            try { await navigator.clipboard.writeText(texto + " " + url); t.textContent = "¡Enlace copiado! Pégalo en WhatsApp"; }
+            catch (e) { window.open("https://wa.me/?text=" + encodeURIComponent(texto + " " + url), "_blank"); return; }
+            setTimeout(() => { t.textContent = "Compártelo con tus amigos y ayúdanos a mejorar"; }, 3500);
+          };
+        }
+      }
       const lm = $("#rg-movil"); if (lm && lm.closest("label")) lm.closest("label").style.display = "none";
       $("#rg-enviar").textContent = "Registrarme y votar";
       if (SB_LIBRE) { ["#b-zona-camarero", "#dp-camarero", "#b-ver-mapa"].forEach((q) => { const z = $(q); if (z) z.style.display = "none"; }); } // los premios se darán en un stand, no en los bares
