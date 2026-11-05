@@ -715,6 +715,7 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 #portada .cartel-fondo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(26px) saturate(1.15);transform:scale(1.15);z-index:0}
 #portada .acciones{position:relative;z-index:1}
 #portada .btn-compartir{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;background:transparent;color:#FFCC33;border:1.5px solid rgba(255,204,51,.75);font:600 .84rem/1.25 Poppins,sans-serif;padding:11px 14px;border-radius:99px;text-align:center}#portada .btn-compartir[hidden]{display:none}
+#portada .btn-grupo{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.55);font:700 .92rem/1.25 Poppins,sans-serif;padding:12px 14px;border-radius:99px;text-align:center}#portada .btn-grupo[hidden]{display:none}
 #portada .aviso-prueba{margin:0 0 12px;font:500 .74rem/1.4 Poppins,sans-serif;color:#E9E2D0;text-align:center}#portada .aviso-prueba b{color:#FFCC33}
 #portada .eti{font:600 .68rem Poppins;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
 #portada h1{font-size:clamp(1.9rem,8vw,2.5rem);color:var(--cream);margin-top:.2em;text-wrap:balance}
@@ -1152,6 +1153,7 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
   <div class="acciones">
     <p class="aviso-prueba" id="aviso-prueba" hidden><b>Prueba no oficial.</b> Esta aplicación es un ensayo de votación digital para futuras ediciones. No es la votación oficial de la XI Ruta de la Tapa.</p>
     <button class="btn btn-oro" id="b-entrar">Entrar en la ruta</button>
+    <button class="btn btn-grupo" id="b-grupos" type="button" hidden>👥 Tapea con tus amigos</button>
     <button class="btn btn-compartir" id="b-compartir" type="button" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg><span id="b-compartir-t">Compártelo con tus amigos y ayúdanos a mejorar</span></button>
     <button class="btn btn-qr" id="b-simular-qr"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/><path d="M13 7h4v2M7 13v4h2"/></svg>Demo: simular que escaneo el QR de un bar</button>
     <button class="enlace" id="b-ver-mapa">Ver el mapa de establecimientos</button>
@@ -1287,6 +1289,7 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
       <label>Nombre del grupo<input id="gf-nombre" class="g-in" maxlength="40" placeholder="Ej.: Los de la oficina"></label>
       <p class="g-err" id="gf-err"></p>
       <button class="btn btn-oro" id="gf-crear-ok">Crear grupo</button>
+      <button class="enlace" id="gf-a-unir" type="button">Ya tengo un código</button>
     </div>
     <div id="gf-unir" hidden>
       <h3>Entrar en un grupo</h3>
@@ -1294,6 +1297,7 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
       <input id="gf-codigo" class="g-in cod" maxlength="6" placeholder="······" autocapitalize="characters" autocomplete="off">
       <p class="g-err" id="gf-err2"></p>
       <button class="btn btn-oro" id="gf-unir-ok">Entrar</button>
+      <button class="enlace" id="gf-a-crear" type="button">Quiero crear un grupo</button>
     </div>
   </div>
 </div>
@@ -3111,6 +3115,12 @@ function cargarDatosRuta() {
     setTimeout(() => $(modo === "crear" ? "#gf-nombre" : "#gf-codigo").focus(), 250);
   }
   $("#gf-cerrar").onclick = () => $("#g-form").classList.remove("on");
+  $("#gf-a-unir").onclick = () => abrirFormGrupo("unir");
+  $("#gf-a-crear").onclick = () => abrirFormGrupo("crear");
+  $("#b-grupos").onclick = async () => {
+    abrirApp(); await cargarGrupos();
+    if (!(GRUPOS || []).length) abrirFormGrupo("crear"); else abrirTapaporte();
+  };
   const gMsgError = (e) => ({
     codigo_no_valido: "Ese código no existe. Revísalo con quien te lo pasó.",
     grupo_lleno: "El grupo ya está completo (máximo 10 personas).",
@@ -3422,6 +3432,7 @@ function cargarDatosRuta() {
       else $("#aviso-demo").firstChild.textContent = SB_LIBRE ? "PRUEBA ABIERTA — vota la tapa de cada bar, sin escanear nada " : "PRUEBA — servidor real: se vota con el ticket QR ";
       iniciarContadorGente();
       setTimeout(procesarInvitacion, 1500);
+      { const bg = $("#b-grupos"); if (bg) { bg.hidden = false; cargarGrupos().then(() => { if (G_DISP === false) bg.hidden = true; }); } }
       if (SB_LIBRE) { const ap = $("#aviso-prueba"); if (ap) ap.hidden = false; }
       if (SB_LIBRE) {
         const bc = $("#b-compartir"); if (bc) {
