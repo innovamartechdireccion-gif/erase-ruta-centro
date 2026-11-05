@@ -710,7 +710,7 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 #portada .acciones{background:var(--navy);margin-left:-22px;margin-right:-22px;padding:18px 22px max(20px,env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
 .portada-texto{flex:1;display:flex;flex-direction:column;justify-content:center}
 #portada .marca,#portada .portada-texto{display:none}
-.portada-cartel{position:relative;z-index:1;flex:1;min-height:0;width:calc(100% + 44px);max-width:none;margin:0 -22px;object-fit:contain;object-position:center top}
+.portada-cartel{position:relative;z-index:1;flex:1;min-height:0;width:calc(100% + 44px);max-width:none;margin:0 -22px;box-sizing:border-box;padding:0 14px 14px;object-fit:contain;object-position:center top}
 #portada{overflow:hidden}
 #portada .cartel-fondo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(26px) saturate(1.15);transform:scale(1.15);z-index:0}
 #portada .acciones{position:relative;z-index:1}
@@ -1171,7 +1171,7 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
     <button class="btn btn-grupo" id="b-grupos" type="button" hidden>👥 Tapea con tus amigos</button>
     <button class="btn btn-compartir" id="b-compartir" type="button" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg><span id="b-compartir-t">Compártelo con tus amigos y ayúdanos a mejorar</span></button>
     <button class="btn btn-qr" id="b-simular-qr"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/><path d="M13 7h4v2M7 13v4h2"/></svg>Demo: simular que escaneo el QR de un bar</button>
-    <div class="pie-enlaces"><button class="enlace" id="b-opinion" type="button" hidden>💬 Valora la app y sugiere mejoras</button><button class="enlace" id="b-creditos" type="button">Créditos</button></div>
+    <div class="pie-enlaces"><button class="enlace" id="b-opinion" type="button" hidden>💬 Valora la app</button><button class="enlace" id="b-creditos" type="button">Créditos</button></div>
     <button class="enlace" id="b-ver-mapa">Ver el mapa de establecimientos</button>
     <button class="enlace enlace-mini" id="b-zona-camarero">Zona camarero · comprobar diploma</button>
   </div>
