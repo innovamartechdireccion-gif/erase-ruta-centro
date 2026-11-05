@@ -955,6 +955,20 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 .btn-linea{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
 
 .rk-info{margin:10px 2px 2px;font:500 .74rem/1.4 Poppins;color:#5d6b7a}.rk-info summary{cursor:pointer;font:600 .76rem Poppins;color:var(--navy);list-style:none}.rk-info summary::-webkit-details-marker{display:none}.rk-info p{margin:6px 0 0;padding:9px 11px;background:#E8F0F7;border-radius:10px}
+/* ---- Opinión y créditos ---- */
+#portada .pie-enlaces{display:flex;gap:18px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:6px}
+#portada .pie-enlaces .enlace{margin-top:6px}
+#portada .pie-enlaces [hidden]{display:none}
+.op-estrellas{display:flex;gap:6px;justify-content:center;margin:6px 0 14px}
+.op-estrellas button{background:none;border:none;font-size:2.4rem;line-height:1;color:#D8CEB7;cursor:pointer;padding:2px}
+.op-estrellas button.on{color:#FFB400}
+.op-etiqueta{font:700 .8rem Poppins;text-align:center;margin:0 0 4px;color:var(--navy);min-height:1.2em}
+.capa-caja textarea.g-in{width:100%;box-sizing:border-box;padding:12px;border:1.5px solid #CFC5AC;border-radius:12px;font:500 .92rem/1.4 Poppins;background:#fff;color:var(--navy);min-height:96px;resize:vertical}
+.cr-bloque{margin:0 0 12px;font:500 .84rem/1.45 Poppins;color:#33485a}
+.cr-bloque b{display:block;font:700 .7rem Poppins;letter-spacing:.12em;text-transform:uppercase;color:#8A6A1E;margin-bottom:2px}
+.cr-marca{font:800 1.15rem 'Baloo 2';letter-spacing:.06em;color:var(--navy);display:block}
+.tp-opinion{max-width:560px;margin:18px auto 4px;text-align:center}
+.tp-opinion .gr-btn{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
 /* ---- Grupos de amigos ---- */
 #gl-cuerpo{margin:0 0 6px}
 .gr-promo{background:linear-gradient(135deg,#012941,#0B4166);color:#fff;border-radius:16px;padding:14px 14px 12px;box-shadow:0 4px 14px rgba(1,41,65,.22)}
@@ -1157,6 +1171,7 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
     <button class="btn btn-grupo" id="b-grupos" type="button" hidden>👥 Tapea con tus amigos</button>
     <button class="btn btn-compartir" id="b-compartir" type="button" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg><span id="b-compartir-t">Compártelo con tus amigos y ayúdanos a mejorar</span></button>
     <button class="btn btn-qr" id="b-simular-qr"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/><path d="M13 7h4v2M7 13v4h2"/></svg>Demo: simular que escaneo el QR de un bar</button>
+    <div class="pie-enlaces"><button class="enlace" id="b-opinion" type="button" hidden>💬 Valora la app y sugiere mejoras</button><button class="enlace" id="b-creditos" type="button">Créditos</button></div>
     <button class="enlace" id="b-ver-mapa">Ver el mapa de establecimientos</button>
     <button class="enlace enlace-mini" id="b-zona-camarero">Zona camarero · comprobar diploma</button>
   </div>
@@ -1279,6 +1294,33 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
   <div class="g-pie">
     <button class="btn btn-oro" id="g-img">Compartir podio</button>
     <button class="btn btn-linea" id="g-volver">Seguir tapeando</button>
+  </div>
+</div>
+<div class="capa" id="opinion">
+  <div class="capa-caja">
+    <button class="capa-cerrar" id="op-cerrar" aria-label="Cerrar">✕</button>
+    <div id="op-form">
+      <h3>Valora la app</h3>
+      <p class="capa-sub">Es una prueba y tu opinión nos ayuda a mejorarla.</p>
+      <div class="op-estrellas" id="op-estrellas"><button type="button" data-n="1" aria-label="1 estrella">★</button><button type="button" data-n="2" aria-label="2 estrellas">★</button><button type="button" data-n="3" aria-label="3 estrellas">★</button><button type="button" data-n="4" aria-label="4 estrellas">★</button><button type="button" data-n="5" aria-label="5 estrellas">★</button></div>
+      <p class="op-etiqueta" id="op-etiqueta"></p>
+      <label>¿Qué mejorarías o qué echas de menos?<textarea id="op-texto" class="g-in" maxlength="600" placeholder="Cuéntanos lo que quieras (opcional)"></textarea></label>
+      <p class="g-err" id="op-err"></p>
+      <button class="btn btn-oro" id="op-enviar">Enviar opinión</button>
+    </div>
+    <div id="op-gracias" hidden style="text-align:center;padding:14px 0"><h3 style="margin:0 0 6px">¡Gracias! 🙌</h3><p class="capa-sub" style="margin:0">Tu opinión ya está guardada. Si quieres cambiarla, vuelve a abrir esta pantalla.</p></div>
+  </div>
+</div>
+<div class="capa" id="creditos">
+  <div class="capa-caja">
+    <button class="capa-cerrar" id="cr-cerrar" aria-label="Cerrar">✕</button>
+    <h3>Créditos</h3>
+    <p class="capa-sub">Ruta de la Tapa de La Línea · XI edición</p>
+    <div class="cr-bloque"><b>Idea y desarrollo de la app</b><span class="cr-marca">INNOVAMAR TECH</span>Proyecto Érase · Prueba no oficial de votación digital para futuras ediciones.</div>
+    <div class="cr-bloque"><b>Organiza la Ruta de la Tapa</b>Asociación Linense de Autónomos de Hostelería (ALAHO)</div>
+    <div class="cr-bloque"><b>Colaboran y patrocinan</b>Ayuntamiento de La Línea de la Concepción, Diputación de Cádiz, Alhambra, Coca-Cola y Guadiaro</div>
+    <div class="cr-bloque"><b>Mapa</b>© colaboradores de OpenStreetMap · Leaflet</div>
+    <div class="cr-bloque"><b>Cartel, nombres y logotipos</b>Pertenecen a sus respectivos titulares y se usan solo para esta prueba.</div>
   </div>
 </div>
 <div class="capa" id="g-lista">
@@ -3044,7 +3086,8 @@ function cargarDatosRuta() {
       + "</div>"
       + finalHtml
       + '<div class="tp-hitos">' + hitosHtml + "</div>"
-      + '<div class="tp-rejilla">' + rejilla + "</div>";
+      + '<div class="tp-rejilla">' + rejilla + "</div>"
+      + (SB ? '<div class="tp-opinion"><button class="gr-btn" id="tp-opinion" type="button"' + (OP_DISP === false ? " hidden" : "") + '>💬 Valora la app y sugiere mejoras</button></div>' : "");
     ultimoSello = "";
   }
   $("#tp-cuerpo").addEventListener("click", (ev) => {
@@ -3074,6 +3117,42 @@ function cargarDatosRuta() {
     compartirCanvas(cv, "mi-tapaporte.png", "Llevo " + n + " de " + PARADAS.length + " tapas en la XI Ruta de la Tapa de La Línea 🍽️ Gracias a Alhambra, Coca-Cola, Guadiaro y al Ayuntamiento de La Línea. #TAPALALINEA26");
   };
   $("#b-tapaporte-mapa").onclick = () => abrirTapaporte();
+
+  /* =====================================================================
+     OPINIONES (valorar la app + sugerir mejoras) y CRÉDITOS
+     ===================================================================== */
+  let OP_DISP = null, opNota = 0, opTimer = null;
+  const OP_ETIQ = ["", "Mala", "Floja", "Normal", "Buena", "¡Genial!"];
+  const opPintarEstrellas = () => { document.querySelectorAll("#op-estrellas button").forEach((b) => b.classList.toggle("on", Number(b.dataset.n) <= opNota)); $("#op-etiqueta").textContent = OP_ETIQ[opNota] || ""; };
+  async function comprobarOpiniones() {
+    if (!SB) return;
+    try { const r = await sbPeticion("/rest/v1/rpc/opinion_enviar", {}); OP_DISP = r.estado === 404 ? false : true; } catch (e) { OP_DISP = null; }
+    const b = $("#b-opinion"); if (b) b.hidden = OP_DISP === false;
+    const t = $("#tp-opinion"); if (t) t.hidden = OP_DISP === false;
+  }
+  async function abrirOpinion() {
+    clearTimeout(opTimer);
+    $("#op-form").hidden = false; $("#op-gracias").hidden = true; $("#op-err").textContent = "";
+    opNota = 0; $("#op-texto").value = ""; opPintarEstrellas();
+    $("#opinion").classList.add("on");
+    if (usuario()) { const r = await sbRpc("opinion_mia", {}, true); if (r && r.ok && r.tiene) { opNota = r.nota; $("#op-texto").value = r.texto || ""; opPintarEstrellas(); } }
+  }
+  $("#op-estrellas").addEventListener("click", (ev) => { const b = ev.target.closest("button[data-n]"); if (b) { opNota = Number(b.dataset.n); opPintarEstrellas(); $("#op-err").textContent = ""; } });
+  $("#op-cerrar").onclick = () => $("#opinion").classList.remove("on");
+  $("#op-enviar").onclick = () => {
+    if (!opNota) { $("#op-err").textContent = "Elige de 1 a 5 estrellas."; return; }
+    conRegistro(async () => {
+      const b = $("#op-enviar"); b.disabled = true;
+      const r = await sbRpc("opinion_enviar", { p_nota: opNota, p_texto: $("#op-texto").value.trim() }, true);
+      b.disabled = false;
+      if (r && r.ok) { $("#op-form").hidden = true; $("#op-gracias").hidden = false; $("#opinion").classList.add("on"); opTimer = setTimeout(() => $("#opinion").classList.remove("on"), 2600); }
+      else { $("#opinion").classList.add("on"); $("#op-err").textContent = r && r.error === "sin_conexion" ? "No hay conexión. Inténtalo de nuevo." : "No se ha podido enviar. Inténtalo de nuevo."; }
+    });
+  };
+  $("#b-opinion").onclick = abrirOpinion;
+  $("#tp-cuerpo").addEventListener("click", (ev) => { if (ev.target.closest("#tp-opinion")) abrirOpinion(); });
+  $("#b-creditos").onclick = () => $("#creditos").classList.add("on");
+  $("#cr-cerrar").onclick = () => $("#creditos").classList.remove("on");
 
   /* =====================================================================
      GRUPOS DE AMIGOS (solo con servidor real). El voto oficial no cambia:
@@ -3449,6 +3528,7 @@ function cargarDatosRuta() {
       else $("#aviso-demo").firstChild.textContent = SB_LIBRE ? "PRUEBA ABIERTA — vota la tapa de cada bar, sin escanear nada " : "PRUEBA — servidor real: se vota con el ticket QR ";
       iniciarContadorGente();
       setTimeout(procesarInvitacion, 1500);
+      comprobarOpiniones().then(() => { const b = $("#b-opinion"); if (b && OP_DISP !== false) b.hidden = false; });
       { const bg = $("#b-grupos"); if (bg) { bg.hidden = false; cargarGrupos().then(() => { if (G_DISP === false) bg.hidden = true; }); } }
       if (SB_LIBRE) { const ap = $("#aviso-prueba"); if (ap) ap.hidden = false; }
       if (SB_LIBRE) {
