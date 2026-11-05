@@ -2581,6 +2581,7 @@ function cargarDatosRuta() {
     return '<div class="ranking-fila' + (destacar ? " destacada" : "") + '"><span class="ranking-pos">' + (i + 1) + "</span>" + thumb
       + '<div class="ranking-info">'
       + '<div class="ranking-cab"><span class="ranking-nombre">' + r.nombre + (destacar ? ' <em>tu voto</em>' : "") + '</span><span class="ranking-media">' + r.media.toFixed(2) + "</span></div>"
+      + (r.real != null ? '<div style="font:500 .68rem Poppins;color:#8A94A0;margin:-1px 0 3px">media real ' + r.real.toFixed(2) + " · " + r.votos + (r.votos === 1 ? " voto" : " votos") + "</div>" : "")
       + '<div class="ranking-barra-fondo"><div class="ranking-barra" data-w="' + pct + '" style="width:0"></div></div>'
       + "</div></div>";
   }
@@ -2622,9 +2623,15 @@ function cargarDatosRuta() {
         const ranking = datos.filter((r) => PARADAS.some((q) => q.id === r.est_id))
           .map((r) => ({ id: r.est_id, nombre: r.nombre, media: Number(r.media), votos: Number(r.votos) }))
           .sort((a, b) => b.media - a.media);
+        // Nota ponderada: con pocos votos la nota se acerca a la media general (peso = 5 votos),
+        // para que un 5 de una sola persona no supere a una tapa con muchos votos.
+        const totV = ranking.reduce((s, r) => s + r.votos, 0), C = totV ? ranking.reduce((s, r) => s + r.media * r.votos, 0) / totV : 0, PESO = 5;
+        ranking.forEach((r) => { r.real = r.media; r.media = (r.votos * r.real + PESO * C) / (r.votos + PESO); });
+        ranking.sort((a, b) => b.media - a.media);
         if (RANKING === "parcial") ranking.length = Math.min(ranking.length, 3);
         cuerpo.innerHTML = ranking.length ? ranking.map((r, i) => pintarFilaRanking(r, i, p && r.id === p.id)).join("")
           : '<p class="ranking-vacio">Todavía no hay votos suficientes para mostrar la clasificación.</p>';
+        if (ranking.length) { const rk = destino.querySelector(".tapa360-ranking"); if (rk) rk.insertAdjacentHTML("beforeend", '<p class="ranking-nota">La nota tiene en cuenta cuántos votos recibe cada tapa: con pocos votos se acerca a la media general. Así un 5 de una sola persona no supera a una tapa muy votada.</p>'); }
         animarBarras(cuerpo);
       });
       return;
