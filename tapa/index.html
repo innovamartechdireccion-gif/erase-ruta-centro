@@ -3126,7 +3126,7 @@ function cargarDatosRuta() {
   const opPintarEstrellas = () => { document.querySelectorAll("#op-estrellas button").forEach((b) => b.classList.toggle("on", Number(b.dataset.n) <= opNota)); $("#op-etiqueta").textContent = OP_ETIQ[opNota] || ""; };
   async function comprobarOpiniones() {
     if (!SB) return;
-    try { const r = await sbPeticion("/rest/v1/rpc/opinion_enviar", {}); OP_DISP = r.estado === 404 ? false : true; } catch (e) { OP_DISP = null; }
+    try { const r = await sbPeticion("/rest/v1/rpc/opinion_mia", {}); OP_DISP = r.estado === 404 ? false : true; } catch (e) { OP_DISP = null; }
     const b = $("#b-opinion"); if (b) b.hidden = OP_DISP === false;
     const t = $("#tp-opinion"); if (t) t.hidden = OP_DISP === false;
   }
