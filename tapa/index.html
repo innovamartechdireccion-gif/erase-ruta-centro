@@ -953,6 +953,82 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 .tp-pie .btn{padding:12px 10px;font-size:.86rem}
 .btn-linea{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
 
+/* ---- Grupos de amigos ---- */
+.tp-grupos{max-width:560px;margin:0 auto 16px}
+.gr-promo{background:linear-gradient(135deg,#012941,#0B4166);color:#fff;border-radius:16px;padding:14px 14px 12px;box-shadow:0 4px 14px rgba(1,41,65,.22)}
+.gr-promo b{display:block;font:700 .98rem Poppins;color:#FFCC33;margin-bottom:3px}
+.gr-promo p{margin:0 0 10px;font:500 .8rem/1.4 Poppins;color:rgba(255,255,255,.9)}
+.gr-botones{display:flex;gap:8px;flex-wrap:wrap}
+.gr-btn{border:none;border-radius:99px;font:700 .8rem Poppins;padding:10px 16px;background:#FFCC33;color:var(--navy);cursor:pointer}
+.gr-btn.sec{background:rgba(255,255,255,.16);color:#fff}
+.gr-btn.lin{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.gr-tit{display:flex;align-items:center;justify-content:space-between;margin:0 2px 8px;font:700 .95rem Poppins}
+.gr-tit small{font:600 .72rem Poppins;color:#8A94A0}
+.gr-tarj{display:flex;align-items:center;gap:10px;width:100%;background:#fff;border:1px solid #E4DCCB;border-radius:14px;padding:11px 12px;margin-bottom:8px;text-align:left;color:var(--navy);cursor:pointer}
+.gr-tarj .ic{flex:none;width:38px;height:38px;border-radius:50%;background:#FFF1C9;display:flex;align-items:center;justify-content:center;font-size:1.15rem}
+.gr-tarj .tx{flex:1;min-width:0}
+.gr-tarj b{display:block;font:700 .88rem Poppins;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr-tarj span{font:500 .72rem Poppins;color:#5d6b7a}
+.gr-chip{flex:none;border-radius:99px;font:700 .66rem Poppins;padding:4px 9px;background:#FFF1C9;color:#7A5A12}
+.gr-chip.ok{background:#DDF2E3;color:#1C6B36}
+.gr-acciones{display:flex;gap:8px;margin-top:2px}
+.gr-acciones .gr-btn{flex:1;background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+
+#grupo{position:fixed;inset:0;background:var(--cream);color:var(--navy);display:none;z-index:58;flex-direction:column}
+#grupo.on{display:flex}
+.g-cab{flex:none;background:var(--navy);padding:calc(max(12px,env(safe-area-inset-top)) + 34px) 14px 12px;display:flex;align-items:center;gap:10px}
+.g-cab h2{font-size:1.05rem;margin:0;flex:1;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-cuerpo{flex:1;min-height:0;overflow-y:auto;padding:14px 14px 24px;-webkit-overflow-scrolling:touch}
+.g-caja{max-width:560px;margin:0 auto}
+.g-miembros{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.g-miembro{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid #E4DCCB;border-radius:99px;font:600 .74rem Poppins;padding:5px 10px}
+.g-miembro.yo{border-color:var(--gold);background:#FFFBF0}
+.g-miembro button{border:none;background:#EFE8D6;color:var(--navy);width:20px;height:20px;border-radius:50%;font:700 .72rem/1 Poppins;cursor:pointer;padding:0}
+.g-miembro button.sino{width:auto;padding:0 8px;background:#B3261E;color:#fff;border-radius:99px}
+.g-cupo{font:600 .72rem Poppins;color:#8A94A0;margin:0 2px 10px}
+.g-invitar{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px dashed var(--gold-dark);border-radius:14px;padding:11px 12px;margin-bottom:14px}
+.g-invitar .tx{flex:1;font:500 .76rem/1.3 Poppins;color:#5d6b7a}
+.g-invitar .tx b{display:block;font:700 .9rem Poppins;color:var(--navy);letter-spacing:.08em}
+.g-podio{background:linear-gradient(135deg,#012941,#0B4166);border-radius:16px;padding:13px 12px;margin-bottom:14px;color:#fff}
+.g-podio h3{margin:0 0 8px;font:700 .8rem Poppins;letter-spacing:.06em;text-transform:uppercase;color:#FFCC33}
+.g-pod{display:flex;align-items:center;gap:10px;padding:5px 0}
+.g-pod+.g-pod{border-top:1px solid rgba(255,255,255,.12)}
+.g-pod .pos{flex:none;width:22px;font:800 1.1rem 'Baloo 2'}
+.g-pod img{flex:none;width:40px;height:40px;border-radius:50%;object-fit:cover}
+.g-pod .nom{flex:1;min-width:0;font:700 .84rem Poppins;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-pod .nom small{display:block;font:500 .66rem Poppins;color:rgba(255,255,255,.7)}
+.g-pod .nota{flex:none;font:800 1.25rem 'Baloo 2';color:#FFCC33}
+.g-vacio{background:#fff;border:1px solid #E4DCCB;border-radius:14px;padding:16px 14px;text-align:center;font:500 .82rem/1.4 Poppins;color:#5d6b7a;margin-bottom:14px}
+.g-sec{margin:14px 2px 8px;font:700 .72rem Poppins;letter-spacing:.1em;text-transform:uppercase;color:#8A94A0}
+.g-tapa{background:#fff;border:1px solid #E4DCCB;border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.g-tapa-cab{display:flex;align-items:center;gap:10px}
+.g-tapa-cab img{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover}
+.g-tapa-cab .tx{flex:1;min-width:0}
+.g-tapa-cab b{display:block;font:700 .86rem Poppins;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-tapa-cab span{font:500 .72rem Poppins;color:#5d6b7a}
+.g-tapa.espera{background:#FFFBF0;border-style:dashed;border-color:#D9C48B}
+.g-tapa.espera img{filter:grayscale(1);opacity:.55}
+.g-candado{flex:none;font-size:1.15rem}
+.g-media{flex:none;font:800 1.5rem 'Baloo 2';color:var(--gold-dark)}
+.g-votos{margin-top:8px;border-top:1px solid #EFE8D6;padding-top:7px}
+.g-voto{display:flex;align-items:center;gap:8px;padding:3px 0;font:600 .76rem Poppins}
+.g-voto .n{flex:0 0 38%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-voto.yo .n{color:var(--gold-dark)}
+.g-voto .bar{flex:1;height:8px;border-radius:99px;background:#EFE8D6;overflow:hidden}
+.g-voto .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#FFCC33,var(--gold));width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.g-voto .v{flex:none;width:30px;text-align:right;font-weight:800}
+.g-tapa.nueva{animation:destapa 1.1s ease-out;box-shadow:0 0 0 3px rgba(255,204,51,.7)}
+@keyframes destapa{0%{transform:scale(.94) rotateX(30deg);opacity:.3}60%{transform:scale(1.03)}100%{transform:none;opacity:1}}
+.g-pie{flex:none;display:flex;gap:10px;padding:10px 14px max(12px,env(safe-area-inset-bottom));border-top:1px solid #E4DCCB;background:var(--cream)}
+.g-pie .btn{padding:12px 10px;font-size:.86rem}
+.g-pie .btn:disabled{opacity:.4}
+.g-peligro{margin-top:18px;text-align:center}
+.g-peligro button{background:none;border:none;color:#B3261E;font:600 .78rem Poppins;text-decoration:underline;cursor:pointer;padding:8px}
+.g-aviso{margin:0 0 12px;padding:9px 12px;border-radius:12px;background:#E8F0F7;font:500 .76rem/1.35 Poppins;color:#2B4A63}
+.capa-caja input.g-in{width:100%;box-sizing:border-box;padding:12px;border:1.5px solid #CFC5AC;border-radius:12px;font:600 1rem Poppins;background:#fff;color:var(--navy)}
+.capa-caja input.g-in.cod{text-align:center;letter-spacing:.3em;text-transform:uppercase;font-size:1.3rem}
+.g-err{min-height:1.2em;margin:6px 0 8px;color:#B3261E;font:600 .78rem Poppins}
+
 /* ---- Barra del mapa: logo ALAHO centrado + botón Mi Tapaporte ---- */
 .pa-logo{flex:1;display:flex;justify-content:center}
 .pa-logo img{width:auto!important;height:40px!important;background:#fff;border-radius:10px;padding:3px 8px}
@@ -1187,6 +1263,48 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
   <div class="tp-pie">
     <button class="btn btn-oro" id="tp-volver-mapa">Seguir tapeando</button>
     <button class="btn btn-linea" id="tp-clasif">Clasificación</button>
+  </div>
+</div>
+
+<!-- ======= GRUPOS DE AMIGOS ======= -->
+<div id="grupo">
+  <div class="g-cab">
+    <button class="tp-volver" id="g-cerrar" aria-label="Cerrar">✕</button>
+    <h2 id="g-titulo">Grupo</h2>
+  </div>
+  <div class="g-cuerpo" id="g-cuerpo"></div>
+  <div class="g-pie">
+    <button class="btn btn-oro" id="g-img">Compartir podio</button>
+    <button class="btn btn-linea" id="g-volver">Seguir tapeando</button>
+  </div>
+</div>
+<div class="capa" id="g-form">
+  <div class="capa-caja">
+    <button class="capa-cerrar" id="gf-cerrar" aria-label="Cerrar">✕</button>
+    <div id="gf-crear">
+      <h3>Crea tu grupo</h3>
+      <p class="capa-sub">Tu voto cuenta siempre en la clasificación general. Con un grupo, además, tenéis la vuestra: cada tapa se destapa a la vez cuando hayáis votado todos.</p>
+      <label>Nombre del grupo<input id="gf-nombre" class="g-in" maxlength="40" placeholder="Ej.: Los de la oficina"></label>
+      <p class="g-err" id="gf-err"></p>
+      <button class="btn btn-oro" id="gf-crear-ok">Crear grupo</button>
+    </div>
+    <div id="gf-unir" hidden>
+      <h3>Entrar en un grupo</h3>
+      <p class="capa-sub">Escribe el código que te han pasado (6 letras y números).</p>
+      <input id="gf-codigo" class="g-in cod" maxlength="6" placeholder="······" autocapitalize="characters" autocomplete="off">
+      <p class="g-err" id="gf-err2"></p>
+      <button class="btn btn-oro" id="gf-unir-ok">Entrar</button>
+    </div>
+  </div>
+</div>
+<div class="capa" id="g-invit">
+  <div class="capa-caja">
+    <button class="capa-cerrar" id="gi-cerrar" aria-label="Cerrar">✕</button>
+    <h3>Te han invitado a un grupo</h3>
+    <p class="capa-sub" id="gi-txt"></p>
+    <p class="g-aviso">Tu voto de cada tapa cuenta en la clasificación general, como siempre. Además se suma a la de este grupo, y las notas se destapan a la vez cuando hayáis votado todos.</p>
+    <p class="g-err" id="gi-err"></p>
+    <button class="btn btn-oro" id="gi-entrar">Entrar en el grupo</button>
   </div>
 </div>
 
@@ -2905,7 +3023,9 @@ function cargarDatosRuta() {
       + "</div>"
       + finalHtml
       + '<div class="tp-hitos">' + hitosHtml + "</div>"
+      + '<div class="tp-grupos" id="tp-grupos"></div>'
       + '<div class="tp-rejilla">' + rejilla + "</div>";
+    if (typeof pintarGruposTarjeta === "function") pintarGruposTarjeta();
     ultimoSello = "";
   }
   $("#tp-cuerpo").addEventListener("click", (ev) => {
@@ -2921,6 +3041,7 @@ function cargarDatosRuta() {
     pintarTapaporte();
     $("#tapaporte").classList.add("on");
     $("#tp-cuerpo").scrollTop = 0;
+    if (G_ON) refrescarTarjetaGrupos();
   }
   function cerrarTapaporte() { $("#tapaporte").classList.remove("on"); }
   $("#tp-cerrar").onclick = cerrarTapaporte;
@@ -2935,6 +3056,261 @@ function cargarDatosRuta() {
     compartirCanvas(cv, "mi-tapaporte.png", "Llevo " + n + " de " + PARADAS.length + " tapas en la XI Ruta de la Tapa de La Línea 🍽️ Gracias a Alhambra, Coca-Cola, Guadiaro y al Ayuntamiento de La Línea. #TAPALALINEA26");
   };
   $("#b-tapaporte-mapa").onclick = () => abrirTapaporte();
+
+  /* =====================================================================
+     GRUPOS DE AMIGOS (solo con servidor real). El voto oficial no cambia:
+     cada voto cuenta siempre en la clasificación general. El grupo solo LEE
+     esos votos. Una tapa se destapa en el grupo cuando han votado todos y
+     es el servidor quien lo decide (nadie recibe notas ajenas antes).
+     ===================================================================== */
+  const G_ON = !!SB;
+  const gEsc = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  let G_DISP = null, GRUPOS = null, gActual = null, gEstado = null, gTimer = null, gConfirm = "", gPendiente = "";
+  const gVistas = (id) => leerJSON("tapa_g_vistas_" + id, []);
+  const gUrl = (codigo) => location.origin + location.pathname + "?grupo=" + codigo;
+
+  async function cargarGrupos() {
+    if (!G_ON) { GRUPOS = []; return; }
+    if (!usuario()) {
+      GRUPOS = [];
+      // Sin registrarse no se crea sesión: se pregunta al servidor con la clave pública si la capa existe (404 = no existe).
+      if (G_DISP === null) { try { const r = await sbPeticion("/rest/v1/rpc/grupo_mis", {}); G_DISP = r.estado === 404 ? false : null; } catch (e) {} }
+      return;
+    }
+    const r = await sbRpc("grupo_mis", {}, true);
+    if (r && r.ok) { GRUPOS = r.grupos; G_DISP = true; }
+    else {
+      if (GRUPOS == null) GRUPOS = [];
+      // El servidor aún no tiene la capa de grupos: la función no existe -> se oculta la tarjeta.
+      if (r && r.error === "error_servidor" && !G_DISP) G_DISP = false;
+    }
+  }
+  function pintarGruposTarjeta() {
+    const el = $("#tp-grupos"); if (!el) return;
+    if (!G_ON || G_DISP === false) { el.innerHTML = ""; return; }
+    const gs = GRUPOS || [];
+    if (!gs.length) {
+      el.innerHTML = '<div class="gr-promo"><b>👥 Tapea con tus colegas o tu familia</b>'
+        + "<p>Crea un grupo: tu voto cuenta en la clasificación general y además tenéis la vuestra. Cada tapa se destapa a la vez cuando hayáis votado todos.</p>"
+        + '<div class="gr-botones"><button class="gr-btn" id="gr-crear" type="button">Crear un grupo</button><button class="gr-btn sec" id="gr-unirse" type="button">Tengo un código</button></div></div>';
+      return;
+    }
+    el.innerHTML = '<div class="gr-tit">👥 Mis grupos<small>' + gs.length + "</small></div>"
+      + gs.map((g) => '<button class="gr-tarj" data-g="' + g.id + '" type="button"><span class="ic">👥</span><span class="tx"><b>' + gEsc(g.nombre) + "</b><span>"
+        + g.miembros + (g.miembros === 1 ? " persona" : " personas") + " · " + g.reveladas + (g.reveladas === 1 ? " tapa destapada" : " tapas destapadas") + "</span></span>"
+        + (g.esperando > 0 ? '<span class="gr-chip">' + g.esperando + " esperando</span>" : (g.reveladas > 0 ? '<span class="gr-chip ok">al día</span>' : "")) + "</button>").join("")
+      + '<div class="gr-acciones"><button class="gr-btn" id="gr-crear" type="button">+ Crear grupo</button><button class="gr-btn" id="gr-unirse" type="button">Tengo un código</button></div>';
+  }
+  async function refrescarTarjetaGrupos() { await cargarGrupos(); if ($("#tapaporte").classList.contains("on")) pintarGruposTarjeta(); }
+
+  /* ---------- crear / entrar ---------- */
+  function abrirFormGrupo(modo) {
+    $("#gf-crear").hidden = modo !== "crear"; $("#gf-unir").hidden = modo !== "unir";
+    $("#gf-err").textContent = ""; $("#gf-err2").textContent = "";
+    $("#g-form").classList.add("on");
+    setTimeout(() => $(modo === "crear" ? "#gf-nombre" : "#gf-codigo").focus(), 250);
+  }
+  $("#gf-cerrar").onclick = () => $("#g-form").classList.remove("on");
+  const gMsgError = (e) => ({
+    codigo_no_valido: "Ese código no existe. Revísalo con quien te lo pasó.",
+    grupo_lleno: "El grupo ya está completo (máximo 10 personas).",
+    demasiados_grupos: "Has llegado al máximo de grupos.",
+    nombre_no_valido: "Ponle un nombre al grupo (entre 2 y 40 letras).",
+    otra_ruta: "Ese grupo es de otra ruta.",
+    sin_conexion: "No hay conexión. Inténtalo de nuevo.",
+    mucha_gente: "Hay mucha gente ahora mismo. Espera un minuto y vuelve a pulsar."
+  }[e] || "No se ha podido completar. Inténtalo de nuevo.");
+  $("#gf-crear-ok").onclick = () => {
+    const nombre = $("#gf-nombre").value.trim().replace(/\s+/g, " ");
+    if (nombre.length < 2) { $("#gf-err").textContent = gMsgError("nombre_no_valido"); return; }
+    conRegistro(async () => {
+      const b = $("#gf-crear-ok"); b.disabled = true;
+      const r = await sbRpc("grupo_crear", { p_nombre: nombre }, true);
+      b.disabled = false;
+      if (r && r.ok) { $("#g-form").classList.remove("on"); $("#gf-nombre").value = ""; await refrescarTarjetaGrupos(); abrirGrupo(r.id, true); }
+      else { $("#g-form").classList.add("on"); $("#gf-err").textContent = gMsgError(r && r.error); }
+    });
+  };
+  $("#gf-unir-ok").onclick = () => {
+    const cod = $("#gf-codigo").value.trim().toUpperCase();
+    if (cod.length < 6) { $("#gf-err2").textContent = gMsgError("codigo_no_valido"); return; }
+    conRegistro(async () => {
+      const b = $("#gf-unir-ok"); b.disabled = true;
+      const r = await sbRpc("grupo_unirse", { p_codigo: cod }, true);
+      b.disabled = false;
+      if (r && r.ok) { $("#g-form").classList.remove("on"); $("#gf-codigo").value = ""; await refrescarTarjetaGrupos(); abrirGrupo(r.id, false); }
+      else { $("#g-form").classList.add("on"); $("#gf-err2").textContent = gMsgError(r && r.error); }
+    });
+  };
+
+  /* ---------- invitación por enlace (?grupo=CODIGO) ---------- */
+  async function procesarInvitacion() {
+    const cod = (QS.get("grupo") || "").trim().toUpperCase();
+    if (!G_ON || !/^[A-Z0-9]{6}$/.test(cod)) return;
+    const r = await sbRpc("grupo_ver_codigo", { p_codigo: cod }, true);
+    try { history.replaceState(null, "", location.pathname); } catch (e) {}
+    if (!r || !r.ok) { gPendiente = ""; return; }
+    if (r.ya_soy_miembro) { await refrescarTarjetaGrupos(); const g = (GRUPOS || []).find((x) => x.codigo === cod); if (g) { abrirTapaporte(); abrirGrupo(g.id, false); } return; }
+    gPendiente = cod;
+    $("#gi-txt").innerHTML = "<b>" + gEsc(r.master) + "</b> te invita al grupo <b>«" + gEsc(r.nombre) + "»</b> (" + r.miembros + " de 10 personas).";
+    $("#gi-err").textContent = "";
+    $("#g-invit").classList.add("on");
+  }
+  $("#gi-cerrar").onclick = () => $("#g-invit").classList.remove("on");
+  $("#gi-entrar").onclick = () => {
+    conRegistro(async () => {
+      const b = $("#gi-entrar"); b.disabled = true;
+      const r = await sbRpc("grupo_unirse", { p_codigo: gPendiente }, true);
+      b.disabled = false;
+      if (r && r.ok) { $("#g-invit").classList.remove("on"); gPendiente = ""; await refrescarTarjetaGrupos(); abrirTapaporte(); abrirGrupo(r.id, false); }
+      else { $("#g-invit").classList.add("on"); $("#gi-err").textContent = gMsgError(r && r.error); }
+    });
+  };
+
+  /* ---------- pantalla del grupo ---------- */
+  async function abrirGrupo(id, recienCreado) {
+    gActual = id; gEstado = null; gConfirm = "";
+    $("#g-titulo").textContent = "Grupo"; $("#g-cuerpo").innerHTML = '<p class="g-vacio">Cargando…</p>';
+    $("#grupo").classList.add("on");
+    await refrescarGrupo();
+    if (recienCreado && gEstado) invitarAGrupo();
+    clearInterval(gTimer);
+    gTimer = setInterval(() => { if (!document.hidden && $("#grupo").classList.contains("on")) refrescarGrupo(); }, 8000);
+  }
+  function cerrarGrupo() { $("#grupo").classList.remove("on"); clearInterval(gTimer); gActual = null; refrescarTarjetaGrupos(); }
+  $("#g-cerrar").onclick = cerrarGrupo;
+  $("#g-volver").onclick = () => { cerrarGrupo(); cerrarTapaporte(); cerrarHojasFicha(); cerrarParada(); };
+  async function refrescarGrupo() {
+    if (!gActual) return;
+    const id = gActual, r = await sbRpc("grupo_estado", { p_grupo: id }, true);
+    if (id !== gActual) return;
+    if (r && r.ok) { gEstado = r; pintarGrupo(); }
+    else if (r && r.error === "grupo_no_encontrado") { cerrarGrupo(); }
+  }
+  const gParada = (id) => PARADAS.find((q) => q.id === id);
+  function gRanking() {
+    return ((gEstado && gEstado.tapas) || []).filter((t) => t.revelada && t.media != null)
+      .map((t) => ({ t, q: gParada(t.est_id) })).filter((x) => x.q)
+      .sort((a, b) => Number(b.t.media) - Number(a.t.media));
+  }
+  function pintarGrupo() {
+    const e = gEstado; if (!e) return;
+    const g = e.grupo, n = e.miembros.length, rk = gRanking();
+    $("#g-titulo").textContent = g.nombre;
+    const vistas = gVistas(g.id), nuevas = [];
+    const miembros = e.miembros.map((m) => '<span class="g-miembro' + (m.yo ? " yo" : "") + '">' + (m.master ? "👑 " : "") + gEsc(m.nombre) + (m.yo ? " (tú)" : "")
+      + (g.soy_master && !m.master ? ' <button type="button" data-expulsar="' + m.mid + '" aria-label="Quitar">' + (gConfirm === "x" + m.mid ? "" : "✕") + "</button>" : "") + "</span>").join("");
+    const miembrosFix = miembros.replace(/<button type="button" data-expulsar="(\d+)" aria-label="Quitar"><\/button>/g, '<button type="button" class="sino" data-expulsar="$1">¿Quitar?</button>');
+    const podio = rk.length
+      ? '<div class="g-podio"><h3>Clasificación del grupo</h3>' + rk.slice(0, 5).map((x, i) => '<div class="g-pod"><span class="pos">' + (i + 1) + '</span><img src="' + x.q.mini + '" alt=""><span class="nom">' + gEsc(x.q.nombre) + "<small>" + gEsc(x.q.tapaNombre) + '</small></span><span class="nota">' + Number(x.t.media).toFixed(2) + "</span></div>").join("") + "</div>"
+      : '<div class="g-vacio"><b>Aún no hay ninguna tapa destapada.</b><br>Vota una tapa en su bar y, cuando hayáis votado todos los del grupo, se destapan las notas a la vez.</div>';
+    const tapas = (e.tapas || []).map((t) => ({ t, q: gParada(t.est_id) })).filter((x) => x.q);
+    const esperando = tapas.filter((x) => !x.t.revelada);
+    const reveladas = tapas.filter((x) => x.t.revelada).sort((a, b) => Number(b.t.media) - Number(a.t.media));
+    const filaEspera = (x) => {
+      const t = x.t, f = t.faltan || [];
+      const txt = t.yo_vote ? "Tu voto está guardado. Esperando a " + gEsc(f.join(", ")) + " · " + t.votaron + " de " + t.total
+        : "Ya han votado " + t.votaron + " de " + t.total + ". Vota esta tapa para poder destaparla.";
+      return '<div class="g-tapa espera"><div class="g-tapa-cab"><img src="' + x.q.mini + '" alt=""><span class="tx"><b>' + gEsc(x.q.nombre) + "</b><span>" + txt + '</span></span><span class="g-candado">🔒</span></div></div>';
+    };
+    const filaReveal = (x) => {
+      const t = x.t, nueva = vistas.indexOf(t.est_id) < 0; if (nueva) nuevas.push(t.est_id);
+      return '<div class="g-tapa' + (nueva ? " nueva" : "") + '"><div class="g-tapa-cab"><img src="' + x.q.mini + '" alt=""><span class="tx"><b>' + gEsc(x.q.nombre) + "</b><span>" + gEsc(x.q.tapaNombre) + '</span></span><span class="g-media">' + Number(t.media).toFixed(2) + "</span></div>"
+        + '<div class="g-votos">' + t.votos.map((v) => '<div class="g-voto' + (v.yo ? " yo" : "") + '"><span class="n">' + gEsc(v.nombre) + '</span><span class="bar"><i data-w="' + (Number(v.media) / 5 * 100) + '"></i></span><span class="v">' + Number(v.media).toFixed(1) + "</span></div>").join("") + "</div></div>";
+    };
+    const peligro = g.soy_master
+      ? '<div class="g-peligro"><button type="button" id="g-eliminar">' + (gConfirm === "del" ? "¿Seguro? Pulsa otra vez para eliminar el grupo" : "Eliminar el grupo") + "</button></div>"
+      : '<div class="g-peligro"><button type="button" id="g-salir">' + (gConfirm === "out" ? "¿Seguro? Pulsa otra vez para salir" : "Salir del grupo") + "</button></div>";
+    $("#g-cuerpo").innerHTML = '<div class="g-caja">'
+      + '<div class="g-miembros">' + miembrosFix + "</div><p class=\"g-cupo\">" + n + " de " + g.max + " personas" + (g.soy_master && n > 1 ? " · Si alguien no vota, quítalo con la ✕" : "") + "</p>"
+      + '<div class="g-invitar"><span class="tx">Código del grupo<b>' + gEsc(g.codigo) + '</b></span><button class="gr-btn" id="g-invitar" type="button">Invitar</button></div>'
+      + podio
+      + (esperando.length ? '<div class="g-sec">Esperando al grupo</div>' + esperando.map(filaEspera).join("") : "")
+      + (reveladas.length ? '<div class="g-sec">Tapas destapadas</div>' + reveladas.map(filaReveal).join("") : "")
+      + '<p class="g-aviso" style="margin-top:14px">Tus votos cuentan siempre en la clasificación general. Aquí solo se ven las notas de cada tapa cuando han votado todos los del grupo.</p>'
+      + peligro + "</div>";
+    requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll("#g-cuerpo .bar i").forEach((i) => { i.style.width = i.dataset.w + "%"; })));
+    if (nuevas.length) setTimeout(() => { try { localStorage.setItem("tapa_g_vistas_" + g.id, JSON.stringify(vistas.concat(nuevas))); } catch (x) {} }, 2500);
+    $("#g-img").disabled = !rk.length;
+  }
+  $("#g-cuerpo").addEventListener("click", async (ev) => {
+    const g = gEstado && gEstado.grupo; if (!g) return;
+    if (ev.target.closest("#g-invitar")) { invitarAGrupo(); return; }
+    const ex = ev.target.closest("[data-expulsar]");
+    if (ex) {
+      const clave = "x" + ex.dataset.expulsar;
+      if (gConfirm !== clave) { gConfirm = clave; pintarGrupo(); return; }
+      gConfirm = ""; await sbRpc("grupo_expulsar", { p_grupo: g.id, p_mid: Number(ex.dataset.expulsar) }, true); await refrescarGrupo(); return;
+    }
+    if (ev.target.closest("#g-eliminar")) {
+      if (gConfirm !== "del") { gConfirm = "del"; pintarGrupo(); return; }
+      gConfirm = ""; await sbRpc("grupo_eliminar", { p_grupo: g.id }, true); cerrarGrupo(); return;
+    }
+    if (ev.target.closest("#g-salir")) {
+      if (gConfirm !== "out") { gConfirm = "out"; pintarGrupo(); return; }
+      gConfirm = ""; await sbRpc("grupo_salir", { p_grupo: g.id }, true); cerrarGrupo(); return;
+    }
+  });
+  async function invitarAGrupo() {
+    const g = gEstado && gEstado.grupo; if (!g) return;
+    const url = gUrl(g.codigo);
+    const texto = "Únete a mi grupo «" + g.nombre + "» en la Ruta de la Tapa de La Línea 🍽️ Tu voto cuenta en la clasificación general y además en la nuestra. Las notas se destapan a la vez cuando votemos todos. Código: " + g.codigo;
+    try { if (navigator.share) { await navigator.share({ title: "Grupo «" + g.nombre + "»", text: texto, url }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(texto + " " + url); const b = $("#g-invitar"); if (b) { b.textContent = "¡Copiado!"; setTimeout(() => { b.textContent = "Invitar"; }, 2500); } }
+    catch (e) { window.open("https://wa.me/?text=" + encodeURIComponent(texto + " " + url), "_blank"); }
+  }
+
+  /* Imagen para compartir: clasificación del grupo */
+  async function dibujarGrupo() {
+    try { await Promise.all(['700 60px "Baloo 2"', '600 30px Poppins'].map((f) => document.fonts.load(f))); } catch (e) { /* noop */ }
+    const W = 1080, H = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    const x = cv.getContext("2d"), rk = gRanking().slice(0, 5), g = gEstado.grupo, n = gEstado.miembros.length;
+    x.fillStyle = "#012941"; x.fillRect(0, 0, W, H);
+    x.textAlign = "center"; x.fillStyle = "#FFCC33"; x.font = '700 30px Poppins'; x.fillText("XI RUTA DE LA TAPA · LA LÍNEA", W / 2, 84);
+    let t = g.nombre; x.fillStyle = "#fff"; x.font = '800 72px "Baloo 2"';
+    while (x.measureText(t).width > W - 120 && t.length > 4) t = t.slice(0, -2);
+    if (t !== g.nombre) t = t.trim() + "…";
+    x.fillText(t, W / 2, 178);
+    x.fillStyle = "rgba(255,255,255,.78)"; x.font = '500 28px Poppins'; x.fillText("Nuestra clasificación · " + n + (n === 1 ? " persona" : " personas") + " · " + rk.length + (rk.length === 1 ? " tapa" : " tapas") + " destapadas", W / 2, 226);
+    const imgs = await Promise.all(rk.map((r) => cargarImg(r.q.mini)));
+    const fila = rk.length <= 3 ? 176 : 150, y0 = 262 + Math.max(0, Math.round((730 - rk.length * (fila + 14)) / 2));
+    rk.forEach((r, i) => {
+      const y = y0 + i * (fila + 14), medalla = ["#FFCC33", "#D5DBE1", "#D9A066", "rgba(255,255,255,.4)", "rgba(255,255,255,.4)"][i];
+      x.fillStyle = "rgba(255,255,255,.08)"; x.beginPath(); x.roundRect(60, y, W - 120, fila, 26); x.fill();
+      x.fillStyle = medalla; x.textAlign = "center"; x.font = '800 62px "Baloo 2"'; x.fillText(String(i + 1), 120, y + fila / 2 + 22);
+      const d = 112, cx = 170, cy = y + (fila - d) / 2;
+      if (imgs[i]) { x.save(); x.beginPath(); x.arc(cx + d / 2, cy + d / 2, d / 2, 0, Math.PI * 2); x.clip(); x.drawImage(imgs[i], cx, cy, d, d); x.restore(); }
+      x.lineWidth = 5; x.strokeStyle = medalla; x.beginPath(); x.arc(cx + d / 2, cy + d / 2, d / 2, 0, Math.PI * 2); x.stroke();
+      x.textAlign = "left"; x.fillStyle = "#fff"; x.font = '700 36px Poppins';
+      let nm = r.q.nombre; while (x.measureText(nm).width > 520 && nm.length > 4) nm = nm.slice(0, -2); if (nm !== r.q.nombre) nm = nm.trim() + "…";
+      x.fillText(nm, 310, y + fila / 2 - 6);
+      x.fillStyle = "rgba(255,255,255,.7)"; x.font = '500 25px Poppins';
+      let tn = r.q.tapaNombre || ""; while (x.measureText(tn).width > 520 && tn.length > 4) tn = tn.slice(0, -2); if (tn !== (r.q.tapaNombre || "")) tn = tn.trim() + "…";
+      x.fillText(tn, 310, y + fila / 2 + 32);
+      x.textAlign = "right"; x.fillStyle = "#FFCC33"; x.font = '800 66px "Baloo 2"'; x.fillText(Number(r.t.media).toFixed(2), W - 96, y + fila / 2 + 24);
+    });
+    x.textAlign = "center"; x.fillStyle = "rgba(255,255,255,.7)"; x.font = '500 26px Poppins';
+    let nms = gEstado.miembros.map((m) => m.nombre).join(" · "); while (x.measureText(nms).width > W - 120 && nms.length > 6) nms = nms.slice(0, -2); 
+    x.fillText(nms, W / 2, 1006);
+    x.textAlign = "center"; x.fillStyle = "#FFCC33"; x.font = '700 31px Poppins'; x.fillText("¿Y la vuestra? Crea tu grupo y votad a la vez  #TAPALALINEA26", W / 2, 1056);
+    dibujarPatrocinadores(x, await cargarImg(DIP_IMG.patro), "oro", 0, 1096, W, H - 1096);
+    return cv;
+  }
+  $("#g-img").onclick = async () => {
+    if (!gEstado || !gRanking().length) return;
+    const b = $("#g-img"); b.disabled = true; const tx = b.textContent; b.textContent = "Preparando imagen…";
+    try {
+      const cv = await dibujarGrupo();
+      await compartirCanvas(cv, "clasificacion-grupo-ruta-tapa.png", "Así va la clasificación de nuestro grupo «" + gEstado.grupo.nombre + "» en la Ruta de la Tapa de La Línea 🍽️ ¿Os animáis a hacer la vuestra? " + location.origin + location.pathname);
+    } finally { b.disabled = false; b.textContent = tx; }
+  };
+
+  /* Tarjeta de grupos dentro del Tapaporte */
+  $("#tp-cuerpo").addEventListener("click", (ev) => {
+    if (ev.target.closest("#gr-crear")) { abrirFormGrupo("crear"); return; }
+    if (ev.target.closest("#gr-unirse")) { abrirFormGrupo("unir"); return; }
+    const gt = ev.target.closest("[data-g]"); if (gt) abrirGrupo(gt.dataset.g, false);
+  });
 
   /* ---------- DEMO: simular el escaneo del QR de un bar. Hace lo mismo
      que el QR real: abre la ficha de ese bar y pasa directo a votar
@@ -3045,6 +3421,7 @@ function cargarDatosRuta() {
       if (SB.produccion || SB_LIBRE) { $("#aviso-demo").hidden = true; document.body.classList.add("sin-aviso"); }
       else $("#aviso-demo").firstChild.textContent = SB_LIBRE ? "PRUEBA ABIERTA — vota la tapa de cada bar, sin escanear nada " : "PRUEBA — servidor real: se vota con el ticket QR ";
       iniciarContadorGente();
+      setTimeout(procesarInvitacion, 1500);
       if (SB_LIBRE) { const ap = $("#aviso-prueba"); if (ap) ap.hidden = false; }
       if (SB_LIBRE) {
         const bc = $("#b-compartir"); if (bc) {
