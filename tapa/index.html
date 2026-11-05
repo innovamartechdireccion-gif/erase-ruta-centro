@@ -706,11 +706,11 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 .marca b{font:800 .86rem Montserrat;letter-spacing:.05em}
 
 /* ---- portada ---- */
-#portada{justify-content:flex-start;text-align:center;background:var(--cream);padding-top:max(14px,env(safe-area-inset-top))}
+#portada{justify-content:flex-start;text-align:center;background:var(--cream);padding-top:max(14px,env(safe-area-inset-top));padding-bottom:0}
 #portada .acciones{background:var(--navy);margin-left:-22px;margin-right:-22px;padding:18px 22px max(20px,env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
 .portada-texto{flex:1;display:flex;flex-direction:column;justify-content:center}
 #portada .marca,#portada .portada-texto{display:none}
-.portada-cartel{position:relative;z-index:1;flex:1;min-height:0;width:calc(100% + 44px);max-width:none;margin:0 -22px;object-fit:contain}
+.portada-cartel{position:relative;z-index:1;flex:1;min-height:0;width:calc(100% + 44px);max-width:none;margin:0 -22px;object-fit:contain;object-position:center top}
 #portada{overflow:hidden}
 #portada .cartel-fondo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(26px) saturate(1.15);transform:scale(1.15);z-index:0}
 #portada .acciones{position:relative;z-index:1}
