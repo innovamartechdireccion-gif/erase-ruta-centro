@@ -955,7 +955,7 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 .btn-linea{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
 
 /* ---- Grupos de amigos ---- */
-.tp-grupos{max-width:560px;margin:0 auto 16px}
+#gl-cuerpo{margin:0 0 6px}
 .gr-promo{background:linear-gradient(135deg,#012941,#0B4166);color:#fff;border-radius:16px;padding:14px 14px 12px;box-shadow:0 4px 14px rgba(1,41,65,.22)}
 .gr-promo b{display:block;font:700 .98rem Poppins;color:#FFCC33;margin-bottom:3px}
 .gr-promo p{margin:0 0 10px;font:500 .8rem/1.4 Poppins;color:rgba(255,255,255,.9)}
@@ -1278,6 +1278,15 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
   <div class="g-pie">
     <button class="btn btn-oro" id="g-img">Compartir podio</button>
     <button class="btn btn-linea" id="g-volver">Seguir tapeando</button>
+  </div>
+</div>
+<div class="capa" id="g-lista">
+  <div class="capa-caja">
+    <button class="capa-cerrar" id="gl-cerrar" aria-label="Cerrar">✕</button>
+    <h3>Tapea con tus amigos</h3>
+    <p class="capa-sub">Tu voto cuenta siempre en la clasificación general. En un grupo, además, tenéis la vuestra.</p>
+    <div id="gl-cuerpo"></div>
+    <button class="enlace" id="gl-lista-cerrar2" type="button">Cerrar</button>
   </div>
 </div>
 <div class="capa" id="g-form">
@@ -3027,9 +3036,7 @@ function cargarDatosRuta() {
       + "</div>"
       + finalHtml
       + '<div class="tp-hitos">' + hitosHtml + "</div>"
-      + '<div class="tp-grupos" id="tp-grupos"></div>'
       + '<div class="tp-rejilla">' + rejilla + "</div>";
-    if (typeof pintarGruposTarjeta === "function") pintarGruposTarjeta();
     ultimoSello = "";
   }
   $("#tp-cuerpo").addEventListener("click", (ev) => {
@@ -3045,7 +3052,6 @@ function cargarDatosRuta() {
     pintarTapaporte();
     $("#tapaporte").classList.add("on");
     $("#tp-cuerpo").scrollTop = 0;
-    if (G_ON) refrescarTarjetaGrupos();
   }
   function cerrarTapaporte() { $("#tapaporte").classList.remove("on"); }
   $("#tp-cerrar").onclick = cerrarTapaporte;
@@ -3090,7 +3096,7 @@ function cargarDatosRuta() {
     }
   }
   function pintarGruposTarjeta() {
-    const el = $("#tp-grupos"); if (!el) return;
+    const el = $("#gl-cuerpo"); if (!el) return;
     if (!G_ON || G_DISP === false) { el.innerHTML = ""; return; }
     const gs = GRUPOS || [];
     if (!gs.length) {
@@ -3105,7 +3111,10 @@ function cargarDatosRuta() {
         + (g.esperando > 0 ? '<span class="gr-chip">' + g.esperando + " esperando</span>" : (g.reveladas > 0 ? '<span class="gr-chip ok">al día</span>' : "")) + "</button>").join("")
       + '<div class="gr-acciones"><button class="gr-btn" id="gr-crear" type="button">+ Crear grupo</button><button class="gr-btn" id="gr-unirse" type="button">Tengo un código</button></div>';
   }
-  async function refrescarTarjetaGrupos() { await cargarGrupos(); if ($("#tapaporte").classList.contains("on")) pintarGruposTarjeta(); }
+  async function refrescarTarjetaGrupos() { await cargarGrupos(); if ($("#g-lista").classList.contains("on")) pintarGruposTarjeta(); }
+  function abrirLista() { pintarGruposTarjeta(); $("#g-lista").classList.add("on"); refrescarTarjetaGrupos(); }
+  $("#gl-cerrar").onclick = () => $("#g-lista").classList.remove("on");
+  $("#gl-lista-cerrar2").onclick = () => $("#g-lista").classList.remove("on");
 
   /* ---------- crear / entrar ---------- */
   function abrirFormGrupo(modo) {
@@ -3119,7 +3128,7 @@ function cargarDatosRuta() {
   $("#gf-a-crear").onclick = () => abrirFormGrupo("crear");
   $("#b-grupos").onclick = async () => {
     abrirApp(); await cargarGrupos();
-    if (!(GRUPOS || []).length) abrirFormGrupo("crear"); else abrirTapaporte();
+    if (!(GRUPOS || []).length) abrirFormGrupo("crear"); else abrirLista();
   };
   const gMsgError = (e) => ({
     codigo_no_valido: "Ese código no existe. Revísalo con quien te lo pasó.",
@@ -3160,7 +3169,7 @@ function cargarDatosRuta() {
     const r = await sbRpc("grupo_ver_codigo", { p_codigo: cod }, true);
     try { history.replaceState(null, "", location.pathname); } catch (e) {}
     if (!r || !r.ok) { gPendiente = ""; return; }
-    if (r.ya_soy_miembro) { await refrescarTarjetaGrupos(); const g = (GRUPOS || []).find((x) => x.codigo === cod); if (g) { abrirTapaporte(); abrirGrupo(g.id, false); } return; }
+    if (r.ya_soy_miembro) { await refrescarTarjetaGrupos(); const g = (GRUPOS || []).find((x) => x.codigo === cod); if (g) abrirGrupo(g.id, false); return; }
     gPendiente = cod;
     $("#gi-txt").innerHTML = "<b>" + gEsc(r.master) + "</b> te invita al grupo <b>«" + gEsc(r.nombre) + "»</b> (" + r.miembros + " de 10 personas).";
     $("#gi-err").textContent = "";
@@ -3172,7 +3181,7 @@ function cargarDatosRuta() {
       const b = $("#gi-entrar"); b.disabled = true;
       const r = await sbRpc("grupo_unirse", { p_codigo: gPendiente }, true);
       b.disabled = false;
-      if (r && r.ok) { $("#g-invit").classList.remove("on"); gPendiente = ""; await refrescarTarjetaGrupos(); abrirTapaporte(); abrirGrupo(r.id, false); }
+      if (r && r.ok) { $("#g-invit").classList.remove("on"); gPendiente = ""; await refrescarTarjetaGrupos(); abrirGrupo(r.id, false); }
       else { $("#g-invit").classList.add("on"); $("#gi-err").textContent = gMsgError(r && r.error); }
     });
   };
@@ -3187,15 +3196,15 @@ function cargarDatosRuta() {
     clearInterval(gTimer);
     gTimer = setInterval(() => { if (!document.hidden && $("#grupo").classList.contains("on")) refrescarGrupo(); }, 8000);
   }
-  function cerrarGrupo() { $("#grupo").classList.remove("on"); clearInterval(gTimer); gActual = null; refrescarTarjetaGrupos(); }
-  $("#g-cerrar").onclick = cerrarGrupo;
-  $("#g-volver").onclick = () => { cerrarGrupo(); cerrarTapaporte(); cerrarHojasFicha(); cerrarParada(); };
+  function cerrarGrupo(aLista) { $("#grupo").classList.remove("on"); clearInterval(gTimer); gActual = null; cargarGrupos().then(() => { if (aLista === true && (GRUPOS || []).length) abrirLista(); }); }
+  $("#g-cerrar").onclick = () => cerrarGrupo(true);
+  $("#g-volver").onclick = () => { cerrarGrupo(); $("#g-lista").classList.remove("on"); cerrarTapaporte(); cerrarHojasFicha(); cerrarParada(); };
   async function refrescarGrupo() {
     if (!gActual) return;
     const id = gActual, r = await sbRpc("grupo_estado", { p_grupo: id }, true);
     if (id !== gActual) return;
     if (r && r.ok) { gEstado = r; pintarGrupo(); }
-    else if (r && r.error === "grupo_no_encontrado") { cerrarGrupo(); }
+    else if (r && r.error === "grupo_no_encontrado") { cerrarGrupo(true); }
   }
   const gParada = (id) => PARADAS.find((q) => q.id === id);
   function gRanking() {
@@ -3316,10 +3325,10 @@ function cargarDatosRuta() {
   };
 
   /* Tarjeta de grupos dentro del Tapaporte */
-  $("#tp-cuerpo").addEventListener("click", (ev) => {
+  $("#gl-cuerpo").addEventListener("click", (ev) => {
     if (ev.target.closest("#gr-crear")) { abrirFormGrupo("crear"); return; }
     if (ev.target.closest("#gr-unirse")) { abrirFormGrupo("unir"); return; }
-    const gt = ev.target.closest("[data-g]"); if (gt) abrirGrupo(gt.dataset.g, false);
+    const gt = ev.target.closest("[data-g]"); if (gt) { $("#g-lista").classList.remove("on"); abrirGrupo(gt.dataset.g, false); }
   });
 
   /* ---------- DEMO: simular el escaneo del QR de un bar. Hace lo mismo
