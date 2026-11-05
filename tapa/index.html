@@ -954,6 +954,7 @@ h1,h2,h3{font-family:'Baloo 2',Georgia,sans-serif;margin:0 0 .3em}
 .tp-pie .btn{padding:12px 10px;font-size:.86rem}
 .btn-linea{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
 
+.rk-info{margin:10px 2px 2px;font:500 .74rem/1.4 Poppins;color:#5d6b7a}.rk-info summary{cursor:pointer;font:600 .76rem Poppins;color:var(--navy);list-style:none}.rk-info summary::-webkit-details-marker{display:none}.rk-info p{margin:6px 0 0;padding:9px 11px;background:#E8F0F7;border-radius:10px}
 /* ---- Grupos de amigos ---- */
 #gl-cuerpo{margin:0 0 6px}
 .gr-promo{background:linear-gradient(135deg,#012941,#0B4166);color:#fff;border-radius:16px;padding:14px 14px 12px;box-shadow:0 4px 14px rgba(1,41,65,.22)}
@@ -2631,7 +2632,7 @@ function cargarDatosRuta() {
         if (RANKING === "parcial") ranking.length = Math.min(ranking.length, 3);
         cuerpo.innerHTML = ranking.length ? ranking.map((r, i) => pintarFilaRanking(r, i, p && r.id === p.id)).join("")
           : '<p class="ranking-vacio">Todavía no hay votos suficientes para mostrar la clasificación.</p>';
-        if (ranking.length) { const rk = destino.querySelector(".tapa360-ranking"); if (rk) rk.insertAdjacentHTML("beforeend", '<p class="ranking-nota">La nota tiene en cuenta cuántos votos recibe cada tapa: con pocos votos se acerca a la media general. Así un 5 de una sola persona no supera a una tapa muy votada.</p>'); }
+        if (ranking.length) { const rk = destino.querySelector(".tapa360-ranking"); if (rk) rk.insertAdjacentHTML("beforeend", '<details class="rk-info"><summary>ⓘ ¿Cómo se calcula esta clasificación?</summary><p>No es una media simple: es una <b>ponderación entre la nota de cada tapa y el número de votos que ha recibido</b>. Con pocos votos, la nota se acerca a la media general; cuantos más votos reciba, más pesa su nota real. Así, una tapa con un solo 5 no supera a otra con muchos votos altos. Debajo de cada nota ves su media real y sus votos.</p></details>'); }
         animarBarras(cuerpo);
       });
       return;
