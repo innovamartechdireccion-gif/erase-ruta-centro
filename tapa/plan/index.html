@@ -730,6 +730,7 @@ body.plan-on #plan{display:flex}
 body.sin-aviso #plan-sig{bottom:auto;top:calc(max(10px,env(safe-area-inset-top)) + 130px)}
 #plan-sig[hidden]{display:none}
 body.plan-on #plan-sig{display:none}
+body.plan-on .pastilla{display:none}
 #plan-sig .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--pc);color:#fff;font:700 .85rem/30px Poppins;text-align:center}
 #plan-sig .t{flex:1;min-width:0;display:flex;flex-direction:column}
 #plan-sig small{font:600 .66rem Poppins;color:var(--pc);text-transform:uppercase;letter-spacing:.03em}
@@ -2330,7 +2331,7 @@ function cargarDatosRuta() {
     if (!PLAN.activo) return;
     const ids = PLAN.rutas[PLAN.dia].length ? PLAN.rutas[PLAN.dia] : PARADAS.map((p) => p.id);
     const h = (document.getElementById("plan").offsetHeight || 200) + 14;
-    mapa.fitBounds(L.featureGroup(ids.map((id) => marcadores[id])).getBounds(), { paddingTopLeft: [30, 130], paddingBottomRight: [30, h], maxZoom: 18, animate: true });
+    mapa.fitBounds(L.featureGroup(ids.map((id) => marcadores[id])).getBounds(), { paddingTopLeft: [30, 40], paddingBottomRight: [30, h], maxZoom: 18, animate: true });
   }
   function planToque(id) {
     const arr = PLAN.rutas[PLAN.dia], k = arr.indexOf(id);
