@@ -691,6 +691,132 @@ svg.leaflet-image-layer.leaflet-interactive path {
 #instalar button{border:none;border-radius:99px;font:700 .8rem Poppins;padding:9px 14px;cursor:pointer}
 #instalar .si{background:#FFCC33;color:var(--navy)}
 #instalar .no{background:transparent;color:var(--niebla);padding:9px 6px}
+
+/* ---- Planificador ---- */
+#b-plan{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--navy);color:var(--cream);border:2px solid #FFCC33;border-radius:999px;padding:9px 14px;font:700 .88rem Poppins;box-shadow:0 3px 12px rgba(0,0,0,.3);cursor:pointer;white-space:nowrap}
+#b-plan.tiene::after{content:"";width:9px;height:9px;border-radius:50%;background:#FFCC33}
+body.plan-on #b-plan,body.plan-on .b-tapaporte-flot,body.plan-on .filtro-estab{display:none}
+#plan{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--cream);border-radius:20px 20px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.28);padding:12px 14px max(14px,env(safe-area-inset-bottom));display:none;max-height:42vh;flex-direction:column}
+body.plan-on #plan{display:flex}
+#plan .p-cab{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+#plan .p-cab h4{margin:0;font:700 1rem Poppins;color:var(--navy)}
+#plan .p-cab button{border:none;background:var(--navy);color:var(--cream);border-radius:999px;padding:7px 14px;font:600 .8rem Poppins}
+#plan-dias{display:flex;gap:6px;margin-bottom:8px}
+#plan-dias button{flex:1;position:relative;border:2px solid var(--pc);background:#fff;color:var(--pc);border-radius:12px;padding:5px 0 4px;display:flex;flex-direction:column;align-items:center;line-height:1.05;font-family:Poppins;cursor:pointer}
+#plan-dias small{font-size:.62rem;font-weight:600;opacity:.85}
+#plan-dias b{font-size:1.05rem}
+#plan-dias i{position:absolute;top:-7px;right:-4px;min-width:17px;height:17px;border-radius:9px;background:var(--pc);color:#fff;font:700 .62rem/17px Poppins;text-align:center;font-style:normal}
+#plan-dias i:empty{display:none}
+#plan-dias button.on{background:var(--pc);color:#fff}
+#plan-dias button.on i{background:#fff;color:var(--pc)}
+#plan-resumen{font:500 .8rem Poppins;color:#41505e;margin:0 0 6px}
+#plan-lista{list-style:none;margin:0;padding:0;overflow:auto;flex:1;min-height:0}
+#plan-lista li{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid rgba(1,41,65,.1)}
+#plan-lista .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--pc);color:#fff;font:700 .78rem/26px Poppins;text-align:center}
+#plan-lista .t{flex:1;min-width:0;display:flex;flex-direction:column}
+#plan-lista .t b{font:600 .85rem Poppins;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#plan-lista .t em{font:400 .72rem Poppins;color:#5b6a76;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#plan-lista li button{border:none;background:rgba(1,41,65,.08);color:var(--navy);width:30px;height:30px;border-radius:8px;font-size:.75rem}
+#plan-lista li button:disabled{opacity:.3}
+#plan .p-pie{display:flex;gap:14px;margin-top:6px}
+#plan .p-pie button{border:none;background:none;color:var(--navy);font:600 .78rem Poppins;text-decoration:underline;padding:4px 0}
+.marker-num.plan-en{background:var(--pc);border-color:#fff;color:#fff;transform:scale(1.2)}
+.marker-num.plan-fuera{opacity:.55}
+
+#plan{max-height:none}
+#plan .p-pie{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:4px}
+#plan .p-pie .p-prim{background:var(--navy);color:var(--cream);text-decoration:none;border-radius:999px;padding:9px 16px}
+#plan-sig{position:absolute;left:14px;right:14px;bottom:90px;z-index:21;display:flex;align-items:center;gap:10px;background:#fff;border-radius:16px;border-left:6px solid var(--pc);padding:10px 10px 10px 12px;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+body.sin-aviso #plan-sig{bottom:auto;top:calc(max(10px,env(safe-area-inset-top)) + 130px)}
+#plan-sig[hidden]{display:none}
+body.plan-on #plan-sig{display:none}
+body.plan-on .pastilla{display:none}
+#plan-sig .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--pc);color:#fff;font:700 .85rem/30px Poppins;text-align:center}
+#plan-sig .t{flex:1;min-width:0;display:flex;flex-direction:column}
+#plan-sig small{font:600 .66rem Poppins;color:var(--pc);text-transform:uppercase;letter-spacing:.03em}
+#plan-sig b{font:700 .92rem Poppins;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#plan-sig em{font:400 .72rem Poppins;color:#5b6a76;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#plan-sig button{border:none;border-radius:999px;font:600 .78rem Poppins;padding:8px 12px;background:var(--navy);color:var(--cream)}
+#plan-sig button[data-a="stop"]{background:rgba(1,41,65,.1);color:var(--navy);padding:8px 10px}
+.marker-num.plan-sig{background:var(--pc);border-color:#fff;color:#fff;animation:plansig 1.4s ease-out infinite}
+@keyframes plansig{0%{box-shadow:0 0 0 0 rgba(255,204,51,.9),0 2px 7px rgba(0,0,0,.4)}100%{box-shadow:0 0 0 18px rgba(255,204,51,0),0 2px 7px rgba(0,0,0,.4)}}
+#miplan{position:fixed;inset:0;z-index:60;background:var(--cream);color:var(--navy);overflow-y:auto;padding:0 16px max(24px,env(safe-area-inset-bottom));display:none}
+#miplan.on{display:block}
+.mp-cab{position:sticky;top:0;background:var(--cream);z-index:2;display:flex;align-items:center;gap:10px;padding:max(14px,env(safe-area-inset-top)) 0 10px}
+.mp-cab button{width:38px;height:38px;border-radius:50%;border:none;background:var(--navy);color:var(--cream);font-size:1.3rem;line-height:1}
+.mp-cab h3{margin:0;font:700 1.25rem Poppins}
+#mp-dias{display:flex;gap:6px;margin:4px 0 10px}
+#mp-dias button{flex:1;position:relative;border:2px solid var(--pc);background:#fff;color:var(--pc);border-radius:12px;padding:6px 0 5px;display:flex;flex-direction:column;align-items:center;line-height:1.05;font-family:Poppins}
+#mp-dias small{font-size:.62rem;font-weight:600;opacity:.85}
+#mp-dias b{font-size:1.1rem}
+#mp-dias i{position:absolute;top:-7px;right:-4px;min-width:17px;height:17px;border-radius:9px;background:var(--pc);color:#fff;font:700 .62rem/17px Poppins;text-align:center;font-style:normal}
+#mp-dias i:empty{display:none}
+#mp-dias button.on{background:var(--pc);color:#fff}
+#mp-dias button.on i{background:#fff;color:var(--pc)}
+#mp-resumen{font:600 .9rem Poppins;margin:0 0 10px;color:#41505e}
+#mp-croquis{background:#fff;border-radius:16px;padding:6px;margin-bottom:12px;box-shadow:0 1px 6px rgba(1,41,65,.12)}
+#mp-croquis svg{width:100%;height:auto;display:block}
+#mp-vacio{background:#fff;border-radius:16px;padding:16px;text-align:center;margin-bottom:12px}
+#mp-vacio p{margin:0 0 12px;font:500 .9rem/1.45 Poppins}
+#mp-lista{list-style:none;margin:0 0 14px;padding:0}
+#mp-lista li{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:9px 10px;box-shadow:0 1px 5px rgba(1,41,65,.1);border-left:5px solid var(--pc)}
+#mp-lista li.sig{outline:2.5px solid #FFCC33}
+#mp-lista li.hecho{opacity:.62}
+#mp-lista .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--pc);color:#fff;font:700 .78rem/26px Poppins;text-align:center}
+#mp-lista img{flex:0 0 52px;height:52px;border-radius:10px;object-fit:cover;background:#e9e1cf}
+#mp-lista .t{flex:1;min-width:0;display:flex;flex-direction:column}
+#mp-lista .t b{font:700 .9rem Poppins;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mp-lista .t em{font:400 .76rem Poppins;color:#5b6a76;font-style:normal;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#mp-lista .t u{font:600 .68rem Poppins;color:#1f9d68;text-decoration:none}
+#mp-lista .ac{display:flex;flex-direction:column;gap:4px}
+#mp-lista .ac button{border:none;background:rgba(1,41,65,.08);color:var(--navy);width:30px;height:24px;border-radius:7px;font-size:.66rem}
+#mp-lista .ac button:disabled{opacity:.3}
+.mp-trozo{font:500 .72rem Poppins;color:#5b6a76;padding:4px 0 4px 18px}
+.mp-acc{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.mp-btn{border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:999px;padding:13px 16px;font:700 .92rem Poppins}
+.mp-btn.prim{background:var(--navy);color:var(--cream)}
+.mp-btn.suave{border-color:transparent;background:rgba(1,41,65,.08)}
+#plan-recibido ol{list-style:none;margin:0 0 12px;padding:0}
+#plan-recibido li{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid rgba(1,41,65,.1);font:600 .9rem Poppins}
+#plan-recibido li span{flex:0 0 24px;height:24px;border-radius:50%;background:var(--navy);color:var(--cream);font:700 .72rem/24px Poppins;text-align:center}
+.pr-aviso{font:500 .8rem Poppins;color:#9c4a00;margin:0 0 10px}
+#plan-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:var(--cream);padding:10px 16px;border-radius:999px;font:600 .85rem Poppins;z-index:200;opacity:0;pointer-events:none;transition:.25s}
+#plan-toast.on{opacity:1;transform:translateX(-50%)}
+
+#plan-resumen{line-height:1.45}
+#plan-resumen .pl-tot{font-size:.76rem;color:#5b6a76}
+.marker-num.plan-fuera{opacity:1}
+.marker-num.plan-otro{border-color:var(--po);border-width:5px;box-shadow:0 0 0 2px #fff,0 2px 7px rgba(0,0,0,.4)}
+.mp-cab .mp-ed{margin-left:auto;width:auto;height:auto;border-radius:999px;padding:8px 16px;font:600 .82rem Poppins;background:rgba(1,41,65,.1);color:var(--navy)}
+#mp-prog{margin:0 0 12px}
+#mp-prog .barra{height:12px;border-radius:7px;background:rgba(1,41,65,.12);overflow:hidden}
+#mp-prog .barra i{display:block;height:100%;background:var(--pc);border-radius:7px;transition:width .4s}
+#mp-prog span{display:block;margin-top:6px;font:700 .86rem Poppins;color:var(--pc)}
+#mp-lista .chk{flex:0 0 30px;height:30px;border-radius:9px;border:2.5px solid var(--pc);background:#fff;color:#fff;font:800 1rem/25px Poppins;text-align:center}
+#mp-lista li.hecho .chk{background:var(--pc)}
+#mp-lista li.hecho{opacity:1}
+#mp-lista li.hecho .t b{text-decoration:line-through;text-decoration-thickness:2px;opacity:.6}
+#mp-lista .t u{color:var(--pc)}
+#mp-lista .ac{display:none}
+#miplan.editando #mp-lista .ac{display:flex}
+
+.turnos{display:flex;gap:8px;margin:0 0 8px}
+.turnos button{flex:1;position:relative;border:2px solid var(--pc);background:#fff;color:var(--pc);border-radius:999px;padding:7px 8px;font:700 .84rem Poppins;cursor:pointer}
+.turnos button.on{background:var(--pc);color:#fff}
+.turnos button i{font-style:normal;font-size:.72rem;opacity:.9;margin-left:2px}
+.turnos button i:not(:empty)::before{content:"· "}
+#mp-dias{margin-bottom:8px}
+
+#plan .p-pie .p-go{background:#FFCC33;color:var(--navy);text-decoration:none;border-radius:999px;padding:11px 20px;font-size:.92rem;box-shadow:0 2px 8px rgba(0,0,0,.2);flex:1 0 100%;text-align:center}
+#plan .p-pie .p-go[hidden]{display:none}
+#plan .p-pie .p-prim{background:none;color:var(--navy);text-decoration:underline;padding:4px 0}
+#plan-sig button[data-a="edit"]{background:rgba(1,41,65,.1);color:var(--navy);padding:8px 10px}
+
+.g-planbtn{display:block;width:100%;margin:-4px 0 14px;padding:12px 14px;border:2px solid var(--navy);border-radius:14px;background:#fff;color:var(--navy);font:700 .88rem Poppins;cursor:pointer}
+#pe-lista{display:flex;flex-direction:column;gap:9px;margin-bottom:6px}
+.pe-op{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;border:2px solid var(--pc);border-left-width:7px;background:#fff;border-radius:14px;padding:10px 12px;cursor:pointer;font-family:Poppins;color:var(--navy)}
+.pe-op b{font-size:.9rem}
+.pe-op span{font-size:.74rem;color:#5b6a76;line-height:1.35}
 </style>
 <style>
 :root{--navy:#012941;--navy2:#14243E;--navy-foot:#011E30;--gold:#C8912C;--gold-dark:#9C6F1C;--cream:#F6F1E7;--niebla:rgba(246,241,231,.65);--fondo-cartel:url(data:image/jpeg;base64,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)}
@@ -1133,7 +1259,9 @@ img.ranking-thumb{flex:none;width:36px;height:36px;border-radius:50%;object-fit:
 body.sin-aviso .pastilla{top:max(10px,env(safe-area-inset-top))}
 body.sin-aviso .b-tapaporte-flot{top:calc(max(10px,env(safe-area-inset-top)) + 76px);bottom:auto}
 body.sin-aviso .filtro-estab{top:auto;right:70px;bottom:max(16px,env(safe-area-inset-bottom))}
-body.sin-aviso .filtro-estab .gps-pill{margin-top:0;margin-bottom:8px;order:-1}
+.fila-gps{display:flex;gap:8px;margin-top:8px;width:100%}
+.fila-gps .gps-pill{flex:1;width:auto;margin:0;min-width:0;padding:11px 10px;font-size:.84rem}
+body.sin-aviso .filtro-estab .fila-gps{margin-top:0;margin-bottom:8px;order:-1}
 body.sin-aviso .filtro-estab{display:flex;flex-direction:column}
 body.sin-aviso .leaflet-bottom.leaflet-right{margin-bottom:max(6px,env(safe-area-inset-bottom))}
 body.sin-aviso #cerca-card{bottom:128px}
@@ -1187,9 +1315,49 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
     <div class="cont"><b id="pa-contador">0/0</b><span>tapas</span></div>
   </div>
   <button class="b-tapaporte-flot" id="b-tapaporte-mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/></svg>Mi Tapaporte</button>
+  <div id="plan"><div class="p-cab"><h4>Planifica tu ruta</h4><button id="plan-cerrar" type="button">Listo</button></div><div id="plan-dias"></div><div id="plan-turnos" class="turnos"></div><p id="plan-resumen"></p><div class="p-pie"><button id="plan-empezar" class="p-go" type="button" hidden>▶ Empezamos</button><button id="plan-miplan" type="button">Ver mi plan ›</button><button id="plan-ver" type="button">Ver todos los días</button><button id="plan-vaciar" type="button">Vaciar día</button></div></div>
+  <div id="plan-sig" hidden></div>
   <div class="filtro-estab">
     <select id="filtro-estab" aria-label="Ver un establecimiento en el mapa"></select>
-    <button type="button" id="btn-gps" class="gps-pill"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg><span>Situarme y ver el bar más cercano</span></button>
+    <div class="fila-gps">
+    <button type="button" id="btn-gps" class="gps-pill"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg><span>Bar más cercano</span></button>
+      <button id="b-plan" type="button">📅 Planificar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= MI PLAN ======= -->
+<div id="miplan">
+  <div class="mp-cab"><button id="mp-volver" type="button" aria-label="Volver al mapa">‹</button><h3>Mi plan</h3><button id="mp-editar" type="button" class="mp-ed">Editar</button></div>
+  <div id="mp-dias"></div><div id="mp-turnos" class="turnos"></div>
+  <p id="mp-resumen"></p>
+  <div id="mp-prog" hidden><div class="barra"><i></i></div><span></span></div>
+  <div id="mp-vacio" hidden><p>Todavía no has elegido bares para este día. Toca los números del mapa en el orden en que quieras visitarlos.</p><button type="button" class="mp-btn" id="mp-vacio-btn">Elegir bares en el mapa</button></div>
+  <ol id="mp-lista"></ol>
+  <div class="mp-acc">
+    <button type="button" class="mp-btn prim" id="mp-empezar"></button>
+    <button type="button" class="mp-btn" id="mp-compartir">Compartir este plan</button>
+    <button type="button" class="mp-btn" id="mp-vermapa">Ver solo este recorrido en el mapa</button>
+    <button type="button" class="mp-btn suave" id="mp-anadir">+ Añadir o quitar bares en el mapa</button>
+  </div>
+</div>
+<div class="capa" id="plan-elegir">
+  <div class="capa-caja">
+    <button class="capa-cerrar" id="pe-cerrar" aria-label="Cerrar">✕</button>
+    <h3>Compartir con el grupo</h3>
+    <p class="capa-sub">Elige qué recorrido mandas. Quien abra el enlace entra al grupo y se guarda el plan.</p>
+    <div id="pe-lista"></div>
+    <div id="pe-vacio" hidden><p class="pr-aviso" style="color:var(--navy)">Todavía no has planificado ningún recorrido. Elige los bares en el mapa y vuelve aquí.</p><button class="btn btn-oro" id="pe-planificar" type="button">Planificar ahora</button></div>
+  </div>
+</div>
+<div class="capa" id="plan-recibido">
+  <div class="capa-caja">
+    <h3>Te han pasado un plan</h3>
+    <p class="capa-sub"><b id="pr-dia"></b> · estas son las paradas, en orden:</p>
+    <ol id="pr-lista"></ol>
+    <p class="pr-aviso" id="pr-aviso" hidden>Ya tienes bares elegidos ese día: se sustituirán por estos.</p>
+    <button class="btn btn-oro" id="pr-guardar" type="button">Guardar en mi plan</button>
+    <button class="enlace" id="pr-no" type="button">Ahora no</button>
   </div>
 </div>
 
@@ -2042,6 +2210,322 @@ function cargarDatosRuta() {
       const grupo = L.featureGroup(Object.values(marcadores));
       mapa.fitBounds(grupo.getBounds().pad(0.25));
     }
+    try { initPlan(); } catch (e) { console.warn('plan', e); }
+  }
+
+  /* =====================================================================
+     PLANIFICADOR + "MI PLAN" + SEGUIMIENTO + COMPARTIR
+     Todo en el móvil (localStorage); el plan viaja en el enlace al compartir.
+     ===================================================================== */
+  const DIAS5 = [
+    { d: 4, n: "Mié", l: "Miércoles 4", c: "#2f7fd6", cd: "#1b4f94" }, { d: 5, n: "Jue", l: "Jueves 5", c: "#1f9d68", cd: "#116545" },
+    { d: 6, n: "Vie", l: "Viernes 6", c: "#e8821a", cd: "#a35407" }, { d: 7, n: "Sáb", l: "Sábado 7", c: "#8a4fd0", cd: "#54298e" },
+    { d: 8, n: "Dom", l: "Domingo 8", c: "#d6403f", cd: "#8b1f1e" }
+  ];
+  // Cada día tiene dos recorridos: comida ("c") y cena ("n"). Clave = día + turno, p. ej. "7c".
+  const PLAN_DIAS = [];
+  DIAS5.forEach((x) => [["c", "Comida", x.c], ["n", "Cena", x.cd]].forEach(([t, tn, col]) =>
+    PLAN_DIAS.push({ d: x.d + t, dia: x.d, t, n: x.n, l: x.l + " · " + tn, c: col })));
+  const slotDia = (k) => parseInt(k, 10), slotTurno = (k) => k.slice(-1);
+  const PLAN_KEY = "erase_plan_v2";
+  let PLAN = { activo: false, dia: "4c", rutas: {}, sigue: null, mpdia: "4c", filtro: null };
+  const planLineas = {};
+  const byId = (id) => PARADAS.find((q) => q.id === id);
+  const idsOk = new Set(PARADAS.map((p) => p.id));
+  function planCargar() {
+    let r = {};
+    try { r = JSON.parse(localStorage.getItem(PLAN_KEY) || "{}") || {}; } catch (e) {}
+    const rr = r.r || {};
+    PLAN_DIAS.forEach((x) => {
+      const v = Array.isArray(rr[x.d]) ? rr[x.d] : (x.t === "c" && Array.isArray(rr[x.dia]) ? rr[x.dia] : []);
+      PLAN.rutas[x.d] = v.filter((id) => idsOk.has(id));
+    });
+    const sg = typeof r.s === "number" ? r.s + "c" : r.s;
+    PLAN.sigue = PLAN_DIAS.some((x) => x.d === sg) ? sg : null;
+  }
+  function planGuardar() { try { localStorage.setItem(PLAN_KEY, JSON.stringify({ r: PLAN.rutas, s: PLAN.sigue })); } catch (e) {} try { pintarFiltro(); } catch (e) {} }
+  planCargar();
+  const planDia = (d) => PLAN_DIAS.find((x) => x.d === d);
+  function planDist(a, b) { return marcadores[a].getLatLng().distanceTo(marcadores[b].getLatLng()); }
+  function planMetros(ids) { let t = 0; for (let i = 1; i < ids.length; i++) t += planDist(ids[i - 1], ids[i]); return t; }
+  const fmtM = (m) => m >= 1000 ? (m / 1000).toFixed(1).replace(".", ",") + " km" : Math.max(10, Math.round(m / 10) * 10) + " m";
+  const fmtMin = (m) => Math.max(1, Math.round(m / 75)) + " min";
+  function planResumenTxt(d) {
+    const ids = PLAN.rutas[d];
+    if (!ids.length) return "Aún no has elegido bares este día";
+    const m = planMetros(ids);
+    return ids.length + (ids.length === 1 ? " bar" : " bares") + (ids.length > 1 ? " · " + fmtM(m) + " andando · unos " + fmtMin(m) : "");
+  }
+  function planToast(t) {
+    let el = document.getElementById("plan-toast");
+    if (!el) { el = document.createElement("div"); el.id = "plan-toast"; document.body.appendChild(el); }
+    el.textContent = t; el.classList.add("on"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("on"), 2600);
+  }
+  function planSiguiente() {
+    if (!PLAN.sigue) return null;
+    return PLAN.rutas[PLAN.sigue].find((id) => !yaVotado(id)) || null;
+  }
+
+  /* ---- mapa ---- */
+  function planPintar() {
+    PLAN_DIAS.forEach((x) => {
+      if (planLineas[x.d]) { mapa.removeLayer(planLineas[x.d]); planLineas[x.d] = null; }
+      const ids = PLAN.rutas[x.d];
+      const siguiendo = !PLAN.activo && (PLAN.sigue === x.d || PLAN.filtro === x.d);
+      const mostrar = PLAN.activo || siguiendo || (ids.length > 0 && document.body.classList.contains("plan-ver"));
+      if (ids.length > 1 && mostrar) {
+        const act = (PLAN.activo && PLAN.dia === x.d) || siguiendo;
+        planLineas[x.d] = L.polyline(ids.map((id) => marcadores[id].getLatLng()), {
+          color: x.c, weight: act ? 5 : 3, opacity: act ? 0.95 : (PLAN.activo ? 0.35 : 0.8), dashArray: act ? null : "6 6", lineJoin: "round"
+        }).addTo(mapa);
+      }
+    });
+    const sig = planSiguiente();
+    PARADAS.forEach((p, i) => {
+      const el = document.getElementById("mk-" + p.id); if (!el) return;
+      const span = el.querySelector("span");
+      el.classList.remove("plan-en", "plan-fuera", "plan-sig", "plan-otro");
+      el.style.removeProperty("--pc"); el.style.removeProperty("--po");
+      span.textContent = i + 1;
+      if (PLAN.activo) {
+        const k = PLAN.rutas[PLAN.dia].indexOf(p.id);
+        if (k >= 0) { el.classList.add("plan-en"); el.style.setProperty("--pc", planDia(PLAN.dia).c); span.textContent = k + 1; }
+        else {
+          const od = PLAN_DIAS.find((x) => x.d !== PLAN.dia && PLAN.rutas[x.d].indexOf(p.id) >= 0);
+          if (od) { el.classList.add("plan-otro"); el.style.setProperty("--po", od.c); } else el.classList.add("plan-fuera");
+        }
+      } else if (PLAN.filtro && PLAN.rutas[PLAN.filtro].indexOf(p.id) >= 0) {
+        const kk = PLAN.rutas[PLAN.filtro].indexOf(p.id);
+        el.classList.add(p.id === sig && PLAN.sigue === PLAN.filtro ? "plan-sig" : "plan-en"); el.style.setProperty("--pc", planDia(PLAN.filtro).c); span.textContent = kk + 1;
+      } else if (PLAN.sigue && p.id === sig) {
+        el.classList.add("plan-sig"); el.style.setProperty("--pc", planDia(PLAN.sigue).c);
+        span.textContent = PLAN.rutas[PLAN.sigue].indexOf(p.id) + 1;
+      }
+    });
+    planChips("plan-dias", "plan-turnos", PLAN.dia);
+    const uni = new Set(); PLAN_DIAS.forEach((x) => PLAN.rutas[x.d].forEach((id) => uni.add(id)));
+    const falta = PARADAS.length - uni.size;
+    document.getElementById("plan-resumen").innerHTML = '<b style="color:' + planDia(PLAN.dia).c + '">' + planDia(PLAN.dia).l + ":</b> "
+      + (PLAN.rutas[PLAN.dia].length ? planResumenTxt(PLAN.dia) : "toca los bares en el orden en que quieres ir")
+      + '<br><span class="pl-tot">En tu plan: <b>' + uni.size + " de " + PARADAS.length + "</b> bares · "
+      + (falta ? "te faltan <b>" + falta + "</b>" : "¡están todos!") + "</span>";
+    document.getElementById("plan-empezar").hidden = !PLAN.rutas[PLAN.dia].length;
+    document.getElementById("b-plan").classList.toggle("tiene", PLAN_DIAS.some((x) => PLAN.rutas[x.d].length));
+    planBanner();
+  }
+  const cuentaDia = (dia) => PLAN.rutas[dia + "c"].length + PLAN.rutas[dia + "n"].length;
+  function planChips(idDias, idTurnos, slot) {
+    const dia = slotDia(slot), t = slotTurno(slot);
+    document.getElementById(idDias).innerHTML = DIAS5.map((y) => '<button type="button" data-d="' + y.d + '" class="' + (y.d === dia ? "on" : "") + '" style="--pc:' + y.c + '"><small>' + y.n + "</small><b>" + y.d + "</b><i>" + (cuentaDia(y.d) || "") + "</i></button>").join("");
+    const col = planDia(slot).c;
+    document.getElementById(idTurnos).innerHTML = [["c", "☀️ Comida"], ["n", "🌙 Cena"]].map(([k, nom]) => '<button type="button" data-t="' + k + '" class="' + (k === t ? "on" : "") + '" style="--pc:' + col + '">' + nom + " <i>" + (PLAN.rutas[dia + k].length || "") + "</i></button>").join("");
+  }
+  function planBanner() {
+    const b = document.getElementById("plan-sig"); if (!b) return;
+    if (!PLAN.sigue || PLAN.activo) { b.hidden = true; return; }
+    const ids = PLAN.rutas[PLAN.sigue], sig = planSiguiente(), col = planDia(PLAN.sigue).c;
+    b.hidden = false; b.style.setProperty("--pc", col);
+    if (sig) {
+      const k = ids.indexOf(sig), p = byId(sig);
+      let extra = "";
+      if (k > 0) extra = " · a " + fmtM(planDist(ids[k - 1], sig)) + " de la anterior";
+      b.innerHTML = '<span class="n">' + (k + 1) + '</span><span class="t"><small>' + planDia(PLAN.sigue).n + " " + slotDia(PLAN.sigue) + " · " + (slotTurno(PLAN.sigue) === "c" ? "Comida" : "Cena") + " · " + (k + 1) + "/" + ids.length + "</small><b>" + p.nombre + "</b><em>" + p.tapaNombre + extra + '</em></span><button type="button" data-a="ficha">Ficha</button><button type="button" data-a="edit">Editar</button><button type="button" data-a="stop" aria-label="Terminar y ver todos los bares">✕</button>';
+    } else {
+      b.innerHTML = '<span class="n">✓</span><span class="t"><small>' + planDia(PLAN.sigue).l + '</small><b>¡Ruta completada!</b><em>' + ids.length + " bares votados</em></span>" + '<button type="button" data-a="stop" aria-label="Cerrar">✕</button>';
+    }
+  }
+  function planEmpezar(slot) {
+    if (!PLAN.rutas[slot] || !PLAN.rutas[slot].length) return;
+    PLAN.sigue = slot; planGuardar();
+    if (PLAN.activo) planActivar(false);
+    const f = document.getElementById("filtro-estab"); pintarFiltro(); if (f) f.value = "plan:" + slot;
+    filtrarMapa("plan:" + slot);
+  }
+  function planDetener() {
+    PLAN.sigue = null; planGuardar();
+    const f = document.getElementById("filtro-estab"); if (f) f.value = "";
+    filtrarMapa("");
+  }
+  function planActivar(si) {
+    if (si && PLAN.filtro) { const f = document.getElementById("filtro-estab"); if (f) f.value = ""; filtrarMapa(""); }
+    PLAN.activo = si;
+    document.body.classList.toggle("plan-on", si);
+    PARADAS.forEach((p, i) => {
+      const m = marcadores[p.id];
+      if (si) { m.closePopup(); m.unbindPopup(); }
+      else m.bindPopup(
+        '<div class="mk-pop"><b>' + (i + 1) + ". " + p.nombre + "</b><span>" + p.tapaNombre + '</span><button type="button" data-id="' + p.id + '">Ver ficha ›</button></div>',
+        { closeButton: false, offset: [0, -10], autoPanPaddingTopLeft: [10, 140], autoPanPaddingBottomRight: [10, 130] });
+    });
+    planPintar();
+    setTimeout(() => { mapa.invalidateSize(); planEncuadrar(); }, 60);
+  }
+  function planEncuadrar() {
+    if (!PLAN.activo) return;
+    const ids = PLAN.rutas[PLAN.dia].length ? PLAN.rutas[PLAN.dia] : PARADAS.map((p) => p.id);
+    const h = (document.getElementById("plan").offsetHeight || 200) + 14;
+    mapa.fitBounds(L.featureGroup(ids.map((id) => marcadores[id])).getBounds(), { paddingTopLeft: [30, 40], paddingBottomRight: [30, h], maxZoom: 18, animate: true });
+  }
+  function planToque(id) {
+    const arr = PLAN.rutas[PLAN.dia], k = arr.indexOf(id);
+    if (k >= 0) arr.splice(k, 1); else arr.push(id);
+    planGuardar(); planPintar();
+  }
+
+  /* ---- pantalla "Mi plan" ---- */
+  function croquisSVG(ids, col) {
+    const W = 320, H = 150, P = 22;
+    const pts = ids.map((id) => { const ll = marcadores[id].getLatLng(); return { x: ll.lng * 111320 * Math.cos(36.16 * Math.PI / 180), y: -ll.lat * 111320 }; });
+    const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const sc = Math.min((W - 2 * P) / Math.max(x1 - x0, 30), (H - 2 * P) / Math.max(y1 - y0, 30));
+    const ox = (W - (x1 - x0) * sc) / 2, oy = (H - (y1 - y0) * sc) / 2;
+    const q = pts.map((p) => ({ x: ox + (p.x - x0) * sc, y: oy + (p.y - y0) * sc }));
+    let s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Recorrido del día">';
+    if (q.length > 1) s += '<polyline points="' + q.map((p) => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ") + '" fill="none" stroke="' + col + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
+    q.forEach((p, i) => { s += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="11" fill="' + col + '" stroke="#fff" stroke-width="2.5"/><text x="' + p.x.toFixed(1) + '" y="' + (p.y + 4).toFixed(1) + '" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Poppins,sans-serif">' + (i + 1) + "</text>"; });
+    return s + "</svg>";
+  }
+  function miPlanPintar() {
+    const d = PLAN.mpdia, ids = PLAN.rutas[d], x = planDia(d);
+    planChips("mp-dias", "mp-turnos", d);
+    document.getElementById("mp-resumen").textContent = planResumenTxt(d);
+    const hechas = ids.filter(yaVotado).length;
+    const pr = document.getElementById("mp-prog"); pr.hidden = !ids.length; pr.style.setProperty("--pc", x.c);
+    pr.querySelector("i").style.width = (ids.length ? Math.round(100 * hechas / ids.length) : 0) + "%";
+    pr.querySelector("span").textContent = !ids.length ? "" : hechas === ids.length ? "¡Recorrido completado! " + hechas + " de " + ids.length + " tapas votadas" : hechas + " de " + ids.length + " tapas votadas";
+    const sig = PLAN.sigue === d ? planSiguiente() : null;
+    document.getElementById("mp-lista").innerHTML = ids.map((id, k) => {
+      const p = byId(id), hecho = yaVotado(id);
+      const trozo = k > 0 ? '<div class="mp-trozo">↓ ' + fmtM(planDist(ids[k - 1], id)) + " · " + fmtMin(planDist(ids[k - 1], id)) + " andando</div>" : "";
+      return trozo + '<li style="--pc:' + x.c + '" class="' + (hecho ? "hecho " : "") + (id === sig ? "sig" : "") + '">'
+        + '<span class="chk">' + (hecho ? "✓" : "") + "</span>"
+        + (p.tapaMiniUrl ? '<img src="' + p.tapaMiniUrl + '" alt="" loading="lazy">' : "")
+        + '<span class="t"><b>' + p.nombre + "</b><em>" + p.tapaNombre + "</em>" + (hecho ? "<u>Votada ✓</u>" : (id === sig ? "<u>Siguiente</u>" : "")) + "</span>"
+        + '<span class="ac"><button data-a="up" data-id="' + id + '" ' + (k === 0 ? "disabled" : "") + ' aria-label="Subir">▲</button><button data-a="dn" data-id="' + id + '" ' + (k === ids.length - 1 ? "disabled" : "") + ' aria-label="Bajar">▼</button><button data-a="rm" data-id="' + id + '" aria-label="Quitar">✕</button></span></li>';
+    }).join("");
+    document.getElementById("mp-vacio").hidden = !!ids.length;
+    document.getElementById("mp-empezar").hidden = !ids.length;
+    document.getElementById("mp-compartir").hidden = !ids.length;
+    document.getElementById("mp-vermapa").hidden = !ids.length;
+    document.getElementById("mp-empezar").textContent = PLAN.sigue === d ? "■ Terminar y ver todos los bares" : "▶ Empezamos";
+  }
+  function abrirMiPlan(d) {
+    if (d) PLAN.mpdia = d; else PLAN.mpdia = PLAN.activo || PLAN.sigue ? (PLAN.activo ? PLAN.dia : PLAN.sigue) : PLAN.mpdia;
+    if (PLAN.activo) planActivar(false);
+    miPlanPintar();
+    document.getElementById("miplan").classList.add("on");
+    document.getElementById("miplan").scrollTop = 0;
+  }
+  function cerrarMiPlan() { document.getElementById("miplan").classList.remove("on"); planPintar(); }
+
+  /* ---- compartir / recibir ---- */
+  function planEnlace(d) { return location.origin + location.pathname + "?plan=" + d + ":" + PLAN.rutas[d].join(","); }
+  async function planCompartir() {
+    const d = PLAN.mpdia, ids = PLAN.rutas[d]; if (!ids.length) return;
+    const texto = "Mi ruta del " + planDia(d).l.toLowerCase() + " en la Ruta de la Tapa de La Línea: " + ids.map((id) => byId(id).nombre).join(" → ");
+    const url = planEnlace(d);
+    try { if (navigator.share) { await navigator.share({ title: "Mi plan de la Ruta de la Tapa", text: texto, url }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(texto + "\n" + url); planToast("Enlace copiado: pégalo en WhatsApp"); }
+    catch (e) { window.prompt("Copia este enlace:", url); }
+  }
+  function planParaGrupo() {
+    const g = gEstado && gEstado.grupo; if (!g) return;
+    const con = PLAN_DIAS.filter((x) => PLAN.rutas[x.d].length);
+    const lista = document.getElementById("pe-lista"), vacio = document.getElementById("pe-vacio");
+    vacio.hidden = !!con.length; lista.hidden = !con.length;
+    lista.innerHTML = con.map((x) => '<button type="button" class="pe-op" data-d="' + x.d + '" style="--pc:' + x.c + '"><b>' + x.l + " · " + PLAN.rutas[x.d].length + (PLAN.rutas[x.d].length === 1 ? " bar" : " bares") + "</b><span>" + PLAN.rutas[x.d].map((id) => byId(id).nombre).join(" → ") + "</span></button>").join("");
+    document.getElementById("plan-elegir").classList.add("on");
+  }
+  async function planCompartirGrupo(d) {
+    const g = gEstado && gEstado.grupo; if (!g) return;
+    const ids = PLAN.rutas[d]; if (!ids.length) return;
+    const texto = "Nuestro plan para el " + planDia(d).l.toLowerCase() + " en la Ruta de la Tapa de La Línea (grupo «" + g.nombre + "»): " + ids.map((id) => byId(id).nombre).join(" → ") + ". Ábrelo y entras al grupo con el plan ya guardado 🍽️";
+    const url = location.origin + location.pathname + "?grupo=" + g.codigo + "&plan=" + d + ":" + ids.join(",");
+    document.getElementById("plan-elegir").classList.remove("on");
+    try { if (navigator.share) { await navigator.share({ title: "Plan del grupo «" + g.nombre + "»", text: texto, url }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(texto + " " + url); planToast("Enlace copiado: pégalo en el WhatsApp del grupo"); }
+    catch (e) { window.open("https://wa.me/?text=" + encodeURIComponent(texto + " " + url), "_blank"); }
+  }
+  document.getElementById("pe-lista").onclick = (e) => { const b = e.target.closest("button.pe-op"); if (b) planCompartirGrupo(b.dataset.d); };
+  document.getElementById("pe-cerrar").onclick = () => document.getElementById("plan-elegir").classList.remove("on");
+  document.getElementById("pe-planificar").onclick = () => { document.getElementById("plan-elegir").classList.remove("on"); cerrarGrupo(); document.getElementById("g-lista").classList.remove("on"); abrirApp(); planActivar(true); };
+  let PLAN_RECIBIDO = null;
+  function planProcesarEnlace() {
+    const raw = QS.get("plan"); if (!raw) return;
+    const m = /^(\d[cn]?):(.*)$/.exec(raw); if (!m) return;
+    const d = m[1].length === 1 ? m[1] + "c" : m[1]; if (!planDia(d)) return;
+    const ids = [...new Set(m[2].split(",").filter((id) => idsOk.has(id)))];
+    if (!ids.length) return;
+    PLAN_RECIBIDO = { d, ids };
+    document.getElementById("pr-dia").textContent = planDia(d).l;
+    document.getElementById("pr-lista").innerHTML = ids.map((id, k) => "<li><span>" + (k + 1) + "</span>" + byId(id).nombre + "</li>").join("");
+    document.getElementById("pr-aviso").hidden = !PLAN.rutas[d].length;
+    document.getElementById("plan-recibido").classList.add("on");
+    try { const u = new URL(location.href); u.searchParams.delete("plan"); history.replaceState(null, "", u.pathname + u.search + u.hash); } catch (e) {}
+  }
+  document.getElementById("pr-guardar").onclick = () => {
+    const r = PLAN_RECIBIDO; if (!r) return;
+    PLAN.rutas[r.d] = r.ids; planGuardar();
+    document.getElementById("plan-recibido").classList.remove("on");
+    try { cerrarGrupo(); document.getElementById("g-lista").classList.remove("on"); } catch (e) {}
+    abrirApp(); abrirMiPlan(r.d);
+  };
+  document.getElementById("pr-no").onclick = () => document.getElementById("plan-recibido").classList.remove("on");
+  (function esperarYMostrar() {
+    const conGrupo = !!QS.get("grupo");
+    const intenta = (n) => { if (conGrupo && n < 12 && document.getElementById("g-invit").classList.contains("on")) { setTimeout(() => intenta(n + 1), 800); return; } planProcesarEnlace(); };
+    setTimeout(() => intenta(0), conGrupo ? 2800 : 1800);
+  })();
+
+  function initPlan() {
+    PARADAS.forEach((p) => marcadores[p.id].on("click", () => { if (PLAN.activo) planToque(p.id); }));
+    const caja = document.getElementById("plan-dias");
+    caja.onclick = (e) => { const b = e.target.closest("button"); if (b) { PLAN.dia = +b.dataset.d + slotTurno(PLAN.dia); planPintar(); planEncuadrar(); } };
+    document.getElementById("plan-turnos").onclick = (e) => { const b = e.target.closest("button"); if (b) { PLAN.dia = slotDia(PLAN.dia) + b.dataset.t; planPintar(); planEncuadrar(); } };
+    document.getElementById("b-plan").onclick = () => planActivar(true);
+    document.getElementById("plan-cerrar").onclick = () => {
+      const k = PLAN.dia;
+      planActivar(false);
+      if (PLAN.sigue === k) { if (PLAN.rutas[k].length) planEmpezar(k); else planDetener(); }
+    };
+    document.getElementById("plan-empezar").onclick = () => planEmpezar(PLAN.dia);
+    document.getElementById("plan-vaciar").onclick = () => { PLAN.rutas[PLAN.dia] = []; if (PLAN.sigue === PLAN.dia) PLAN.sigue = null; planGuardar(); planPintar(); };
+    document.getElementById("plan-ver").onclick = () => { document.body.classList.toggle("plan-ver"); planPintar(); };
+    document.getElementById("plan-miplan").onclick = () => { PLAN.mpdia = PLAN.dia; abrirMiPlan(PLAN.dia); };
+    document.getElementById("plan-sig").onclick = (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.a === "ficha") { const s = planSiguiente(); if (s) abrirParada(s); }
+      else if (b.dataset.a === "edit") { PLAN.dia = PLAN.sigue; planActivar(true); }
+      else planDetener();
+    };
+    document.getElementById("mp-volver").onclick = cerrarMiPlan;
+    document.getElementById("mp-dias").onclick = (e) => { const b = e.target.closest("button"); if (b) { PLAN.mpdia = +b.dataset.d + slotTurno(PLAN.mpdia); miPlanPintar(); } };
+    document.getElementById("mp-turnos").onclick = (e) => { const b = e.target.closest("button"); if (b) { PLAN.mpdia = slotDia(PLAN.mpdia) + b.dataset.t; miPlanPintar(); } };
+    document.getElementById("mp-lista").onclick = (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      const arr = PLAN.rutas[PLAN.mpdia], k = arr.indexOf(b.dataset.id);
+      if (b.dataset.a === "rm") arr.splice(k, 1);
+      else if (b.dataset.a === "up" && k > 0) [arr[k - 1], arr[k]] = [arr[k], arr[k - 1]];
+      else if (b.dataset.a === "dn" && k < arr.length - 1) [arr[k + 1], arr[k]] = [arr[k], arr[k + 1]];
+      if (PLAN.sigue === PLAN.mpdia && !arr.length) PLAN.sigue = null;
+      planGuardar(); miPlanPintar();
+    };
+    document.getElementById("mp-empezar").onclick = () => {
+      if (PLAN.sigue === PLAN.mpdia) { planDetener(); miPlanPintar(); }
+      else { document.getElementById("miplan").classList.remove("on"); planEmpezar(PLAN.mpdia); }
+    };
+    document.getElementById("mp-compartir").onclick = planCompartir;
+    document.getElementById("mp-editar").onclick = () => { const m = document.getElementById("miplan"); m.classList.toggle("editando"); document.getElementById("mp-editar").textContent = m.classList.contains("editando") ? "Hecho" : "Editar"; };
+    document.getElementById("mp-vermapa").onclick = () => {
+      document.getElementById("miplan").classList.remove("on");
+      const f = document.getElementById("filtro-estab"); pintarFiltro(); if (f) f.value = "plan:" + PLAN.mpdia; filtrarMapa("plan:" + PLAN.mpdia);
+    };
+    document.getElementById("mp-anadir").onclick = () => { PLAN.dia = PLAN.mpdia; document.getElementById("miplan").classList.remove("on"); planActivar(true); };
+    document.getElementById("mp-vacio-btn").onclick = () => document.getElementById("mp-anadir").onclick();
+    pintarFiltro();
+    if (PLAN.sigue && PLAN.rutas[PLAN.sigue].length) { const f = document.getElementById("filtro-estab"); if (f) f.value = "plan:" + PLAN.sigue; filtrarMapa("plan:" + PLAN.sigue); } else planPintar();
+    setInterval(() => { if (PLAN.sigue && !PLAN.activo) { planBanner(); planPintar(); } if (document.getElementById("miplan").classList.contains("on")) miPlanPintar(); }, 3000);
   }
 
   { const c = document.querySelector(".portada-cartel"), f = document.getElementById("cartel-fondo"); if (c && f) f.src = c.src; }
@@ -2116,17 +2600,25 @@ function cargarDatosRuta() {
   function pintarFiltro() {
     const sel = $("#filtro-estab"); if (!sel) return;
     const previo = sel.value;
+    const dias = (typeof PLAN_DIAS !== "undefined" ? PLAN_DIAS : []).filter((x) => PLAN.rutas[x.d] && PLAN.rutas[x.d].length);
+    const hoyD = (() => { const f = new Date(); return f.getMonth() === 10 ? f.getDate() : 0; })();
     sel.innerHTML = '<option value="">Todos los establecimientos (' + PARADAS.length + ")</option>"
-      + PARADAS.map((p, i) => '<option value="' + p.id + '">' + (i + 1) + ". " + p.nombre + "</option>").join("");
+      + (dias.length ? '<optgroup label="Mi plan">' + dias.map((x) => '<option value="plan:' + x.d + '">' + (x.dia === hoyD ? "Hoy · " : "") + x.l + " · " + PLAN.rutas[x.d].length + (PLAN.rutas[x.d].length === 1 ? " bar" : " bares") + "</option>").join("") + "</optgroup>" : "")
+      + '<optgroup label="Establecimientos">' + PARADAS.map((p, i) => '<option value="' + p.id + '">' + (i + 1) + ". " + p.nombre + "</option>").join("") + "</optgroup>";
     sel.value = previo;
+    if (sel.value !== previo) { sel.value = ""; if (previo && previo.indexOf("plan:") === 0 && mapa) filtrarMapa(""); }
     sel.onchange = () => filtrarMapa(sel.value);
   }
 
   function filtrarMapa(id) {
     if (!mapa) return;
     mapa.closePopup();
+    const dPlan = id && id.indexOf("plan:") === 0 ? id.slice(5) : "";
+    PLAN.filtro = dPlan || null;
+    const idsPlan = dPlan ? PLAN.rutas[dPlan] : null;
+    if (dPlan) id = "";
     Object.entries(marcadores).forEach(([k, m]) => {
-      const visible = !id || k === id;
+      const visible = idsPlan ? idsPlan.indexOf(k) >= 0 : (!id || k === id);
       if (visible && !mapa.hasLayer(m)) m.addTo(mapa);
       if (!visible && mapa.hasLayer(m)) mapa.removeLayer(m);
     });
@@ -2135,9 +2627,12 @@ function cargarDatosRuta() {
       const m = marcadores[id];
       mapa.flyTo(m.getLatLng(), 18, { duration: 0.6 });
       mapa.once("moveend", () => m.openPopup());
+    } else if (idsPlan && idsPlan.length) {
+      mapa.flyToBounds(L.featureGroup(idsPlan.map((k) => marcadores[k])).getBounds().pad(0.3), { duration: 0.6, maxZoom: 18 });
     } else {
       mapa.flyToBounds(L.featureGroup(Object.values(marcadores)).getBounds().pad(0.25), { duration: 0.6 });
     }
+    planPintar();
   }
 
   function refrescarMarcador(id) {
@@ -3331,6 +3826,7 @@ function cargarDatosRuta() {
     $("#g-cuerpo").innerHTML = '<div class="g-caja">'
       + '<div class="g-miembros">' + miembrosFix + "</div><p class=\"g-cupo\">" + n + " de " + g.max + " personas" + (g.soy_master && n > 1 ? " · Si alguien no vota, quítalo con la ✕" : "") + "</p>"
       + '<div class="g-invitar"><span class="tx">Código del grupo<b>' + gEsc(g.codigo) + '</b></span><button class="gr-btn" id="g-invitar" type="button">Invitar</button></div>'
+      + '<button class="g-planbtn" id="g-plan" type="button">' + (g.soy_master ? "🗓️ Compartir mi plan con el grupo" : "🗓️ Enviar mi plan al administrador o al grupo") + "</button>"
       + podio
       + (esperando.length ? '<div class="g-sec">Esperando al grupo</div>' + esperando.map(filaEspera).join("") : "")
       + (reveladas.length ? '<div class="g-sec">Tapas destapadas</div>' + reveladas.map(filaReveal).join("") : "")
@@ -3343,6 +3839,7 @@ function cargarDatosRuta() {
   $("#g-cuerpo").addEventListener("click", async (ev) => {
     const g = gEstado && gEstado.grupo; if (!g) return;
     if (ev.target.closest("#g-invitar")) { invitarAGrupo(); return; }
+    if (ev.target.closest("#g-plan")) { planParaGrupo(); return; }
     const ex = ev.target.closest("[data-expulsar]");
     if (ex) {
       const clave = "x" + ex.dataset.expulsar;
