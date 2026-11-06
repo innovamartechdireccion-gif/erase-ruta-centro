@@ -728,6 +728,7 @@ body.plan-on #plan{display:flex}
 #plan .p-pie .p-prim{background:var(--navy);color:var(--cream);text-decoration:none;border-radius:999px;padding:9px 16px}
 #plan-sig{position:absolute;left:14px;right:14px;bottom:90px;z-index:21;display:flex;align-items:center;gap:10px;background:#fff;border-radius:16px;border-left:6px solid var(--pc);padding:10px 10px 10px 12px;box-shadow:0 4px 16px rgba(0,0,0,.3)}
 body.sin-aviso #plan-sig{bottom:auto;top:calc(max(10px,env(safe-area-inset-top)) + 130px)}
+#plan-sig[hidden]{display:none}
 body.plan-on #plan-sig{display:none}
 #plan-sig .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--pc);color:#fff;font:700 .85rem/30px Poppins;text-align:center}
 #plan-sig .t{flex:1;min-width:0;display:flex;flex-direction:column}
@@ -1300,6 +1301,7 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
   <div class="mp-acc">
     <button type="button" class="mp-btn prim" id="mp-empezar"></button>
     <button type="button" class="mp-btn" id="mp-compartir">Compartir este plan</button>
+    <button type="button" class="mp-btn" id="mp-vermapa">Ver solo este día en el mapa</button>
     <button type="button" class="mp-btn suave" id="mp-anadir">+ Añadir o quitar bares en el mapa</button>
   </div>
 </div>
@@ -2176,7 +2178,7 @@ function cargarDatosRuta() {
     { d: 8, n: "Dom", l: "Domingo 8", c: "#d6403f" }
   ];
   const PLAN_KEY = "erase_plan_v2";
-  let PLAN = { activo: false, dia: 4, rutas: {}, sigue: null, mpdia: 4 };
+  let PLAN = { activo: false, dia: 4, rutas: {}, sigue: null, mpdia: 4, filtro: null };
   const planLineas = {};
   const byId = (id) => PARADAS.find((q) => q.id === id);
   const idsOk = new Set(PARADAS.map((p) => p.id));
@@ -2186,7 +2188,7 @@ function cargarDatosRuta() {
     PLAN_DIAS.forEach((x) => { PLAN.rutas[x.d] = Array.isArray(r.r && r.r[x.d]) ? r.r[x.d].filter((id) => idsOk.has(id)) : []; });
     PLAN.sigue = PLAN_DIAS.some((x) => x.d === r.s) ? r.s : null;
   }
-  function planGuardar() { try { localStorage.setItem(PLAN_KEY, JSON.stringify({ r: PLAN.rutas, s: PLAN.sigue })); } catch (e) {} }
+  function planGuardar() { try { localStorage.setItem(PLAN_KEY, JSON.stringify({ r: PLAN.rutas, s: PLAN.sigue })); } catch (e) {} try { pintarFiltro(); } catch (e) {} }
   planCargar();
   const planDia = (d) => PLAN_DIAS.find((x) => x.d === d);
   function planDist(a, b) { return marcadores[a].getLatLng().distanceTo(marcadores[b].getLatLng()); }
@@ -2214,7 +2216,7 @@ function cargarDatosRuta() {
     PLAN_DIAS.forEach((x) => {
       if (planLineas[x.d]) { mapa.removeLayer(planLineas[x.d]); planLineas[x.d] = null; }
       const ids = PLAN.rutas[x.d];
-      const siguiendo = !PLAN.activo && PLAN.sigue === x.d;
+      const siguiendo = !PLAN.activo && (PLAN.sigue === x.d || PLAN.filtro === x.d);
       const mostrar = PLAN.activo || siguiendo || (ids.length > 0 && document.body.classList.contains("plan-ver"));
       if (ids.length > 1 && mostrar) {
         const act = (PLAN.activo && PLAN.dia === x.d) || siguiendo;
@@ -2234,6 +2236,9 @@ function cargarDatosRuta() {
         const k = PLAN.rutas[PLAN.dia].indexOf(p.id);
         if (k >= 0) { el.classList.add("plan-en"); el.style.setProperty("--pc", planDia(PLAN.dia).c); span.textContent = k + 1; }
         else el.classList.add("plan-fuera");
+      } else if (PLAN.filtro && PLAN.rutas[PLAN.filtro].indexOf(p.id) >= 0) {
+        const kk = PLAN.rutas[PLAN.filtro].indexOf(p.id);
+        el.classList.add(p.id === sig && PLAN.sigue === PLAN.filtro ? "plan-sig" : "plan-en"); el.style.setProperty("--pc", planDia(PLAN.filtro).c); span.textContent = kk + 1;
       } else if (PLAN.sigue && p.id === sig) {
         el.classList.add("plan-sig"); el.style.setProperty("--pc", planDia(PLAN.sigue).c);
         span.textContent = PLAN.rutas[PLAN.sigue].indexOf(p.id) + 1;
@@ -2263,6 +2268,7 @@ function cargarDatosRuta() {
     }
   }
   function planActivar(si) {
+    if (si && PLAN.filtro) { const f = document.getElementById("filtro-estab"); if (f) f.value = ""; filtrarMapa(""); }
     PLAN.activo = si;
     document.body.classList.toggle("plan-on", si);
     PARADAS.forEach((p, i) => {
@@ -2321,6 +2327,7 @@ function cargarDatosRuta() {
     document.getElementById("mp-vacio").hidden = !!ids.length;
     document.getElementById("mp-empezar").hidden = !ids.length;
     document.getElementById("mp-compartir").hidden = !ids.length;
+    document.getElementById("mp-vermapa").hidden = !ids.length;
     document.getElementById("mp-empezar").textContent = PLAN.sigue === d ? "■ Dejar de seguir este día" : "▶ Empezar la ruta del " + x.l.toLowerCase();
   }
   function abrirMiPlan(d) {
@@ -2397,9 +2404,13 @@ function cargarDatosRuta() {
       else miPlanPintar();
     };
     document.getElementById("mp-compartir").onclick = planCompartir;
+    document.getElementById("mp-vermapa").onclick = () => {
+      document.getElementById("miplan").classList.remove("on");
+      const f = document.getElementById("filtro-estab"); pintarFiltro(); if (f) f.value = "plan:" + PLAN.mpdia; filtrarMapa("plan:" + PLAN.mpdia);
+    };
     document.getElementById("mp-anadir").onclick = () => { PLAN.dia = PLAN.mpdia; document.getElementById("miplan").classList.remove("on"); planActivar(true); };
     document.getElementById("mp-vacio-btn").onclick = () => document.getElementById("mp-anadir").onclick();
-    planPintar();
+    pintarFiltro(); planPintar();
     setInterval(() => { if (PLAN.sigue && !PLAN.activo) { planBanner(); planPintar(); } if (document.getElementById("miplan").classList.contains("on")) miPlanPintar(); }, 3000);
   }
 
@@ -2475,17 +2486,25 @@ function cargarDatosRuta() {
   function pintarFiltro() {
     const sel = $("#filtro-estab"); if (!sel) return;
     const previo = sel.value;
+    const dias = (typeof PLAN_DIAS !== "undefined" ? PLAN_DIAS : []).filter((x) => PLAN.rutas[x.d] && PLAN.rutas[x.d].length);
+    const hoyD = (() => { const f = new Date(); return f.getMonth() === 10 ? f.getDate() : 0; })();
     sel.innerHTML = '<option value="">Todos los establecimientos (' + PARADAS.length + ")</option>"
-      + PARADAS.map((p, i) => '<option value="' + p.id + '">' + (i + 1) + ". " + p.nombre + "</option>").join("");
+      + (dias.length ? '<optgroup label="Mi plan">' + dias.map((x) => '<option value="plan:' + x.d + '">' + (x.d === hoyD ? "Hoy · " : "") + x.l + " · " + PLAN.rutas[x.d].length + (PLAN.rutas[x.d].length === 1 ? " bar" : " bares") + "</option>").join("") + "</optgroup>" : "")
+      + '<optgroup label="Establecimientos">' + PARADAS.map((p, i) => '<option value="' + p.id + '">' + (i + 1) + ". " + p.nombre + "</option>").join("") + "</optgroup>";
     sel.value = previo;
+    if (sel.value !== previo) { sel.value = ""; if (previo && previo.indexOf("plan:") === 0 && mapa) filtrarMapa(""); }
     sel.onchange = () => filtrarMapa(sel.value);
   }
 
   function filtrarMapa(id) {
     if (!mapa) return;
     mapa.closePopup();
+    const dPlan = id && id.indexOf("plan:") === 0 ? +id.slice(5) : 0;
+    PLAN.filtro = dPlan || null;
+    const idsPlan = dPlan ? PLAN.rutas[dPlan] : null;
+    if (dPlan) id = "";
     Object.entries(marcadores).forEach(([k, m]) => {
-      const visible = !id || k === id;
+      const visible = idsPlan ? idsPlan.indexOf(k) >= 0 : (!id || k === id);
       if (visible && !mapa.hasLayer(m)) m.addTo(mapa);
       if (!visible && mapa.hasLayer(m)) mapa.removeLayer(m);
     });
@@ -2494,9 +2513,12 @@ function cargarDatosRuta() {
       const m = marcadores[id];
       mapa.flyTo(m.getLatLng(), 18, { duration: 0.6 });
       mapa.once("moveend", () => m.openPopup());
+    } else if (idsPlan && idsPlan.length) {
+      mapa.flyToBounds(L.featureGroup(idsPlan.map((k) => marcadores[k])).getBounds().pad(0.3), { duration: 0.6, maxZoom: 18 });
     } else {
       mapa.flyToBounds(L.featureGroup(Object.values(marcadores)).getBounds().pad(0.25), { duration: 0.6 });
     }
+    planPintar();
   }
 
   function refrescarMarcador(id) {
