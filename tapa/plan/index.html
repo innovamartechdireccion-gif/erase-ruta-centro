@@ -693,9 +693,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 #instalar .no{background:transparent;color:var(--niebla);padding:9px 6px}
 
 /* ---- Planificador ---- */
-#b-plan{position:absolute;left:14px;bottom:max(16px,env(safe-area-inset-bottom));z-index:20;display:flex;align-items:center;gap:7px;background:var(--navy);color:var(--cream);border:2px solid #FFCC33;border-radius:999px;padding:11px 15px;font:600 .88rem Poppins;box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer}
+#b-plan{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--navy);color:var(--cream);border:2px solid #FFCC33;border-radius:999px;padding:9px 14px;font:700 .88rem Poppins;box-shadow:0 3px 12px rgba(0,0,0,.3);cursor:pointer;white-space:nowrap}
 #b-plan.tiene::after{content:"";width:9px;height:9px;border-radius:50%;background:#FFCC33}
-body.sin-aviso #b-plan{left:50%;transform:translateX(-50%);bottom:auto;top:calc(max(10px,env(safe-area-inset-top)) + 76px + 54px)}
 body.plan-on #b-plan,body.plan-on .b-tapaporte-flot,body.plan-on .filtro-estab{display:none}
 #plan{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--cream);border-radius:20px 20px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.28);padding:12px 14px max(14px,env(safe-area-inset-bottom));display:none;max-height:42vh;flex-direction:column}
 body.plan-on #plan{display:flex}
@@ -1165,7 +1164,9 @@ img.ranking-thumb{flex:none;width:36px;height:36px;border-radius:50%;object-fit:
 body.sin-aviso .pastilla{top:max(10px,env(safe-area-inset-top))}
 body.sin-aviso .b-tapaporte-flot{top:calc(max(10px,env(safe-area-inset-top)) + 76px);bottom:auto}
 body.sin-aviso .filtro-estab{top:auto;right:70px;bottom:max(16px,env(safe-area-inset-bottom))}
-body.sin-aviso .filtro-estab .gps-pill{margin-top:0;margin-bottom:8px;order:-1}
+.fila-gps{display:flex;gap:8px;margin-top:8px;width:100%}
+.fila-gps .gps-pill{flex:1;width:auto;margin:0;min-width:0;padding:11px 10px;font-size:.84rem}
+body.sin-aviso .filtro-estab .fila-gps{margin-top:0;margin-bottom:8px;order:-1}
 body.sin-aviso .filtro-estab{display:flex;flex-direction:column}
 body.sin-aviso .leaflet-bottom.leaflet-right{margin-bottom:max(6px,env(safe-area-inset-bottom))}
 body.sin-aviso #cerca-card{bottom:128px}
@@ -1219,11 +1220,13 @@ body.sin-aviso #panel .pz-cartel{margin-top:0}
     <div class="cont"><b id="pa-contador">0/0</b><span>tapas</span></div>
   </div>
   <button class="b-tapaporte-flot" id="b-tapaporte-mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/></svg>Mi Tapaporte</button>
-  <button id="b-plan" type="button">📅 Planificar</button>
   <div id="plan"><div class="p-cab"><h4>Planifica tu ruta</h4><button id="plan-cerrar" type="button">Listo</button></div><div id="plan-dias"></div><p id="plan-resumen"></p><ul id="plan-lista"></ul><div class="p-pie"><button id="plan-ver" type="button">Ver todos los días</button><button id="plan-vaciar" type="button">Vaciar este día</button></div></div>
   <div class="filtro-estab">
     <select id="filtro-estab" aria-label="Ver un establecimiento en el mapa"></select>
-    <button type="button" id="btn-gps" class="gps-pill"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg><span>Situarme y ver el bar más cercano</span></button>
+    <div class="fila-gps">
+    <button type="button" id="btn-gps" class="gps-pill"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg><span>Bar más cercano</span></button>
+      <button id="b-plan" type="button">📅 Planificar</button>
+    </div>
   </div>
 </div>
 
